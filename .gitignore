@@ -8,7 +8,7 @@ conf/
 classes/
 .settings/
 .svn/
-.classpath
+*classpath
 
 # Package Files #
 # *.jar
