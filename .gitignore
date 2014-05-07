@@ -5,10 +5,13 @@
 work/
 tmp/
 conf/
+logs/
 classes/
 .settings/
 .svn/
+
 *classpath
+*.properties
 
 # Package Files #
 # *.jar
