@@ -1983,12 +1983,6 @@ function initField(fieldNode)
 	tempField.type =  $(fieldNode).children("type").text();
 	tempField.dataType = $(fieldNode).children("dataType").text();
 	tempField.controlFieldId = $(fieldNode).children("controlFieldId").text();
-	tempField.x = $(fieldNode).children("x").text();
-	tempField.y = $(fieldNode).children("y").text();
-	tempField.height = $(fieldNode).children("height").text();
-	tempField.width = $(fieldNode).children("width").text();
-	tempField.align = $(fieldNode).children("align").text();
-	tempField.valign = $(fieldNode).children("valign").text();
 	tempField.fieldSize = $(fieldNode).children("fieldSize").text();
 	tempField.fieldTip = $(fieldNode).children("fieldTip").text();
 	
@@ -2225,7 +2219,7 @@ function drawFieldsArea(node)
 				if(isFieldHidden(columnField))
 					continue;
 				
-				if(columnField.id != '641814'&&columnField.type == "reference"&&columnField.dataType == "multiple"&&columnField.height>1)
+				if(columnField.id != '641814'&&columnField.type == "reference"&&columnField.dataType == "multiple")
 				{
 					bugsOfCurrentTask.push(columnField);
 					continue;
