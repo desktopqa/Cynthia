@@ -147,7 +147,6 @@ if("get_children".equals(operation)){
 		
 		for(String filterIdStr : folderFiltersStr)
 		{
-// 			folderFilters.add(DataAccessFactory.getInstance().createUUID(filterIdStr));
 			for(Filter filter : userFocusFilters)
 			{
 				if(filter.getId().toString().equals(filterIdStr))

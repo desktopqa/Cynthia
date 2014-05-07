@@ -1500,7 +1500,7 @@
 
 		//deal with rest fields
 		strb.append("<td class=\"tdNoBottom\">");
-		strb.append("<select id=\"").append(prefix).append("_restOrderSelect\" size=\"10\" style=\"width:20em\" multiple>");
+		strb.append("<select class=\"noSearch\" id=\"").append(prefix).append("_restOrderSelect\" size=\"10\" style=\"width:20em\" multiple>");
 		if(allFieldMap != null)
 		{
 			for(String fieldId : allFieldMap.keySet())
@@ -1549,7 +1549,7 @@
 
 		//deal with selected fields
 		strb.append("<td class=\"tdNoBottom\">");
-		strb.append("<select id=\"").append(prefix).append("_selectedOrderSelect\" size=\"10\" style=\"width:20em\" multiple>");
+		strb.append("<select class=\"noSearch\" id=\"").append(prefix).append("_selectedOrderSelect\" size=\"10\" style=\"width:20em\" multiple>");
 		if(selectedFieldMap != null)
 		{
 			for(String fieldId : selectedFieldMap.keySet())
