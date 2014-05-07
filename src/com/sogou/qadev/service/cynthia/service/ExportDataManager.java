@@ -419,7 +419,6 @@ public class ExportDataManager {
 			
 			HSSFRow dataRow = sheet.createRow((short)(i+1));
 			
-			
 			//编号
 			HSSFCell displayCellId = dataRow.createCell((short)(0));
 			displayCellId.setCellType(HSSFCell.CELL_TYPE_STRING);
