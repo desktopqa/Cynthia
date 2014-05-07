@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFHyperlink;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -431,11 +432,12 @@ public class ExportDataManager {
 				{
 					if (displayNames[j] != null && displayNames[j].equals("标题")) {
 						//标题以超链接形式展示
-						HSSFCell numberCell = dataRow.createCell((short)(j+1));
-						numberCell.setCellStyle(linkStyle);
-						numberCell.setCellType(HSSFCell.CELL_TYPE_FORMULA);
-						numberCell.setCellFormula("HYPERLINK(\"" +  ConfigUtil.getCynthiaWebRoot() + "taskManagement.html?operation=read&taskid=" + task.getId().getValue()+ "\",\"" + task.getTitle()+ "\")");
-						
+						HSSFHyperlink link = new HSSFHyperlink(HSSFHyperlink.LINK_URL);
+					    link.setAddress(ConfigUtil.getCynthiaWebRoot() + "taskManagement.html?operation=read&taskid=" + task.getId().getValue());
+					    HSSFCell numberCell = dataRow.createCell((short)(j+1));
+					    numberCell.setCellStyle(linkStyle);
+					    numberCell.setCellValue(task.getTitle());
+					    numberCell.setHyperlink(link);
 					}else {
 						HSSFCell displayCell = dataRow.createCell((short)(j+1));
 						String cellValue = splitAndFilterString(CynthiaUtil.getXMLStr(displayMap.get(displayNames[j])));
