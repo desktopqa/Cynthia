@@ -1,8 +1,14 @@
+<%@ page contentType="text/xml; charset=UTF-8" %>
+<%--
+@description: add action to flow   
+@author?liming  
+@date:2014-5-7
+@version:V1.0  
+--%>
 <%@page import="com.sogou.qadev.service.cynthia.service.ErrorManager.ErrorType"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.ErrorManager"%>
 <%@page import="com.sogou.qadev.service.cynthia.util.ArrayUtil"%>
 <%@page import="com.sogou.qadev.service.cynthia.bean.DataAccessAction"%>
-<%@ page contentType="text/xml; charset=UTF-8" %>
 
 <%@ page import="com.sogou.qadev.service.cynthia.bean.Flow"%>
 <%@ page import="com.sogou.qadev.service.cynthia.bean.Action"%>

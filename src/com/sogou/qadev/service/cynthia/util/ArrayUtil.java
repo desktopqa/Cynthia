@@ -34,6 +34,21 @@ public class ArrayUtil {
 		
 		return strb.toString();
 	}
+	
+	public static String strArray2String(String[] idArray){
+		if(idArray == null || idArray.length == 0)
+			return "";
+		
+		StringBuffer strb = new StringBuffer();
+		for(String id : idArray)
+		{
+			if(strb.length() > 0)
+				strb.append(",");
+			strb.append(id);
+		}
+		
+		return strb.toString();
+	}
 
 	/**
 	 * @description:string to uuid array 
