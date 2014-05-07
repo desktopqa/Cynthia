@@ -68,6 +68,7 @@ function onCompleteAddCondition(data,textStatus)
 		if(content!="")
 			$("#conditions_table>tbody").append("<tr><td>"+content+"</td><td onclick='subCondition(this)'><span style=\"cursor:pointer;\"class=\"label label-important\">删除</span></td></tr>");
 	}
+	enableSelectSearch();
 }
 
 

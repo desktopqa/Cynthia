@@ -13,6 +13,10 @@ import com.sogou.qadev.service.cynthia.bean.JSTree;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
 import com.sogou.qadev.service.cynthia.service.DataAccessSession;
 import com.sogou.qadev.service.cynthia.service.DbPoolConnection;
+import com.sogou.qadev.service.cynthia.util.ArrayUtil;
+import com.sogou.qadev.service.cynthia.util.ConfigUtil;
+import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
+import com.sogou.qadev.service.cynthia.util.FilterUtil;
 import com.sohu.rd.td.util.text.StringTools;
 
 /**
@@ -703,11 +707,12 @@ public class JSTreeAccessSessionMySQL {
 			{
 				count = rs.getInt(1);
 			}
-			if(count == 0)//表示没有记录存在需要先创建一个记录
+			if(count == 0)//表示没有记录存在需要先创建一个记录并添加默认系统过滤器
 			{
-				String createSql = "insert into favorite_filters (user_name) values (?)";
+				String createSql = "insert into favorite_filters (user_name,filters) values (?,?)";
 				pstm = conn.prepareStatement(createSql);
 				pstm.setString(1, userName);
+				pstm.setString(2, ArrayUtil.strArray2String(FilterUtil.systemFilter.toArray(new String[0])));
 				pstm.execute();
 			}
 

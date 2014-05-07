@@ -6,8 +6,10 @@ work/
 tmp/
 conf/
 classes/
-# .settings/
+.settings/
 .svn/
+.classpath
+
 # Package Files #
 # *.jar
 *.war

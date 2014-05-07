@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app>
-	<display-name>cynthia_Node</display-name>
+	<display-name>cynthia</display-name>
 	<!-- Charset Filter Configuration -->
 	<filter>
 		<filter-name>charsetfilter</filter-name>

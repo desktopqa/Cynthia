@@ -22,6 +22,19 @@ import com.sohu.rd.td.util.xml.XMLUtil;
 
 public class FilterUtil {
 
+	/**
+	 * system filter
+	 */
+	public static Set<String> systemFilter = new HashSet<String>();
+	
+	static
+	{
+		systemFilter.add("119695");
+		systemFilter.add("119891");
+		systemFilter.add("119892");
+		systemFilter.add("119893");
+	}
+	
 	//从日志中查询的字段
 	private static Set<String> logFieldSet = new HashSet<String>();
 	static
