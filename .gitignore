@@ -5,6 +5,7 @@
 work/
 tmp/
 conf/
+classes/
 .settings/
 .svn/
 
