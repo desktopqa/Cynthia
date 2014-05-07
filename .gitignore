@@ -6,7 +6,7 @@ work/
 tmp/
 conf/
 classes/
-.settings/
+#.settings/
 .svn/
 
 # Package Files #
