@@ -9,8 +9,8 @@ logs/
 classes/
 .settings/
 .svn/
-.classpath
 *.properties
+*classpath
 
 # Package Files #
 # *.jar
