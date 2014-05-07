@@ -1,0 +1,49 @@
+.container-fluid
+{
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+#left_tree
+{
+	margin-top: 10px;
+	font-size:12px;
+	overflow: auto;
+}
+
+.row-fluid .main-content
+{
+	margin-left: 0px;
+}
+
+.form-horizontal .control-label {
+	width: 116px;
+	text-align: left;
+}
+
+.form-horizontal .controls {
+	margin-left: 120px;
+}
+
+.form-horizontal .control-group {
+	margin-bottom: 10px;
+	margin-top: 10px;
+}
+
+#conditionsForm
+{
+	border-bottom: 1px solid #F1F1F1;
+	border-top: 1px solid #F1F1F1;
+}
+
+
+#ttip
+{
+	position:absolute;
+	border:1px solid #dcdcdc;
+	background:#f3f3f3;
+	padding:1px;
+	color:#333;
+	display:none;
+	z-index: 9999;
+}

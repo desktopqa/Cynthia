@@ -1,0 +1,177 @@
+﻿
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="../lib/bootstrap2/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../lib/bootstrap2/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
+<link href="../lib/g_bootstrap/css/google-bootstrap.css" rel="stylesheet" type="text/css">
+<link href='../lib/jquery.plugins/jcrops/css/jquery.Jcrop.min.css' rel="stylesheet" style="text/css">
+<link href="../css/user.css" rel="stylesheet" type="text/css">
+<link href="../css/top.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="../lib/jquery/jquery-1.9.3.min.js"></script>
+<script type="text/javascript" src='../lib/bootstrap2/js/bootstrap.cynthia.min.js'></script>
+<script type="text/javascript" src="../lib/fileUpload/ajaxfileupload.js"></script>
+<script type="text/javascript" src="../lib/jquery.plugins/jcrops/js/jquery.Jcrop.js"></script>
+<script type="text/javascript" src="../js/util.js"></script>
+<script type="text/javascript" src="../js/user/userConfig.js"></script>
+<script type="text/javascript" src="../js/md5.js"></script>
+
+</head>
+<body>
+<!-- 头部导航开始 -->
+<div id="header-nav">
+</div>
+<!-- 头部导航结束 -->
+
+
+<div class="container-fluid" style="margin-top:60px;">
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="row-fluid">
+				<!-- 左侧tab页 -->
+				<div class="span2">
+						<div class="tabbable tabs-left" > <!--最外层容器-->
+							<ul class="nav nav-tabs" style='width:100%;'>
+							  <li><a data-toggle="tab"  href="#user_basic">基本信息</a></li>
+							  <li><a data-toggle="tab"  href="#user_pic">设置头像</a></li>
+							  <li><a data-toggle="tab"  href="#user_pass">修改密码</a></li>
+							</ul>
+						</div>
+				</div>
+				
+				<!-- 右侧内容 -->
+				<div class="span10">
+						<div class="tab-content">
+							<!--基本资料-->
+							<div class="tab-pane" id="user_basic">
+								<div>
+									<h4>个人资料</h4>
+									<hr>
+									<div class="info-conv">
+										<table>
+											<tr>
+												<td>姓名:</td>
+												<td>
+													<div id="showUser">
+														<font id="user_name_t">李明</font><span style="margin:6px;">|</span><a href="#" onclick="showChange(true);">修改</a>
+													</div>
+													<div id="modifyUser"  style="display:none;">
+														<input type="text" class="pass" id="user_name_modify">
+														<input type="button" class="btn" value="保存" onclick="modifyUserName();"> 
+														<input type="button" class="btn" value="取消" onclick="showChange(false);"> 
+													</div>
+												</td>
+											</tr>
+											<tr>
+												<td>邮箱:</td>
+												<td>
+													<div>
+														<font id="user_name_p"></font>
+													</div>
+												</td>
+											</tr>
+											
+										</table>
+									</div>
+								</div>
+							</div>
+							
+							<!--设置头像-->
+							<div class="tab-pane" id="user_pic">
+								<div id="userphoto">
+									<h4>设置头像</h4>
+									<hr>
+									<div class="info-conv">
+										<table>
+											<tr>
+												<td>头像:</td>
+												<td>
+													<div class="photo">
+														<img alt="头像" id="userImg" src="../images/default_user.png">
+														<div style="margin-top:10px;">
+															<input type="button" class="btn btn-danger" data-toggle="modal" data-target="#add_user_photo" value="设置头像">
+														</div>
+													</div>
+												</td>
+											</tr>
+										</table>
+									</div>
+								</div>
+							</div>
+							
+							<!--修改密码-->
+							<div class="tab-pane" id="user_pass">
+								<div id="userpass">
+									<h4>修改密码</h4>
+									<hr>
+									<div class="info-conv">
+										<table>
+											<tr><td>现在的密码:</td><td><input class="pass" type="password" id="now_pass"></td></tr>
+											<tr><td>设置新密码:</td><td><input class="pass" type="password" id="change_pass"></td></tr>
+											<tr><td>重复新密码:</td><td><input class="pass" type="password" id="change_pass_again"></td></tr>
+											<tr><td colspan="2"><input type="button" class="btn btn-danger" value="保存" onclick="modifyPassword();"></td></tr>
+										</table>
+									</div>
+								</div>
+							</div>
+							
+							
+							<!-- 其它配置 -->
+							<div class="tab-pane" id="system"><!--系统设置-->
+								<div class="row-fluid" style="margin-top:10px;"> 
+							</div>
+						</div>
+						
+						
+						<!-- 修改用户头像 -->
+						<div id="add_user_photo" class="modal hide fade" style="position:absolute; z-index:9999; width: 800px; max-height:700px;"  tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true">
+						      <div class="modal-header">
+							    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+							    <h5>头像</h5>
+							  </div>
+							  <div class="modal-body">
+									<div class="btn btn-success" style="position: relative;overflow: hidden;direction: ltr;">
+										<i class="icon-upload icon-white"></i> 
+										上传头像图片
+										<input type="file" name="userPic" id="userPic" style="position: absolute; right: 0px; top: 0px; margin: 0px; padding: 0px; cursor: pointer;" onchange="uploadImage()">
+									</div>
+									<span class="label label-warning"><span>（只能上传单张10M以下png、jpg、gif图片）</span></span>
+									
+								<div id="preview-out">
+								  <div id="preview_src">
+								  	 <img src="../images/default_user.png" id="target"/>
+								  </div>
+								  
+								  <div id="preview-pane">
+								  	<div id="preview_title">头像预览</div>
+								  	<div id="preview_large_text" class="preview-text">100px × 100px</div>
+								    <div class="preview-container">
+								      <img src="../images/default_user.png" class="jcrop-preview" id="preview" alt="Preview" />
+								    </div>
+								  </div>
+								</div>	
+								
+								<input id="fileId" type="hidden" />
+								<input id="x" type="hidden" />
+								<input id="y" type="hidden" />
+								<input id="w" type="hidden" />
+								<input id="h" type="hidden" />
+								
+							  </div>
+							  <div class="modal-footer">
+							    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+							    <button class="btn btn-primary" onclick="cutImage()">保存</button>
+							  </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

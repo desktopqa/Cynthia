@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Description" content="Cynthia项目缺陷管理系统，拥有表单流程化设计，可视化拖动布局等功能，提供项目管理，缺陷管理，，统计，查询等服务，是您项目上的好帮手！">
+<meta name="Keywords" content="Cynthia,BUG管理,项目管理 ,缺陷管理,任务管理,BUG,缺陷,开源">
+<title>Cynthia 欢迎您!</title>
+<link href="../lib/bootstrap2/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../lib/bootstrap2/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
+<link href="../lib/g_bootstrap/css/google-bootstrap.css" rel="stylesheet" type="text/css">
+<link href="../css/top.css" rel="stylesheet" type="text/css">
+<link href="../css/index.css" rel="stylesheet" type="text/css">
+<link href="../css/statistic.css" rel="stylesheet" type="text/css">
+<link href='../lib/select2/select2.css' rel="stylesheet" style="text/css"/>
+
+<script type="text/javascript" src='../lib/jquery/jquery-1.9.3.min.js'></script>
+<script type="text/javascript" src='../lib/jquery.plugins/jquery-ui/js/jquery-ui-1.10.3.min.js'></script>
+<script type="text/javascript" src='../lib/bootstrap2/js/bootstrap.cynthia.min.js'></script>
+<script type="text/javascript" src='../js/util.js'></script>
+<script type="text/javascript" src="../lib/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript" src="../js/where.js"></script>
+<script type="text/javascript" src='../lib/select2/select2.js'></script>
+<script type="text/javascript" src='../js/statistic.js'></script>
+<script type="text/javascript" src='../js/filterUtils.js'></script>
+<script type="text/javascript" src="../lib/highchart/highcharts.js"></script>
+<script type="text/javascript" src="../lib/highchart/exporting.js"></script>
+<script type="text/javascript" src="../lib/highchart/export-csv.js"></script>
+<script type="text/javascript" src="../lib/highchart/no-data-to-display.js"></script>
+<script type="text/javascript" src="../lib/highchart/draggable-legend.js"></script>
+<script type="text/javascript" src='../js/cynthiaHighChart.js'></script>
+	
+</head>
+
+<body>
+
+<div class="container-fluid">
+	<div id ="header-nav">
+	</div>
+	<div class="row-fluid" style="margin-top:50px;">
+		<div class="span2">
+			<div id="all_stat_div">
+					<div class="box-title">所有统计选项</div>
+					<div class="box-content" id="all_statistic_div">
+					</div>
+					<div class="box-footer">
+						<input type="checkbox" onclick="changeAllCheck(this);"/>&nbsp;
+						<input type="button" style= "margin:0 auto;" class="btn btn-danger" value="生成报表" onclick="showAllChart();"/>
+						&nbsp;&nbsp;<input type="button" style= "margin-right:0px;" class="btn btn-info" value="新建" onclick="initCreateDiv();"/>
+					</div>
+				</div>
+		</div>
+		<div class="span10">
+			<div id="all_content_div">
+					<div class="box-title">报表</div>
+					<div id = "all_report_div">
+					</div>
+				</div>
+		</div>
+	</div>
+</div>
+
+<div id="statdiv" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h5 id="my_statistic_h">新建统计项</h5>
+  </div>
+  <div class="modal-body">
+  <form class="form-horizontal">
+  <div id="stat_all">
+	  <div id="base_info">
+		  <table class="table-condensed">
+		  	<tbody>
+		  		<tr><td><label>统计名称:</label></td>
+			  		<td>
+				  		<input type="text" placeholder="保存名字" id="stat_name"/>
+			  		</td>
+		  		</tr>
+		  		<tr><td><label>选择统计类型:</label></td>
+			  		<td>
+				  		<select id="stat_type" class="select-width" onchange="setTypeDiv();">
+				  			<option value="">--请选择--</option>
+							<option value="person">统计人员解决</option>
+							<option value="model">统计模块数据</option>
+						</select>
+						&nbsp;&nbsp;<input type="button" class="btn btn-mini btn-danger" id="stat_priciple" onclick="showPrincipleTips();" value="查看统计规则"/>
+			  		</td>
+		  		</tr>
+		  		<tr><td><label>选择表单:</label></td>
+			  		<td>
+			  			<select id="templates" class="select-width" onchange="initTemplateFields();">
+						</select>
+			  		</td>
+		  		</tr>
+		  		<tr><td><label>时间范围:</label></td>
+			  		<td>
+			  			起始：<input style="width: 174px;" class="Wdate" type="text"  id="start_time"  onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+			  		</td>
+		  			<td>
+			  			终止：<input style="width: 174px;" class="Wdate" type="text"  id="end_time"  onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+			  		</td>
+		  		</tr>
+		  		<tr><td><label>时间类型:</label></td>
+			  		<td>
+			  			<select id="time_type" class="select-width">
+			  				<option value="">--请选择--</option>
+							<option value="今天">今天</option>
+							<option value="昨天">昨天</option>
+							<option value="本周">本周</option>
+							<option value="上周">上周</option>
+							<option value="本月">本月</option>
+							<option value="上月">上月</option>
+							<option value="本季">本季</option>
+							<option value="上季">上季</option>
+							<option value="本年">本年</option>
+							<option value="去年">去年</option>
+						</select>&nbsp; <font class="text-error">(时间范围和时间类型任选其一!!)</font>
+			  		</td>
+		  		</tr>
+		  		
+		    </tbody>
+		  </table>
+	  </div>
+	  
+	  <div class="by_task stat">
+	  	 <table class="table-condensed">
+		  	 <tbody>
+		  		<tr><td><label>选择任务:</label></td>
+			  		<td>
+				  		<select id="stat_task" class="select-width">
+						</select>
+			  		</td>
+		  		</tr>
+		  		<tr><td><label>设置bug字段:</label></td>
+			  		<td>
+				  		<select id="stat_task_bug_field" class="select-width" onchange="setTaskBugStatus();">
+						</select>
+			  		</td>
+		  		</tr>
+		     </tbody>
+		  </table>
+	  </div>
+	  
+	  <div class="by_person stat">
+	  	 <table class="table-condensed">
+		  	 <tbody>
+		  		<tr><td><label>选择角色:</label></td>
+			  		<td>
+				  		<select id="stat_role" class="select-width" onchange="initRoleActions();">
+						</select>
+			  		</td>
+		  		</tr>
+		  		<tr><td><label>定义解决动作:</label></td>
+			  		<td>
+				  		<select id="stat_action" class="select-width" multiple placeholder="请选择解决动作">
+						</select>&nbsp;<font class="text-error">(发生过这些动作则定义为解决!!)</font>
+			  		</td>
+		  		</tr>
+		  		<tr><td><label>包含当前指派数据:</label></td>
+			  		<td>
+			  			<input type="radio" style="margin: 0px;" name="containCurAssign"  value ="yes" />是&nbsp;&nbsp;
+					    <input type="radio" style="margin: 0px;" name="containCurAssign" value ="no" checked/>否
+			  		</td>
+		  		</tr>
+		     </tbody>
+		  </table>
+	  </div>
+	  
+	  <div class="by_model by_task by_person stat" style="border-bottom: 1px solid rgb(206, 191, 191);">
+	  	  <table class="table-condensed">
+		  	 <tbody>
+		  		<tr><td><label>设置过滤条件:</label></td>
+			  		<td>
+				  		<select id="fields" onchange="addCondition()" class="select-width">
+							 <option value="">---请选择---</option>
+						</select>&nbsp;<font class="text-error">(多次选择可以添加多个条件!!)</font>
+					</td>
+		  		</tr>
+		     </tbody>
+		  </table>
+		  
+		  <table id="conditions_table" style="margin-left: 5px;">
+			<tbody>
+				
+			</tbody>
+		  </table>
+		  
+		  <table class="table-condensed">
+		  	 <tbody>
+		  		<tr><td><label>字段间关系:</label></td>
+			  		<td>
+					     <input type="radio" style="margin: 0px;" name="betweenField"  checked="checked" value="and" checked/>且&nbsp;&nbsp;
+					     <input type="radio" style="margin: 0px;" name="betweenField" value ="or" />或
+					</td>
+		  		</tr>
+		     </tbody>
+		  </table>
+	  </div>
+	  
+	  <div class="by_model stat">
+	  	<table class="table-condensed">
+		  	 <tbody>
+		  		<tr><td><label>选择统计字段:</label></td>
+			  		<td>
+				  		<select id="stat_field" class="select-width" onchange="initStatFieldOptions();">
+						</select>
+			  		</td>
+		  		</tr>
+		     </tbody>
+		  </table>
+	  </div>
+	  
+	  <div class="stat by_model by_task">
+	  
+	  	<font style="margin-left: 8px;font-size: 14px;">统计项：</font>
+	  	
+	 	<input type="text" class="input-medium search-query" id="search_stat_word" placeholder="search" style="margin-left:10px;width:128px;">
+	  	
+	  	<table class="table-condensed">
+		  	 <tbody>
+		  		<tr>
+			  		<td style="max-height:250px; vertical-align: top;">
+			  			<select id="stat_options" class="noSearch"  size="10" multiple style="max-width:230px;">
+			  			</select>
+			  		</td>
+				  	<td style="vertical-align: sub;">
+					  	<input type="button" class="btn btn-mini btn-danger" value="添加" onclick="addOptions();"/>
+					  	<br />
+					  	<br />
+					  	<input type="button" class="btn btn-mini btn-danger" value="全部" onclick="addAllOptions();"/>
+				  	</td>
+				  	<td style="vertical-align: sub;">
+				  		<table class="table table-condensed">
+					  		<thead>
+					  			<tr><th noWrap>统计显示列名</th><th noWrap>统计项</th><th noWrap>移称</th></tr>
+					  		</thead>
+					  		<tbody id="stat_info_body">
+					  		
+					  		</tbody>
+				  		</table>
+				  	</td>
+		  		</tr>
+		     </tbody>
+		  </table>
+	  </div>
+	  
+	 <div style="margin-top:10px;">
+	  	<table class="table-condensed">
+	  		<tbody>
+		  		<tr><td><label>发信时间:</label></td>
+			  		<td>
+				  		每天：<input type="text" style="width:20px;height:15px;" id="hour"/>时<input type="text" style="width:20px;height:15px;" id="minute"/>分
+			  		</td>
+		  		</tr>
+		  		<tr><td><label>收件人:</label></td>
+			  		<td>
+				  		<input type="text" id="recievers" placeholder="多个收件人英文分号;隔开">
+			  		</td>
+		  		</tr>
+		  		<tr><td><label>图表类型:</label></td>
+			  		<td>
+				  		<select id="chartType" class="select-width">
+				  			<option value="line" selected>线型</option>
+				  			<option value="area">面积图</option>
+				  			<option value="bar">柱状图</option>
+				  			<option value="pie">饼图</option>
+				  		</select>
+			  		</td>
+		  		</tr>
+		     </tbody>
+		  </table>
+	  </div>
+	  
+  </div>
+  
+  </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn" data-dismiss="modal">关闭</button>
+    <button class="btn btn-primary" onclick="saveStat();">保存</button>
+  </div>
+</div>
+
+<input type="hidden" id="stat_id"/>
+
+
+</body>
+</html>

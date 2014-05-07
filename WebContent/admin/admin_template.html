@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Description" content="Cynthia项目缺陷管理系统，拥有表单流程化设计，可视化拖动布局等功能，提供项目管理，缺陷管理，，统计，查询等服务，是您项目上的好帮手！">
+<meta name="Keywords" content="Cynthia,BUG管理,项目管理 ,缺陷管理,任务管理,BUG,缺陷,开源">
+<title>Cynthia 欢迎您!</title>
+<link href="../lib/bootstrap2/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../lib/bootstrap2/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
+<link href="../lib/g_bootstrap/css/google-bootstrap.css" rel="stylesheet" type="text/css">
+<link href="../lib/jquery.plugins/tablesorter/style.css" rel="stylesheet" type="text/css" /> 
+
+<link href="../css/admin.css" rel="stylesheet" type="text/css">
+<link href="../lib/select2/select2.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src='../lib/jquery/jquery-1.9.3.min.js'></script>
+<script type="text/javascript" src='../lib/bootstrap2/js/bootstrap.cynthia.min.js'></script>
+<script type="text/javascript" src="../lib/jquery.plugins/tablesorter/jquery.tablesorter.js"></script>
+
+<script type="text/javascript" src="../js/util.js?v=3"></script>
+<script type="text/javascript" src="../lib/select2/select2.js"></script>
+<script type="text/javascript" src="../js/admin/admin_template.js?v=8"></script>
+
+</head>
+<body>
+<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="span12 template_toolbar">
+			<button class="btn btn-danger btn-create" type="button" onclick="displayCreateDiv()">新建表单</button>
+			<input type="text" class="input-medium search-query" id="search_stat_word" placeholder="search" style="margin-left:10px;width:120px;">
+	  		<input type="button" class="btn btn-info" id="search_stat_btn" value="go">
+		</div>
+	</div>
+	<div class="row-fluid">
+		<div class="span12">
+			<table class="tablesorter table table-hover table-striped" id="templateListGrid">
+				<thead>
+		    		<tr>
+		    			<th>序号</th><th>名称</th><th>类型</th><th>流程</th><th>修改</th><th>表单用户</th><th>删除</th>
+		    		</tr>
+		    	</thead>
+		    	<tbody id="templateBodyDiv">
+		    	</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<!-- 修改div -->
+<div id="modifyTemplateDiv" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h5 id="myModalLabel">修改表单</h5>
+  </div>
+  <div class="modal-body">
+  	<form class="form-horizontal">
+  		<div class="control-group" style="display: none;">
+		    <label class="control-label" for="input_id_m">表单ID：</label>
+		    <div class="controls">
+		   	    <input type="text" id="input_id_m" disabled="disabled"/>
+		    </div>
+		</div>
+  		<div class="control-group">
+		    <label class="control-label" for="input_name_m">名称：</label>
+		    <div class="controls">
+		   	    <input type="text" id="input_name_m" />
+		    </div>
+		</div>
+		<div class="control-group" style="display: none;">
+		    <label class="control-label" for="select_templateTypeId_m">表单类型：</label>
+		    <div class="controls">
+		   	    <select  id="select_templateTypeId_m" disabled="disabled">
+				</select>
+		    </div>
+		  </div>
+		  <div class="control-group">
+		    <label class="control-label" for="select_flowId_m">流程：</label>
+		    <div class="controls">
+		   	    <select  id="select_flowId_m">
+				</select>
+		    </div>
+		  </div>
+  	</form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    <button class="btn btn-primary" onclick="modifyTemplate()">保存</button>
+  </div>
+</div>
+
+
+
+<!-- 管理表单用户div -->
+<div id="templateUserDiv" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h5 id="myModalLabel">管理表单用户</h5>
+  </div>
+  <div class="modal-body">
+    <button class="btn btn-danger" data-toggle="modal" data-target='#addUserDiv'>添加用户</button>
+    <div class="divider"></div>
+  	<table class="table table-hover table-striped table-condensed">
+    	<thead>
+    		<tr><th>序号</th><th>用户</th><th>邮箱</th><th>删除</th></tr>
+    	</thead>
+    	<tbody id="user-cfg-table">
+    	
+    	</tbody>
+    </table>
+    <input type="hidden" id="template_id"/>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+  </div>
+</div>
+
+<!-- 添加用户 -->
+<div id="addUserDiv" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h5>添加用户</h5>
+  </div>
+  <div class="modal-body">
+  	<form class="form-horizontal">
+  		<div class="control-group">
+		    <label class="control-label" for="user_email">选择用户：</label>
+		    <div class="controls" id="allUserDiv">
+		   	    <select id ="allUser" placeholder="多选添加用户" style="width:250px;" multiple >
+		   	    </select>
+		    </div>
+		</div>
+  	</form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    <button class="btn btn-primary" onclick="addUserRight()">添加</button>
+  </div>
+</div>
+
+<!-- 创建template div -->
+<div id="addTemplateDiv" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h5 id="myModalLabel">创建表单</h5>
+  </div>
+  <div class="modal-body">
+  	<form class="form-horizontal">
+  		<div class="control-group">
+		    <label class="control-label" for="input_name">表单名称：</label>
+		    <div class="controls">
+		      <input type="text" id="input_name" />
+		    </div>
+	  	</div>
+	  	
+  		<div class="control-group">
+		    <label class="control-label" for="select_templateTypeId">表单类型：</label>
+		    <div class="controls">
+		   	    <select  id="select_templateTypeId" onchange="onSelectTemplateType()">
+				</select>
+		    </div>
+		</div>
+	  
+	  <div class="control-group">
+	    <label class="control-label" for="select_copyTemplateId">复制自：</label>
+	    <div class="controls">
+	   	    <select id="select_copyTemplateId" onChange="showCopyUser();">
+			</select>
+	    </div>
+	  </div>
+	  
+	  <div class="control-group" id="copy_flow_div">
+	    <label class="control-label" for="select_flowId">流程：</label>
+	    <div class="controls">
+	   	    <select  id="select_flowId">
+			</select>
+	    </div>
+	  </div>
+	  
+	  <div class="control-group" id="user_right_div" style="display:none;">
+	    <label class="control-label" style="color:red" for="select_copyTemplateId">复制人员信息：</label>
+	    <div class="controls">
+	   	    <select id="select_copyUserRight">
+	   	    	<option value="true">是</option>
+	   	    	<option value="true">否</option>
+			</select>
+	    </div>
+	  </div>
+  	</form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    <button class="btn btn-primary" onclick="addTemplate()">保存</button>
+  </div>
+</div>
+</body>
+</html>

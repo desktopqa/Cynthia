@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Description" content="Cynthia项目缺陷管理系统，拥有表单流程化设计，可视化拖动布局等功能，提供项目管理，缺陷管理，，统计，查询等服务，是您项目上的好帮手！">
+<meta name="Keywords" content="Cynthia,BUG管理,项目管理 ,缺陷管理,任务管理,BUG,缺陷,开源">
+<title>Cynthia 欢迎您!</title>
+<link href="../lib/bootstrap2/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../lib/bootstrap2/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
+<link href="../lib/g_bootstrap/css/google-bootstrap.css" rel="stylesheet" type="text/css">
+
+<link href="../css/top.css" rel="stylesheet" type="text/css">
+<link href="../css/admin.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src='../lib/jquery/jquery-1.9.3.min.js'></script>
+<script type="text/javascript" src='../lib/bootstrap2/js/bootstrap.cynthia.min.js'></script>
+<script type="text/javascript" src="../js/admin/admin_layout.js"></script>
+<script type="text/javascript" src="../js/admin/admin_index.js"></script>
+<script type="text/javascript" src="../js/util.js"></script>
+
+</head>
+<body>
+<input type='hidden' id='openRight'>
+
+<div class="container-fluid">
+	<div id ="header-nav">
+	</div>
+	<div class="row-fluid main-content affix">
+		<div class="left left-tree" id='left-tree'>
+			<div class='left-tree-top' aria-labelledby='左侧头部导航'>
+				系统管理
+			</div>
+			<div class="left left-nav">
+				<ul class="nav nav-list affix-top">
+					<li class="active">
+						<a href="#" onclick="showPage('admin_template.html',this)">表单管理</a>
+					</li>
+					<li>
+						<a href="#" onclick="showPage('admin_flow.html',this)">流程管理</a>
+					</li>
+					<li>
+						<a href="#" onclick="showPage('admin_role_user.html',this)">角色管理</a>
+					</li>
+					<li>
+						<a href="#" onclick="showPage('admin_user.html',this)">用户管理</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="main-grid-outer affix" id="main-grid-outer">
+			<iframe id="main-iframe" frameborder="0" src="admin_template.html" scrolling="auto"></iframe>
+		</div>
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Description" content="Cynthia项目缺陷管理系统，拥有表单流程化设计，可视化拖动布局等功能，提供项目管理，缺陷管理，，统计，查询等服务，是您项目上的好帮手！">
+<meta name="Keywords" content="Cynthia,BUG管理,项目管理 ,缺陷管理,任务管理,BUG,缺陷,开源">
+<title>过滤器管理界面</title>
+<link href="lib/bootstrap2/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="lib/bootstrap2/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
+<link href="lib/g_bootstrap/css/google-bootstrap.css" rel="stylesheet" type="text/css">
+<link href='lib/select2/select2.css' rel="stylesheet" style="text/css">
+
+<link href="css/top.css" rel="stylesheet" type="text/css">
+<link href="css/editFilter.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src='lib/jquery/jquery-1.9.3.min.js'></script>
+<script type="text/javascript" src="lib/jquery.plugins/jsTree/jquery.jstree.js"></script>
+<script type="text/javascript" src="lib/jquery.plugins/hotkeys/jquery.hotkeys.js"></script>
+<script type="text/javascript" src="lib/jquery.plugins/dragsort/jquery.dragsort.js"></script>
+<script type="text/javascript" src='lib/select2/select2.js'></script>
+<script type="text/javascript" src='lib/bootstrap2/js/bootstrap.cynthia.min.js'></script>
+<script type="text/javascript" src="lib/My97DatePicker/WdatePicker.js"></script>
+
+<script type="text/javascript" src="js/order.js"></script>
+<script type="text/javascript" src="js/where.js"></script>
+<script type="text/javascript" src="js/tree.js"></script>
+<script type="text/javascript" src='js/util.js'></script>
+<script type="text/javascript" src='js/editFilter.js'></script>
+
+</head>
+<body>
+<div class="container-fluid">
+	<div id ="header-nav">
+	</div>
+	<div class="row-fluid" style="margin-top: 40px;">
+		<div class="span3" style="border-right:2px solid #f1f1f1;" id='left_tree'>
+		</div>
+		<div class="span9" style="margin-left:5px;margin-top:5px;">
+			<div class="row-fluid">
+				<div class="span12" id='topSubmitDiv' style="display: none;">
+					<button class="btn btn-primary" id='input_order' onclick="showOrderArea(true)" type='button'>打开排序设置</button>
+					<button class="btn btn-primary" id='input_defaultUser' onclick="showDefaultUser(true)" type='button'>设置默认关注人</button>
+					<button class="btn btn-primary" id='input_filterTimer' data-toggle='modal' data-target='#filterTimerDiv' type='button'>定时器设置</button>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div id="main_content" style="display: none;" class='span12'>
+					<form class="form-horizontal">
+						  <div class="control-group">
+						    <label class="control-label" for="input_filter_name">名称:</label>
+						    <div class="controls">
+						      <input type="text" id="input_filter_name" placeholder=名称>
+						    </div>
+						  </div>
+						  <div class="control-group">
+						    <label class="control-label" for="templateTypeSelect">任务类型:</label>
+						    <div class="controls">
+						      <select id="templateTypeSelect" style="width: 228px;" onchange="initTemplates()" >
+	 							<option value="0" selected="selected">---请选择---</option>
+	 							<option value="1">缺陷</option>
+	 							<option value="3">任务</option>
+	 							<option value="2">日常管理</option>
+	 						  </select>
+						    </div>
+						  </div>
+						  
+						  <div class="control-group">
+						    <label class="control-label" for="templates">表单名称:</label>
+						    <div class="controls">
+						      <select id="templates" style="width: 228px;" onchange="initFields()">
+								  <option value="">---请选择---</option>
+							  </select>
+						    </div>
+						  </div>
+						  
+						  <div class="control-group">
+						    <label class="control-label" for="fields">选择字段:</label>
+						    <div class="controls">
+						      <select id="fields" style="width: 228px;" onchange="addCondition()">
+								  <option value="">---请选择---</option>
+							  </select>
+							  <span style="color: red;cursor: auto;">(多次选择可以添加多个条件)</span>
+						    </div>
+						  </div>
+					</form>
+					
+					<!-- conditions form -->
+					<form class="form-horizontal" id='conditionsForm'>
+						<table id="conditions_table">
+							<tbody>
+								
+							</tbody>
+						</table>
+					</form>
+					
+					<form class="form-inline" style="display:none">
+					    <label style="width:116px;margin-top:2px;">查找目标:</label>
+					    <label class="radio">
+						    <input id="input_is_current" type="radio" name='find_time' value="current" checked="checked"/>查找当前记录
+						</label>
+						<label class="radio">
+						    <input id="input_is_history" type="radio" name='find_time' value="history"/>查找修改日志
+						</label>
+					</form>
+					<form class="form-inline" >  
+					    <label  style="width:116px;margin-top:2px;">字段间关系:</label>
+			    		<label class="radio">
+					       <input type="radio" id="input_and" name="betweenField"  checked="checked" value ="and" />且
+					    </label>
+ 						<label class="radio">
+					     	<input type="radio" id="input_or"  name="betweenField" value ="or" />或
+					    </label>
+					</form>
+					
+					<form class="form-inline" >  
+						<div class="control-group">
+						    <label class="control-label" for="submitButtons"></label>
+						    <div class="controls">
+						    	<div id='"submitButtons"'>
+						    		<button type="button" onclick="executeSubmit(1)" class='btn btn-danger' >提交</button>
+									&nbsp;&nbsp;&nbsp;&nbsp;
+									<button type="button" onclick="executeSubmit(2)" class='btn' >预览</button>
+						    	</div>
+						    </div>
+						</div> 
+					</form>
+		 		</div> 
+		 		<!-- end of main_content -->
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- 设置排序字段 -->
+<div id="orderFieldDiv" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true" style='width:800px;'>
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h5 >设置排序字段</h5>
+    </div>
+    <div class="modal-body" id='order_td'>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" onclick="showOrderArea(false)">确定</button>
+    </div>
+</div>
+
+<!-- 设置默认关注人 -->
+<div id="defaultUserDiv" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h5 >设置默认关注人<span class="label label-important">你想让谁关注这个过滤器</span></h5>
+    </div>
+    <div class="modal-body">
+    	<table>
+			<tbody>
+				<tr>
+					<td>
+						<select id="template_user_restTemplateUserSelect" multiple="multiple" size="10">
+						</select>
+					</td>
+					<td>
+						<table>
+							<tr>
+								<td align="center">
+									<input type="button" class="btn btn-danger" onclick="moveOptions('template_user_restTemplateUserSelect','template_user_selectedTemplateUserSelect')" class='tinyButton' value="添加">
+								</td>
+							</tr>
+							<tr>
+								<td align="center">
+									<input type="button" class="btn" onclick="moveOptions('template_user_selectedTemplateUserSelect','template_user_restTemplateUserSelect')" class='tinyButton'  value="移除">
+								</td>
+							</tr>
+						</table>
+					</td>
+					<td>
+						<select id="template_user_selectedTemplateUserSelect" multiple="multiple" size="10">
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" onclick="showDefaultUser(false)">确定</button>
+    </div>
+</div>
+
+<!-- 定时任务div -->
+<div id="filterTimerDiv" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true" style='width:800px;'>
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h5>设置定时任务</h5>
+    </div>
+    <div class="modal-body" id='order_td'>
+   		<table>
+			<tr>
+				<td>
+				<form class="form-inline" >  
+						<label>定时发送：</label>
+			    		<label class="radio">
+					       <input type="radio" id="timer_yes" name="timer" value ="yes" onclick="changeTimerDiv(true)" />是&nbsp;
+					    </label>
+ 						<label class="radio">
+					     	<input type="radio" id="timer_no" name="timer" value ="no" onclick="changeTimerDiv(false)" checked="checked" />否
+					    </label>
+				</form>
+				</td>
+			</tr>
+			<tr id="timer_div" style="display: none;">
+				<td class="fullTd" colspan="2"  style="border-bottom: 1px solid #f3f9ff;border-top:1px solid #f3f9ff;">
+					<table>
+					<tr>
+						<td style="width:118px;">定时器名称:</td><td><input type="text" id="timerName" name="timerName"/></td>
+					</tr>
+					<tr>
+						<td>邮件主题:</td><td><input type="text" id="mailTitle" name="mailTitle" value="[Cynthia]" /></td>
+					</tr>
+					<tr>
+						<td>收件人列表:</td><td><textarea id="nameList" name="nameList" rows="3" cols="38"></textarea></td>
+					</tr>
+					<tr>
+						<td>抄送列表:</td><td><textarea id="ccMailList" name="ccMailList" rows="3" cols="38"></textarea></td>
+					</tr>
+					<tr>
+						<td>密件抄送:</td><td><textarea id="bccMailList" name="bccMailList" rows="3" cols="38"></textarea></td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td colspan="5">设置定时器启动参数</td>
+					</tr>
+					<tr>
+						<td>月份</td><td>日期</td><td>周几</td><td>小时</td><td>分钟</td>
+					</tr>
+					<tr>
+						<td style="padding-right: 10px;"><select name='month' id='month' multiple="multiple" style="WIDTH:6em" size=12></select></td>
+						<td style="padding-right: 10px;"><select name='date' id='date' multiple="multiple" style="WIDTH:6em" size=12></select></td>
+						<td style="padding-right: 10px;"><select name='day' id='day' multiple="multiple" style="WIDTH:6em" size=12></select></td>
+						<td style="padding-right: 10px;"><select name='hour' id='hour' multiple="multiple" style="WIDTH:6em" size=12></select></td>
+						<td style="padding-right: 10px;"><select name='minute' id='minute' multiple="multiple" style="WIDTH:6em" size=12></select></td>
+					</tr>
+				</table>
+				</td>
+			</tr>
+		</table>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" onclick="showFilterTimer(false)">确定</button>
+    </div>
+</div>
+
+<form id="previewForm" method="post" style="display: none;" action="previewFilterResult.jsp" target="_blank">
+	<input type="hidden" id="finalXml" name="finalXml" value="" />
+</form>
+
+<div id="advance_div" style="display:none;background-color:#FFFFFF;font-size:11pt;overflow:auto;position:absolute;z-index:105;left:20%;top:35%;width:60%;height:30%">
+	<iframe src="javascript:false" style="position:absolute;visibility:inherit;top:0%;left:0%;width:100%;height:100%;z-index:-1;filter:alpha(opacity=0);"></iframe>
+	<table width="100%" height="100%" style="border:1 solid black">
+		<tr>
+			<td><font size="4"><b>高级设置</b></font></td>
+		</tr>
+		<tr>
+			<td id="advance_div_td">equest</td>
+		</tr>
+	</table>
+</div>
+	
+<!-- 隐藏div  -->
+<input id="input_filter_xml" name="searchConfig" type="hidden"/>
+<input type="hidden" id="filterId" name="filterId" value=""/>
+<input type="hidden" id="timerId" name="timerId" value=""/>
+<input type="hidden" id="nodeId" name="nodeId" value=""/>
+</body>
+</html>

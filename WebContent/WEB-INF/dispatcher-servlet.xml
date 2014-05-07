@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+ "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <!-- 定义映射 -->
+    <bean id="urlMapping"
+        class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <props>
+            	<prop key="getAllTemplates.do">getAllTemplatesController</prop>
+            	<prop key="getTemplatesByTemplateType.do">getTemplatesByTemplateTypeController</prop>
+            	<prop key="getTemplateDatas.do">getTemplateDatasController</prop>
+            	<prop key="getTemplateFields.do">getTemplateFieldsController</prop>
+                <prop key="getAllScript.do">getAllScriptController</prop>
+                <prop key="initScript.do">initScriptController</prop>
+                <prop key="addOrUpdateScript.do">addOrUpdateScriptController</prop>
+                <prop key="mountScriptTemplate.do">mountScriptTemplateController</prop>
+                <prop key="unMountScriptTemplate.do">unMountScriptTemplateController</prop>
+                <prop key="initTemplateScript.do">initTemplateScriptController</prop>
+<!--                 <prop key="excelImportNew.do">importExcelControllerNew</prop> -->
+                <prop key="getTaskBugTemplate.do">getTaskBugTemplateController</prop>
+                <prop key="bugVersionMove.do">bugVersionMoveController</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <!-- 定义视图 -->
+      <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+         <property name="prefix" value="/" />
+         <property name="suffix" value=".jsp" />
+      </bean>
+
+    <!-- 表单模板部分 -->
+    <bean id="getAllTemplatesController" class="com.sogou.qadev.service.cynthia.controller.GetAllTemplatesController">
+    </bean>
+    <bean id="getTemplatesByTemplateTypeController" class="com.sogou.qadev.service.cynthia.controller.GetTemplatesByTemplateTypeController">
+    </bean>
+    <bean id="getTemplateDatasController" class="com.sogou.qadev.service.cynthia.controller.GetTemplateDatasController">
+    </bean>
+    <bean id="getTemplateFieldsController" class="com.sogou.qadev.service.cynthia.controller.GetTemplateFieldsController">
+    </bean>
+	<!-- 统计函数部分 该部分主要是用于统计函数中需要提取的数据信息 -->
+	
+	
+	<!-- get all scripts y -->
+	<bean id="getAllScriptController" class="com.sogou.qadev.service.cynthia.controller.GetAllScriptController">
+	</bean>
+		
+	<!-- init script y -->
+	<bean id="initScriptController" class="com.sogou.qadev.service.cynthia.controller.InitScriptController">
+	</bean>
+	
+	<!-- add or update script y-->
+	<bean id="addOrUpdateScriptController" class="com.sogou.qadev.service.cynthia.controller.AddOrUpdateScriptController">
+	</bean>
+	
+	<!-- y -->
+	<bean id="mountScriptTemplateController" class="com.sogou.qadev.service.cynthia.controller.MountScriptTemplateController">
+	</bean>
+	<!-- y -->
+	<bean id="unMountScriptTemplateController" class="com.sogou.qadev.service.cynthia.controller.UnMountScriptTemplateController">
+	</bean>
+	<!-- y -->
+	<bean id="initTemplateScriptController" class="com.sogou.qadev.service.cynthia.controller.InitTemplateScriptController">
+	</bean>
+	
+	<!-- 扩展插件部分 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize">
+			<value>104857600</value>
+		</property>
+	</bean>
+	<!-- Excel导入插件新版 y -->
+<!-- 	<bean id="importExcelControllerNew" class="com.sogou.qadev.service.cynthia.controller.ExcelImportControllerNew"> -->
+<!-- 	</bean> -->
+	
+	<!-- GetTaskBugTemplateController y-->
+	<bean id="getTaskBugTemplateController" class="com.sogou.qadev.service.cynthia.controller.GetTaskBugTemplateController">
+	</bean>	
+	<!-- bugVersionMoveController y-->
+	<bean id="bugVersionMoveController" class="com.sogou.qadev.service.cynthia.controller.BugVersionMoveController">
+	</bean>
+	<!-- bug版本迁移插件完成 -->
+</beans>

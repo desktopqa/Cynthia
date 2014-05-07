@@ -1,0 +1,23 @@
+body,input,select
+{
+	font-family: 'Microsoft Yahei', Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	line-height: 20px;
+	color: #333333;
+}
+
+#svg_container 
+{  
+	margin-top: 5px;
+	margin-left: 1px;
+    width: 80%;  
+    border: 1px solid #aaa;  
+    height: 600px;
+}  
+
+.modal {
+	position: absolute;
+}
+.modal-body {
+	max-height: 300px;
+}

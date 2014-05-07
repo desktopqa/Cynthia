@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Description" content="Cynthia项目缺陷管理系统，拥有表单流程化设计，可视化拖动布局等功能，提供项目管理，缺陷管理，，统计，查询等服务，是您项目上的好帮手！">
+<meta name="Keywords" content="Cynthia,BUG管理,项目管理 ,缺陷管理,任务管理,BUG,缺陷,开源">
+<title>关于Cynthia</title>
+<link href="lib/bootstrap2/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="lib/bootstrap2/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
+<link href="lib/g_bootstrap/css/google-bootstrap.css" rel="stylesheet" type="text/css">
+<link href="css/top.css" rel="stylesheet" type="text/css">
+
+<style type="text/css">
+.about-sidebar
+{
+	position: fixed;
+	top: 50px;
+	width: 228px;
+	margin: 30px 0 0;
+	padding: 0;
+	background-color: #fff;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	-webkit-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+	-moz-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+	box-shadow: 0 1px 4px rgba(0,0,0,.065);
+}
+</style>
+
+<script type="text/javascript" src='lib/jquery/jquery-1.9.3.min.js'></script>
+<script type="text/javascript" src='lib/bootstrap2/js/bootstrap.min.js'></script>
+<script type="text/javascript">
+$(function(){
+	$(".about-sidebar").children("li").click(function(){
+		var stubId = $(this).children("a").attr("link");
+		var divItem = $(stubId);
+		$("html,body").animate({scrollTop:($(divItem).offset().top - 40)},100);
+		$(".about-sidebar").children("li").removeClass("active");
+		$(this).addClass("active");
+	});
+});
+</script>
+</head>
+<body>
+<div class="container-fluid">
+	<div id ="header-nav">
+	
+	</div>
+	
+	<div class="row-fluid" style="position: absolute;top:40px;">
+		<div class="span2">
+			<ul class="nav nav-list about-sidebar">
+				<li class="active"><a href="#" link='#aboutCynthia'>关于Cynthia</a>
+				<li><a href="#" link='#contractUs'>联系我们</a>
+			</ul>
+		</div>
+		<div class="span9">
+			<!-- 关于section -->
+			<section id="aboutCynthia">
+				<div class="page-header">
+					<h3>关于Cynthia</h3>
+				</div>
+				<p>
+					Cynthia提供了一个基于Web的、开源的、跨平台的软件项目管理和问题管理的解决方案。<br />
+					通过极大的灵活度，实现了特殊性和普遍性的统一。<br />
+					它提供了强大的自定义配置功能，用户能够根据自己的实际情况配置问题的流转和数据模板，它同时内置了强大的Cache模块提高数据的访问效率。
+				</p>
+			</section>
+			<!-- 联系我们 -->
+			<section id="contractUs">
+				<div class="page-header">
+					<h3>联系我们</h3>
+				</div>
+				<p>
+					<a target="_self" href="mailto:cynthiafb@sogou-inc.com"/>cynthiafb@sogou-inc.com</a>
+				</p>
+				<p>
+					QQ群：305330695
+				</p>
+			</section>
+		</div>
+	</div>
+</div>
+</body>
+</html>

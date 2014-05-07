@@ -1,0 +1,86 @@
+@CHARSET "UTF-8";
+BODY {FONT: 81%/150% Verdana,Simsun; COLOR: #333; BACKGROUND-COLOR: #fff}
+
+SPAN {PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px}
+
+table		{font-size: 100%; margin-top: 0em; margin-bottom: 0em;}
+th		{text-align: left; background: #CCCCCC; margin: .25em; vertical-align: bottom;}
+tr		{vertical-align: top;}
+td		{margin: .25em; border-bottom: 1px solid #CCCCCC; }
+.td1		{margin: .25em; vertical-align: bottom; valign: bottom; border-bottom: 0px; }
+.tdNoBottom {border-bottom: 0px;}
+.tdNoBorder {border: 0px;}
+
+/* HYPERLINKS */ 
+a:link		{color: #0000cc; TEXT-DECORATION: none}
+a:active	{color: #0000cc; TEXT-DECORATION: none}
+a:visited	{color: #0000cc; TEXT-DECORATION: none}
+
+input			     { font-size: 10pt; border-right:0px solid; border-left:0px solid; border-top:0px solid; border-bottom:1px solid; color:#000000; background-color:#edffee; }
+textarea             { font-size: 10pt; border-right:0px solid; border-left:0px solid; border-top:0px solid; border-bottom:1px solid; color:#000000; background-color:#edffee; }
+a           	     { color: #0000FF; }
+select		         { font-size: 10pt; border-right:0px solid; border-left:0px solid; border-top:0px solid; border-bottom:1px solid; color:#000000; background-color:#edffee; }
+
+.radio    		     { border-right:0px solid; border-left:0px solid; border-top:0px solid; border-bottom:0px solid; color:#000000; background-color:#EEEEEE; }
+.checkbox		     { border-right:0px solid; border-left:0px solid; border-top:0px solid; border-bottom:0px solid; color:#FFFFFF; background-color:#EEEEEE; }
+.input_text 	     { font-size: 10pt; border-right:0px solid; border-left:0px solid; border-top:0px solid; border-bottom:1px solid; color:#000000; background-color:#edffee; }
+.input_file   	     { font-size: 10pt; border-right:0px solid; border-left:0px solid; border-top:0px solid; border-bottom:1px solid; color:#000000; background-color:#edffee; }
+.button     	     { font-size: 10pt; border-right:0px solid; border-left:0px solid; border-top:0px solid; border-bottom:1px solid; color:#000000; background-color:#edffee; }
+
+.visiblecolortrue	 { background-color:#EEEEEE}
+.visiblecolorfalse	 { background-color:#00D215}
+.visiblecolornullity { background-color:#FF3366}
+
+.reporthead          { font-size:12px; background-color:#6699CC}
+.reportaverage       { font-size:12px; background-color:#EEEE00}
+.reportbody1         { font-size:12px; background-color:#EEEEEE}
+.reportbody2         { font-size:12px; background-color:#C0E0C0}
+
+.pagefont 			 { font-size:12px}
+.maxfontcolor        { color:#FF0000}
+.minfontcolor        { color:#9933CC}
+.gragfontcolor       { color:#808080}
+.pb					 {background-color: #EEFFFF}
+
+UL {PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px}
+LI {PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px}
+
+.Header {TEXT-ALIGN: center}
+.Header .Brand {PADDING-RIGHT: 8px; PADDING-LEFT: 8px; FLOAT: left; PADDING-BOTTOM: 8px; WIDTH: 500px; PADDING-TOP: 16px}
+.Header .Brand .Jewel {DISPLAY: block; FLOAT: left}
+.Header .Brand .Beta {DISPLAY: block; FLOAT: left}
+.Header .Brand .Product {DISPLAY: block; FLOAT: bottom; VALIGN: bottom; PADDING-RIGHT: 0px; PADDING-LEFT: 8px; FONT-WEIGHT: bold; FONT-SIZE: 130%; PADDING-BOTTOM: 0px; PADDING-TOP: 8px}
+.Header .Brand .Beta {DISPLAY: block; FONT-WEIGHT: bold; MARGIN: 24px -35px 0px 0px; COLOR: #f30}
+.Header .Brand .Jewel {CURSOR: pointer; POSITION: relative}
+.Header .Brand .Jewel IMG {BORDER-TOP-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-RIGHT-WIDTH: 0px}
+.Header .Me {PADDING-RIGHT: 16px; PADDING-LEFT: 16px; FLOAT: right; PADDING-BOTTOM: 23px; WIDTH: 227px; PADDING-TOP: 23px; TEXT-ALIGN: right}
+.BreadCrumb {CLEAR: both; MARGIN: 0px 16px 10px}
+.BreadCrumb .CurrentOn {DISPLAY: inline; FLOAT: left}
+.BreadCrumb .HelpSection {DISPLAY: inline; FLOAT: right}
+.ClearFloat {CLEAR: both}
+.LeftNav {BORDER-RIGHT: #afd3eb 1px solid; PADDING-RIGHT: 0px; BORDER-TOP: #afd3eb 1px solid; PADDING-LEFT: 0px; FLOAT: left; PADDING-BOTTOM: 8px; BORDER-LEFT: #afd3eb 1px solid; MARGIN-RIGHT: 8px; PADDING-TOP: 8px; BORDER-BOTTOM: #afd3eb 1px solid;}
+.LeftNavDividerPadding {PADDING-RIGHT: 8px; PADDING-LEFT: 8px; PADDING-BOTTOM: 0px; PADDING-TOP: 0px}
+.NavList {LIST-STYLE-TYPE: none}
+.LeftNavItem {PADDING-RIGHT: 5px; DISPLAY: block; PADDING-LEFT: 16px; BACKGROUND: #fff; PADDING-BOTTOM: 5px; COLOR: #333; PADDING-TOP: 5px; HEIGHT: 1em; TEXT-DECORATION: none; WORD-WRAP: break-word}
+
+.selectimg {
+	background: url(../images/multiselect.gif) repeat-x;
+	position: absolute;
+	margin: 3px 0px 0px -11px;
+	width: 19px;
+	height: 21px;
+	display: inline;
+	line-height: 21px;
+	vertical-align: middle;
+}
+.selectimgon {
+    background: url(../images/multiselect-hover.gif) repeat-x;
+	position:absolute;
+	margin:3px 0px 0px -11px;
+	*margin:1px 0px 0px -11px;
+	width:19px;
+	height:21px;
+	line-height:21px;
+	vertical-align:middle;
+	display: inline;
+}

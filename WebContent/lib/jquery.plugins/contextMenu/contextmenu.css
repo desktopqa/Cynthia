@@ -1,0 +1,33 @@
+/* Some styling */
+
+body{
+	font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
+	font-size: .8em;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.hasmenu, .hasmenu2 {
+	border: 1px solid #008;
+	margin: 3px;
+	padding: 5px;
+	width: 30px;
+}
+
+.ui-widget{
+	font-size: .8em;
+}
+.ui-menu {
+	width: 150px;
+	z-index:999999;
+}
+
+/* Define a custom icon */
+
+.ui-icon.custom-icon-firefox {
+	background-image: url(application_firefox.gif);
+	background-position: 0 0;
+}

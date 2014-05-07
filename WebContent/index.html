@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Cynthia缺陷管理系统</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Description" content="Cynthia项目缺陷管理系统，拥有表单流程化设计，可视化拖动布局等功能，提供项目管理，缺陷管理，，统计，查询等服务，是您项目上的好帮手！">
+<meta name="Keywords" content="Cynthia,BUG管理,项目管理 ,缺陷管理,任务管理,BUG,缺陷,开源">
+<link href="lib/bootstrap2/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="lib/bootstrap2/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
+<link href="lib/g_bootstrap/css/google-bootstrap.css" rel="stylesheet" type="text/css">
+<link href="lib/jquery.plugins/color-picker/colorPicker.css" rel="stylesheet" type="text/css">
+<link href="lib/jquery.plugins/jquery-ui/css/ui-lightness/jquery-ui-1.10.3.custom.css" rel="stylesheet" type="text/css">
+<link href="css/top.css" rel="stylesheet" type="text/css">
+<link href="css/index.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src='lib/jquery/jquery-1.9.3.min.js'></script>
+<script type="text/javascript" src='lib/jquery.plugins/jquery-ui/js/jquery-ui-1.10.3.min.js'></script>
+<script type="text/javascript" src='lib/bootstrap2/js/bootstrap.cynthia.min.js'></script>
+<script type="text/javascript" src='lib/jquery.plugins/color-picker/jquery.colorPicker.js'></script>
+<script type="text/javascript" src='js/util.js'></script>
+<script type="text/javascript" src='js/index.js'></script>
+<script type="text/javascript" src='js/index_grid.js'></script>
+<script type="text/javascript" src='js/changeTh.js'></script>
+<script type="text/javascript" src='js/filterUtils.js'></script>
+
+</head>
+
+<body>
+
+<div class="container-fluid">
+	<div id ="header-nav">
+	</div>
+	
+	<div class="row-fluid mid-toolbar affix">
+		<div class="span12 middle">
+		
+		<div class="left btn-group" style="margin-left:20px;width: 222px;">
+		   <button class="btn btn-danger span6" style="height:30px;margin-right:0px;" id='openTemplate'>新&nbsp;&nbsp;建</button>
+		   <button id="createMenuDrop" style="height:30px;"class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+		      <span class="caret"></span>
+		   </button>
+		   <ul class="dropdown-menu" id="createBugMenu" style="overflow-y:scroll; min-width:130px;">
+		   </ul>
+		</div>
+			<div class="pull-left">
+				<div>
+					<div class="btn-group">
+						<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						       导出
+						    <span class="caret"></span>
+					    </a>
+					    <ul class="dropdown-menu" style="min-width:100px;">
+							<li><a href="javascript:exportFilterData('all')">全部</a></li>
+					     	<li><a href="javascript:exportFilterData('choosed')">勾选</a></li>
+					     	<li class="filter-show"><a href="javascript:exportFilterData('beforeNum','1000')">1000条</a></li>
+					     	<li class='divider filter-show'></li>
+					     	<li class="filter-show"><a href="#" data-toggle='modal' data-target='#inputExportNum'>自定义</a></li>
+				    	</ul>
+					</div>
+					<button class="btn filter-show" type="button" data-toggle='modal' data-target='#sendMailDiv'>发送</button>
+					<div class="btn-group">
+						<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						       更多操作
+						    <span class="caret"></span>
+					    </a>
+					    <ul class="dropdown-menu" style="min-width:88px;">
+							<li><a href='#' data-toggle='modal'  onclick="openChoosedData();">打开</a></li>
+					    	<li class='divider'></li>
+							<li><a href='#' data-toggle='modal'  onclick="initModifyData();">修改</a></li>
+							<li><a href='#' data-toggle='modal'  onclick="initCloseData();">关闭</a></li>
+					     	<li class='divider'></li>
+					     	<li><a href='#' onclick="alertClose();">删除</a></li>
+				    	</ul>
+					</div>
+					<div class="btn-group" style="margin-left:1px;">
+						<a class="btn dropdown-toggle" id="tagLinkTitle" data-toggle="dropdown" href="#">
+						    标记为
+						    <span class="caret"></span>
+					    </a>
+					    <ul id="ul-tag" class="dropdown-menu" style="min-width:150px;">
+<!-- 					     	<li><a href='#' onclick="">星标</a></li> -->
+<!-- 					     	<li><a href='#' onclick="tagDataMoveOut();">取消所有标记</a></li> -->
+<!-- 					     	<li id="tagMoveOut"><a href='#' style="display: none;" onclick="tagIdMoveOut();">移出标签</a></li> -->
+							<li class='divider'></li>
+				    	</ul>
+					</div>
+					<button class="btn filter-show" type="button" data-toggle="modal" onclick="openCfgDisplayDiv();">配置显示</button>
+					<button class="btn filter-show" type="button" onclick="setHomeFilter();">设为默认</button>
+					<button class="btn" type="button" onclick="refreshFilter();">刷新</button>
+				</div>
+			</div>
+			<div class="pull-right" style="margin-top:5px;">
+				<div>
+					<form class="form-inline">
+						<table>
+							<tr>
+								<td>
+									<input type="text" id="current-page" class="input-mini input-super-mini" value=1 />
+								</td>
+								<td style="position:relative; top:0.15em;">
+									<label>/</label>
+									<label id="totalPage"></label>页 共
+									<label id="totalCount"></label>条
+								</td>
+								<td>
+									<button class="btn btn-mini" type="button" id="prev-page"><i title="上一页" class="icon-chevron-left"></i></button>
+									<button class="btn btn-mini" type="button" id='next-page'><i title="下一页" class=" icon-chevron-right"></i></button>
+								</td>
+							</tr>
+						</table>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row-fluid main-content affix">
+		<div class="left left-tree" id='left-tree'>
+			<div class='left-tree-top' aria-labelledby='左侧头部导航'>
+				<i class="icon-backward" id='hideLeftTreeIcon' title="收起" onclick="hideLeftTreeIconClick()"></i>
+			</div>
+			<div class="left left-nav">
+				<div class="left left-nav">
+					<ul id = "favorate_menu"  class="nav nav-list">
+					</ul>
+				</div>
+				
+				<ul class="nav nav-list" style="clear:both;">
+					<li><a href='#' id='allFiltersIcon'><i class="icon-chevron-right" title="查看更多"></i>查看更多...</a></li>
+					<li class="divider"></li>
+				</ul>
+				
+				<div id ="favorate_tag">
+					<ul class="nav nav-list">
+						<li class="my-tag" id="my-tag"><a href="#" id="my-tag-link"><i class="icon-cog pull-right" id='tagConfigIcon' title="配置标签"></i><i class="icon-arrow-right" id='tagExpandIcon'></i>我的标签</a>
+							<ul id="left-tag-list" class="nav nav-list hide">
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div id='left-tree-expand' onclick="showLeftTreeIconClick()">
+			<i class="icon-forward" title="展开"></i>
+		</div>
+
+		<div class="main-grid-outer affix" id='main-grid-outer'>
+			<table id="main-grid-header" >
+			</table>
+			<div id="main-grid-div">
+				<table id='main-grid-content' class="table table-hover">
+			    </table>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- related divs -->
+<!-- 配置显示字段的div -->
+<div id="cfgDisplayDiv" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="display modal" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h5>配置显示字段</h5>
+  </div>
+  <div class="modal-body">
+    <div class="row-fluid">
+		<div class="span5">
+			<select id='leftDisplayFields' multiple="multiple">
+			</select>
+		</div>
+		<div class="span2 btn-group">
+			<button class="btn btn-block btn-1st" type="button" onclick="addDispayField()">增加</button>
+			<button class="btn btn-block" type="button" onclick="removeDisplayField()">移除</button>
+			<button class="btn btn-block" type="button" onclick="moveUpDisplayField()">上移</button>
+			<button class="btn btn-block" type="button" onclick="moveDownDisplayField()">下移</button>
+		</div>
+		<div class="span5">
+			<select id='rightDisplayFields' multiple="multiple">
+			 
+			</select>
+		</div>
+	</div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    <button class="btn btn-primary" onclick="saveDisplayFieldModifyResult()">保存修改</button>
+  </div>
+</div>
+
+
+<!-- 配置管理标签的div -->
+<div id="cfgTagDiv" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h5>我的标签配置</h5>
+  </div>
+  <div class="modal-body">
+    <table class="table table-hover table-striped table-condensed" id='tagNameGrid'>
+    	<thead><tr><th>标签名</th><th>操作</th></tr></thead>
+    	<tbody id="tag-cfg-table">
+    	</tbody>
+    </table>
+    <button class="btn btn-danger" data-toggle="modal" onclick="addTagClassify()">新增</button>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    <button class="btn btn-primary" onclick="saveTagClassifyModifyResult()">保存修改</button>
+  </div>
+</div>
+
+<!-- 新增标签 -->
+<div id="cfgNewTagDiv" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <div>
+    	<h5 id="myModalLabelTag">新建标签</h5>
+    </div>
+  </div>
+  <div class="modal-body">
+  	<form class="form-inline">
+  		<label>标签名称：</label>
+  		<input type="text" id='tagName' placeholder="标签名">
+  		<input type="hidden" id='modifyTagId'>
+  	</form>
+  	<form class="form-inline">
+  		<label>标签颜色：</label>
+  		<input type="text" id='tagColor' >
+  	</form>
+	
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    <button class="btn btn-primary" onclick="addOrModifyClassify()">确定</button>
+  </div>
+</div>
+
+<!-- 自定义导出数据总数 -->
+<div id = "inputExportNum" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true">
+   <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h5 id="myModalLabel">自定义导出数据</h5>
+  </div>
+  
+  <div class="modal-body">
+  	<form class="form-horizontal">
+  		<div class="control-group">
+		    <label class="control-label" for="mailReciever">输入导出前N条，N=</label>
+		    <div class="controls">
+		      <input type="text" id="exportNum">
+		    </div>
+		  </div>
+  	</form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    <button class="btn btn-primary" onclick="exportFilterDefine()">确定</button>
+  </div>
+  
+</div>
+
+<!-- 发送邮件  div-->
+<div id="sendMailDiv" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h5 id="myModalLabel">发送邮件</h5>
+  </div>
+  <div class="modal-body">
+  	<form class="form-horizontal">
+  		<div class="control-group">
+		    <label class="control-label" for="mailReciever">收件人：</label>
+		    <div class="controls">
+		      <input type="text" id="mailReciever">
+		    </div>
+		  </div>
+		  <div class="control-group">
+		    <label class="control-label" for="maiSubject">主题：</label>
+		    <div class="controls">
+		      <input type="text" value="Cynthia过滤器结果" id="mailSubject">
+		    </div>
+		  </div>
+		  <div class="control-group">
+		    <label class="control-label" for="mailContent">邮件内容：</label>
+		    <div class="controls">
+		      <textarea id="mailContent" rows="4" cols="6"></textarea>
+		    </div>
+		  </div>
+  	</form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    <button class="btn btn-primary" onclick="sendFilterResult()">发送</button>
+  </div>
+</div>
+
+
+
+
+<!-- 修改数据  div-->
+<div id="modifyDataDiv" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h5 id="myLabelModifyData">修改数据</h5>
+  </div>
+  <div class="modal-body">
+  	<form class="form-horizontal">
+  		<div class="control-group">
+		    <label class="control-label" for="modifyDataAction">选择动作：</label>
+		    <div class="controls">
+		   	    <select id="modifyDataAction" onchange="onModifyActionChange();">
+				</select>
+		    </div>
+		  </div>
+		  <div class="control-group">
+		    <label class="control-label" for="modifyDataAssignUser">指派人：</label>
+		    <div class="controls">
+		   	    <select id="modifyDataAssignUser">
+				</select>
+		    </div>
+		  </div>
+		  <div class="control-group">
+		    <label class="control-label" for="modifyDataActionComment">执行描述：</label>
+		    <div class="controls">
+		      <textarea rows="4" cols="6" id='modifyDataActionComment'></textarea>
+		    </div>
+		  </div>
+  	</form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    <button class="btn btn-primary" onclick="modifyFilterData();">保存</button>
+  </div>
+</div>
+
+
+
+<!-- 修改或关闭结果显示框 -->
+<div id="modifyResult" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h5 id="myModifyResultLabel">修改数据结果</h5>
+  </div>
+  <div class="modal-body">
+ 		<table class="table table-hover table-striped table-condensed">
+ 				<colgroup>
+	 				<col class='x-large-col'>
+	 				<col class='middle-mini-col'>
+	 				<col class='middle-mini-col'>
+	 				<col class='middle-mini-col'>
+	 			</colgroup>
+	 		<thead>
+		 		<tr>
+			 		<th>标题</th>
+			 		<th>状态</th>
+			 		<th>指派人</th>
+			 		<th>修改结果</th>
+		 		</tr>
+		 	</thead>
+			<tbody id='modify-content'>
+			<tbody>
+	    </table>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" data-dismiss="modal">确定</button>
+  </div>
+</div>
+
+
+<!-- 配置多级菜单列表 显示所有过滤器-->
+<div id='allFiltersDiv' class="">
+	<ul id='allFiltersList' class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+     </ul>
+</div>
+
+<div id='menu_fav' class="contextMenu">
+	<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+		<li><a tabindex="-1" href="#">编辑</a></li>
+		<li><a tabindex="-1" href="#">新窗口打开</a></li>
+		<li><a tabindex="-1" href="#">移出常用栏</a></li>
+	</ul>
+</div>
+
+
+<!-- hidden field -->
+<input type="hidden" id="filterId">
+<input type="hidden" id="curTagId">
+
+</body>
+</html>

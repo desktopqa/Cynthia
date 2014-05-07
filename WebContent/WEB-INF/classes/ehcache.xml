@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="gbk"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ehcache.xsd">
+    <diskStore path="java.io.tmpdir"/>
+    <defaultCache maxElementsInMemory="10000" eternal="true" timeToIdleSeconds="0" timeToLiveSeconds="0" overflowToDisk="true"/>
+    <!-- 
+        配置自定义缓存
+        maxElementsInMemory：缓存中允许创建的最大对象数
+        eternal：缓存中对象是否为永久的，如果是，超时设置将被忽略，对象从不过期。
+        timeToIdleSeconds：缓存数据空闲的最大时间，也就是说如果有一个缓存有多久没有被访问就会被销毁，
+                    如果该值是 0 就意味着元素可以停顿无穷长的时间。
+        timeToLiveSeconds：缓存数据存活的时间，缓存对象最大的的存活时间，超过这个时间就会被销毁，
+                    这只能在元素不是永久驻留时有效，如果该值是0就意味着元素可以停顿无穷长的时间。
+        overflowToDisk：内存不足时，是否启用磁盘缓存。
+        memoryStoreEvictionPolicy：缓存满了之后的淘汰算法。
+        
+        每一个小时更新一次缓存（1小时过期） 
+    -->
+    <cache name="foreverCache"
+        maxElementsInMemory="1000000000"
+        eternal="true"
+        overflowToDisk="true"
+        timeToIdleSeconds="0"
+        timeToLiveSeconds="0"
+        memoryStoreEvictionPolicy="LFU">
+    </cache>
+    
+    
+    <!-- 可以设置过期时间 -->
+    <cache name="expiresCache"
+        maxElementsInMemory="1000000"
+        eternal="false"
+        overflowToDisk="true"
+        timeToIdleSeconds="7200"
+        timeToLiveSeconds="7200"
+        memoryStoreEvictionPolicy="LFU">
+    </cache>
+    
+</ehcache>
