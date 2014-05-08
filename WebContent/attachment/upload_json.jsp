@@ -87,7 +87,7 @@ while (itr.hasNext()) {
 		}
 		
 		Attachment attachment = null;
-				try{
+		try{
 			File file = File.createTempFile("attachment_", ".attachment");
 			File uploadedFile = new File(file.getParent(), file.getName());
 			item.write(uploadedFile);

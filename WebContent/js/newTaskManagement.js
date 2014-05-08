@@ -1017,7 +1017,6 @@ function executeCancel()
 
 function displayUploadFile(fieldId)
 {
-	initUploadify();
 	$("#uploadFileDiv input[type=file]").val("");
 	$("#objId").val(fieldId);
 	$("#uploadFileDiv").modal('show');
@@ -4008,6 +4007,8 @@ function formatDateStr(dateStr)
 
 
 $(function(){
+	//init file upload
+	initUploadify(); 
 	initMyTag();
 	onReadyLoad();
 	//标签颜色选项

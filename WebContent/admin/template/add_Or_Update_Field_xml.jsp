@@ -118,8 +118,8 @@
 		Field field = template.addField(type, dataType);
 		if(field == null)
 		{
-	out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
-	return;
+			out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
+			return;
 		}
 		int rowIndex = Integer.parseInt(request.getParameter("rowIndex"));
 		int columnIndex = Integer.parseInt(request.getParameter("columnIndex"));
@@ -133,7 +133,7 @@
 		field.setDefaultValue(request.getParameter("defaultValue"));
 		String controlFieldIdStr = request.getParameter("controlFieldId");
 		if(controlFieldIdStr != null)
-	field.setControlFieldId(DataAccessFactory.getInstance().createUUID(controlFieldIdStr));
+			field.setControlFieldId(DataAccessFactory.getInstance().createUUID(controlFieldIdStr));
 		
 		//control option ids
 		Set<UUID> controlOptionIdSet = new LinkedHashSet<UUID>();
@@ -185,7 +185,6 @@
 					tol.setBefore("");
 					tol.setAfter(field.toXMLString());
 					das.addTemplateOpreateLog(tol);
-					out.println(ErrorManager.getCorrectXml());
 				}else{
 					out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
 					return;	
@@ -229,8 +228,8 @@
 		String fieldXmlBefore = field.toXMLString();
 		if(field == null)
 		{
-	out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
-	return;
+			out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
+			return;
 		}
 		field.setName(request.getParameter("fieldName"));
 		field.setDescription(request.getParameter("fieldDescription"));
@@ -240,14 +239,14 @@
 		field.setDefaultValue(request.getParameter("defaultValue"));
 		String controlFieldIdStr = request.getParameter("controlFieldId");
 		if(controlFieldIdStr != null)
-	field.setControlFieldId(DataAccessFactory.getInstance().createUUID(controlFieldIdStr));
+			field.setControlFieldId(DataAccessFactory.getInstance().createUUID(controlFieldIdStr));
 		
 		//control option ids
 		Set<UUID> controlOptionIdSet = new LinkedHashSet<UUID>();
 		
 		String[] controlOptionIdStrArray = (String[])ArrayUtil.format(request.getParameterValues("controlOptionId"), new String[0]);
 		for(String controlOptionIdStr : controlOptionIdStrArray)
-	controlOptionIdSet.add(DataAccessFactory.getInstance().createUUID(controlOptionIdStr));
+			controlOptionIdSet.add(DataAccessFactory.getInstance().createUUID(controlOptionIdStr));
 	
 		field.setControlOptionIds(controlOptionIdSet);
 		
@@ -264,46 +263,26 @@
 		
 		String[] actionIdStrArray = (String[])ArrayUtil.format(request.getParameterValues("actionId"), new String[0]);
 		for(String actionIdStr : actionIdStrArray)
-	actionIdSet.add(DataAccessFactory.getInstance().createUUID(actionIdStr));
+			actionIdSet.add(DataAccessFactory.getInstance().createUUID(actionIdStr));
 		
 		field.setActionIds(actionIdSet);
 		ErrorCode errorCode = das.updateTemplate(template);
 		if(errorCode.equals(ErrorCode.success)){
-	das.updateCache(DataAccessAction.update, template.getId().getValue(),template);
-	//记录修改日志
-	TemplateOperateLog tol = new TemplateOperateLog();
-	tol.setTemplateId(templateId.getValue());
-	tol.setFieldId(field.getId().getValue());
-	tol.setFieldName(field.getName());
-	tol.setOperateType(TemplateOperateLog.MODIFY);
-	tol.setCreateTime(Timestamp.valueOf(com.sogou.qadev.service.cynthia.util.Date.valueOf(new Date().toLocaleString()).toTimestamp().toString()));
-	tol.setCreateUser(key.getUsername());
-	tol.setBefore(fieldXmlBefore);
-	tol.setAfter(field.toXMLString());
-	das.addTemplateOpreateLog(tol);
-	out.println(ErrorManager.getCorrectXml());
+			das.updateCache(DataAccessAction.update, template.getId().getValue(),template);
+			//记录修改日志
+			TemplateOperateLog tol = new TemplateOperateLog();
+			tol.setTemplateId(templateId.getValue());
+			tol.setFieldId(field.getId().getValue());
+			tol.setFieldName(field.getName());
+			tol.setOperateType(TemplateOperateLog.MODIFY);
+			tol.setCreateTime(Timestamp.valueOf(com.sogou.qadev.service.cynthia.util.Date.valueOf(new Date().toLocaleString()).toTimestamp().toString()));
+			tol.setCreateUser(key.getUsername());
+			tol.setBefore(fieldXmlBefore);
+			tol.setAfter(field.toXMLString());
+			das.addTemplateOpreateLog(tol);
+			out.println(ErrorManager.getCorrectXml());
 		}else{
-	out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));
+			out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));
 		}
 	}
-	
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	/*String controlHiddenFieldIdStr = request.getParameter("controlHiddenFieldId");
-	if(controlHiddenFieldIdStr != null)
-		field.setControlHiddenFieldId(DataAccessFactory.getInstance().createUUID(controlHiddenFieldIdStr));
-	
-	Set<UUID> controlHiddenFieldsIdSet = new LinkedHashSet<UUID>();
-	String[] controlHiddenFieldsIdStrArray = (String[])ArrayUtil.format(request.getParameterValues("controlHiddenFields"), new String[0]);
-	for(int i = 0;i< controlHiddenFieldsIdStrArray.length; i++){
-		controlHiddenFieldsIdSet.add(DataAccessFactory.getInstance().createUUID(controlHiddenFieldsIdStrArray[i]));
-	}
-	field.setControlHiddenFieldsIds(controlHiddenFieldsIdSet);
-	
-	Set<UUID> controlHiddenStatesIdSet = new LinkedHashSet<UUID>();
-	String[] controlHiddenStatesIdStrArray = (String[])ArrayUtil.format(request.getParameterValues("controlHiddenStates"), new String[0]);
-	for(int i = 0; i< controlHiddenStatesIdStrArray.length; i++){
-		controlHiddenStatesIdSet.add(DataAccessFactory.getInstance().createUUID(controlHiddenStatesIdStrArray[i]));
-	}
-	field.setControlHiddenStatesIds(controlHiddenStatesIdSet);*/
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 %>
