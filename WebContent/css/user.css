@@ -87,7 +87,7 @@ html, body
    width: 100px;
    height: 100px;
    overflow: hidden;
-     border: 1px rgba(0,0,0,.4) solid;
+   border: 1px rgba(0,0,0,.4) solid;
    background-color: white;
    -webkit-border-radius: 6px;
    -moz-border-radius: 6px;

@@ -2,7 +2,7 @@
 $.fn.Huploadify = function(opts){
 	var itemTemp = '<div id="${fileID}" class="uploadify-queue-item"><div class="uploadify-progress"><div class="uploadify-progress-bar"></div></div><span class="up_filename">${fileName}</span><span class="uploadbtn">上传</span><span class="delfilebtn" title="删除"></span></div>';
 	var defaults = {
-		fileTypeExts:'',//允许上传的文件类型，格式'*.jpg;*.doc'
+		fileExt:'',//允许上传的文件类型，格式'*.jpg;*.doc'
 		uploader:'',//文件提交的地址
 		auto:false,//是否开启自动上传
 		method:'post',//发送请求的方式，get或post
@@ -48,7 +48,7 @@ $.fn.Huploadify = function(opts){
 	//将输入的文件类型字符串转化为数组,原格式为*.jpg;*.png
 	var getFileTypes = function(str){
 		var result = [];
-		if(str.trim() === "")
+		if(str === "")
 			return result;
 		var arr1 = str.split(";");
 		for(var i=0,len=arr1.length;i<len;i++){
@@ -61,10 +61,10 @@ $.fn.Huploadify = function(opts){
 		var _this = $(this);
 		//先添加上file按钮和上传列表
 		var instanceNumber = $('.uploadify').length+1;
-		var inputStr = '<input id="select_btn_'+instanceNumber+'" class="selectbtn" style="display:none;" type="file" name="fileselect[]"';
+		var inputStr = '<input id="select_btn_'+instanceNumber+'" class="selectbtn" style="width:0px;" type="file" name="fileselect[]"';
 		inputStr += option.multi ? ' multiple' : '';
 		inputStr += ' accept="';
-		inputStr += getFileTypes(option.fileTypeExts).join(",");
+		inputStr += getFileTypes(option.fileExt).join(",");
 		inputStr += '"/>';
 		inputStr += '<a id="file_upload_'+instanceNumber+'-button" href="javascript:void(0)" class="uploadify-button">';
 		inputStr += option.buttonText;
@@ -81,7 +81,7 @@ $.fn.Huploadify = function(opts){
 		  fileFilter: [],					//过滤后的文件数组
 		  filter: function(files) {		//选择文件组的过滤方法
 			  var arr = [];
-			  var typeArray = getFileTypes(option.fileTypeExts);
+			  var typeArray = getFileTypes(option.fileExt);
 			  for(var i=0,len=files.length;i<len;i++){
 			  	var thisFile = files[i];
 			  		if(parseInt(formatFileSize(thisFile.size,true))>option.fileSizeLimit){
@@ -266,7 +266,7 @@ $.fn.Huploadify = function(opts){
 			  //点击上传按钮时触发file的click事件
 			  _this.find('.uploadify-button').on('click',function(){
 				  _this.find('.selectbtn').trigger('click');
-				});
+			  });
 			  
 			  option.onInit&&option.onInit();
 		  }

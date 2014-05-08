@@ -4007,8 +4007,6 @@ function formatDateStr(dateStr)
 
 
 $(function(){
-	//init file upload
-	initUploadify(); 
 	initMyTag();
 	onReadyLoad();
 	//标签颜色选项

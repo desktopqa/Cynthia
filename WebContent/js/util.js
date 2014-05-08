@@ -975,7 +975,7 @@ function getRootDir()
     pathName = pathName.substr(1);
     //求pathName中 / 的个数 多少个则向上返回多少级；
     count = pathName.replace(/[^\/]/g,'').length;
-    webBaseUrl = webBaseUrl.trim().substring(8);
+    webBaseUrl = trim(webBaseUrl).substring(8);
     webBaseCount = webBaseUrl.replace(/[^\/]/g,'').length - 1;
     
     count -= webBaseCount;
@@ -1179,7 +1179,7 @@ function addHeadHtml()
 	
 	//用户头像及信息
 	headHtml += "<li class=\"dropdown\">"; 
-	headHtml += "<a href='#' class='dropdown-toggle' data-toggle='dropdown' style='padding:6px 0 0 0px;margin-left:10px;'><img class='img-circle' style='width:25px;border:2px solid #E7E0E0;' src='" + userPicUrl + "'></a>";
+	headHtml += "<a href='#' class='dropdown-toggle' data-toggle='dropdown' style='padding:6px 0 0 0px;margin-left:10px;'><img class='img-circle' style='width:25px;height:25px;border:2px solid #E7E0E0;' src='" + userPicUrl + "'></a>";
 	headHtml += "<div class='dropdown-menu pull-right' style='white-space:nowrap; border-radius: 3px;line-height: 30px;width:250px;padding: 5px 10px 0px 10px;'>";
 	
 	headHtml += "<div class='row-fluid'>";

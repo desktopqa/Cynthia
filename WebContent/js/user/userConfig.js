@@ -59,14 +59,32 @@ function initJcrops()
 		onChange: showPreview,
 		onSelect: showPreview,
 		drawBorders:true,
-		aspectRatio: 1,
+		aspectRatio: 1
 	},function(){
 		jcrop_api = this;
 	});
 }
 
+//获取原始图像宽高属性
+function getImgNaturalDimensions(img) {
+    var nWidth, nHeight;
+    if (img.naturalWidth) { 
+    	// 现代浏览器
+        nWidth = img.naturalWidth;
+        nHeight = img.naturalHeight;
+    } else { 
+    	// IE6/7/8
+        var image = new Image();
+        image.src = img.src;
+    	nWidth = image.width;
+    	nHeight = image.height;
+    }
+    return { width:nWidth,height:nHeight };
+}
+
 function showPreview(coords)
 {
+	var a = getImgNaturalDimensions($('#target')[0]);
 	//源图像框宽高
 	var boundx = $('#target').width();
 	var boundy = $('#target').height();
@@ -76,11 +94,12 @@ function showPreview(coords)
 	
 	var rx = tarwidth / coords.w;
 	var ry = tarheight / coords.h;
-	var width = Math.round(rx * boundx);
+	var width  = Math.round(rx * boundx);
 	var height = Math.round(ry * boundy);
-	var left = Math.round(rx * coords.x);
-	var top = Math.round(ry * coords.y);
+	var left   = Math.round(rx * coords.x);
+	var top    = Math.round(ry * coords.y);
 	
+	//设置预览头像
 	$('#preview').css({
 		width: width + 'px',
 		height: height + 'px',
@@ -88,10 +107,16 @@ function showPreview(coords)
 		marginTop: '-' + top + 'px'
 	});
 	
-	$('#x').val(coords.x);
-	$('#y').val(coords.y);
-	$('#w').val(coords.w);
-	$('#h').val(coords.h);
+	//计算剪切left,top,width,height;
+	var left1   = Math.round(coords.x*a.width/boundx);
+	var top1    = Math.round(coords.y*a.height/boundy);
+	var width1  = Math.round(coords.w*a.width/boundx);
+	var height1 = Math.round(coords.h*a.height/boundy);
+	
+	$('#x').val(left1);
+	$('#y').val(top1);
+	$('#w').val(width1);
+	$('#h').val(height1);
 };
 
 function cutImage()
