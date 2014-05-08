@@ -23,6 +23,14 @@ import com.sohu.rd.td.util.xml.XMLUtil;
 
 public class FilterDataAssembleUtil {
 
+	/**
+	 * @description:get data template field value map
+	 * @date:2014-5-8 上午10:50:59
+	 * @version:v1.0
+	 * @param task
+	 * @param das
+	 * @return
+	 */
 	private static Map<String, String> createMapByTaskFieldValue(Data task,
 			DataAccessSession das) {
 		Map<String, String> dataMap = new HashMap<String, String>();

@@ -7,7 +7,7 @@
 	<link href="../lib/bootstrap2/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 	<link href="../css/top.css" rel="stylesheet" type="text/css">
 	<link href="../css/user.css" rel="stylesheet" type="text/css">
-	<script type="text/javascript" src="../lib/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../lib/jquery/jquery-1.9.3.min.js"></script>
 	<script type="text/javascript" src="../js/util.js"></script>
 	<script type="text/javascript" src="../js/user/userinfo.js"></script>
 	<script type="text/javascript" src="../js/md5.js"></script>
