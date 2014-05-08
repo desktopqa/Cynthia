@@ -74,47 +74,41 @@ while (itr.hasNext()) {
 	String fileName = item.getName();
 	if(fileName == null)
 	{
-		
 		continue;
 	}
 	fileName = fileName.substring(fileName.lastIndexOf("\\")+1);
 	long fileSize = item.getSize();
 	if (!item.isFormField()) {
-		//检查文件大小
-		if(item.getSize() > maxSize){
-	out.println(getError("上传文件大小超过限制。"));
-	return;
-		}
 		//检查扩展名
 		String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
 		if(!Arrays.<String>asList(extMap.get(dirName).split(",")).contains(fileExt)){
-	out.println(getError("上传文件扩展名是不允许的扩展名。\n只允许" + extMap.get(dirName) + "格式。"));
-	return;
+			out.println(getError("上传文件扩展名是不允许的扩展名。\n只允许" + extMap.get(dirName) + "格式。"));
+			return;
 		}
 		
 		Attachment attachment = null;
-		try{
-	File file = File.createTempFile("attachment_", ".attachment");
-	File uploadedFile = new File(file.getParent(), file.getName());
-	item.write(uploadedFile);
-	byte[] bytes = new byte[(int)file.length()];
-	FileInputStream fis = new FileInputStream(file);
-	fis.read(bytes);
-		    attachment = das.createAttachment(fileName, bytes);
-	fis.close();
-	file.delete();
+				try{
+			File file = File.createTempFile("attachment_", ".attachment");
+			File uploadedFile = new File(file.getParent(), file.getName());
+			item.write(uploadedFile);
+			byte[] bytes = new byte[(int)file.length()];
+			FileInputStream fis = new FileInputStream(file);
+			fis.read(bytes);
+				    attachment = das.createAttachment(fileName, bytes);
+			fis.close();
+			file.delete();
 		}catch(Exception e){
-	out.println(getError("上传文件失败。"));
-	return;
+			out.println(getError("上传文件失败。"));
+			return;
 		}
 		JSONObject obj = new JSONObject();
 		obj.put("error", 0);
 		if("image".equals(dirName))
 		{
-	obj.put("url", "../attachment/download_json.jsp?param=image_"+attachment.getId());
+			obj.put("url", "../attachment/download_json.jsp?param=image_"+attachment.getId());
 		}else
 		{
-	obj.put("url", "../attachment/download_json.jsp?param=file_"+attachment.getId());
+			obj.put("url", "../attachment/download_json.jsp?param=file_"+attachment.getId());
 		}
 		obj.put("title",fileName);
 		out.println(obj.toJSONString());
