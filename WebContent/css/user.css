@@ -80,7 +80,7 @@ html, body
 #preview-pane
 {
 	display: table-cell;
-	padding-left: 10px; 
+	padding-left: 50px; 
 	vertical-align:top;
 }
 #preview-pane .preview-container {

@@ -176,7 +176,6 @@ function initStatFieldOptions(fieldId)
 
 function initTemplateFields()
 {
-	//TODO 技术支持和浏览器反馈的特别慢！
 	var type = $("#stat_type").val();
 	if(!type)
 		return;
@@ -757,7 +756,7 @@ function showAllChart()
 			type:'POST',
 			dataType:'json',
 			success:function(data){
-				var chart = initChart(divId,data);
+				var chart = $.initChart(divId,data);
 				chart.setChartData(data.name,data.data,data.chartType);
 			}
 		});
