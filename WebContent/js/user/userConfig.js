@@ -119,6 +119,7 @@ function showPreview(coords)
 	$('#h').val(height1);
 };
 
+//后台剪切头像
 function cutImage()
 {
 	var data = 
