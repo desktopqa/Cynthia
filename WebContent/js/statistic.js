@@ -713,8 +713,7 @@ function editStat(statId)
 	
 	$("#recievers").val($(rootNode).find("reciever").text());
 	$("#chartType").val($(rootNode).find("graph").text());
-	enableSelectSearch();
-	
+
 	//设置过滤条件
 	clearConditionTable();
 	$(rootNode).find("conditions").find("field").each(function(index,node){
@@ -726,6 +725,7 @@ function editStat(statId)
 		}
 	});
 	
+	enableSelectSearch();	
 	$("#statdiv").modal('show');
 }
 
