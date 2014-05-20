@@ -3938,11 +3938,6 @@ function showSendMail()
 	$("#send_mail_win").modal('show');
 }
 
-function sendMailCancel()
-{
-	$("#send_mail_win").modal('hide');
-}
-
 function sendMailSubmit()
 {
 	var sendMailReceivers = $("#sendMailReceivers").val();
@@ -3992,7 +3987,7 @@ function sendMailSubmit()
 function mailSendSuccess()
 {
 	showInfoWin("success","邮件发送成功!");
-	executeSendMailCancel();
+	$("#send_mail_win").modal('hide');
 	$("#mail_send_ok").disabled = false;
 }
 

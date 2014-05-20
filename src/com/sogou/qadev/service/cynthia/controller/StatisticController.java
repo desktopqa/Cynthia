@@ -18,6 +18,7 @@ import com.sogou.qadev.service.cynthia.bean.TimerAction;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
 import com.sogou.qadev.service.cynthia.service.DataAccessSession.ErrorCode;
 import com.sogou.qadev.service.cynthia.service.StatisticerManager;
+import com.sogou.qadev.service.cynthia.util.CommonUtil;
 import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
 import com.sogou.qadev.service.login.bean.Key;
 
@@ -48,14 +49,20 @@ public class StatisticController extends BaseController{
 	@ResponseBody
 	public String update(HttpServletRequest request, HttpServletResponse response ,HttpSession session) throws Exception {
 		
+
 		Key key = (Key)session.getAttribute("key");
 		String statId = request.getParameter("statId");
 		String statName = request.getParameter("statName");
 		String params = request.getParameter("params");
 		params = CynthiaUtil.getXMLStr(params);
-		String mailTime = request.getParameter("mailTime");
+		String isSendMail = request.getParameter("isSendMail");
+		String[] month = request.getParameterValues("month[]");
+		String[] date = request.getParameterValues("date[]");
+		String[] week = request.getParameterValues("week[]");
+		String hour = request.getParameter("hour[]");
+		String minute = request.getParameter("minute[]");
 		String recievers = request.getParameter("recievers");
-		
+
 		params = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + params;
 		TimerAction timerAction = null;
 		Timer timer = null;
@@ -67,7 +74,7 @@ public class StatisticController extends BaseController{
 			timerAction.setName(statName);
 			timerAction.setCreateUser(key.getUsername());
 			timerAction.setParam(params);
-			if (mailTime != null && !mailTime.equals("") && recievers != null && !recievers.equals("")) {
+			if (isSendMail != null && isSendMail.equals("true") && recievers != null && !recievers.equals("")) {
 				timer = das.createTimer(key.getUsername());
 				timer.setActionId(timerAction.getId());
 				timer.setActionParam(timerAction.getParam());
@@ -77,26 +84,23 @@ public class StatisticController extends BaseController{
 				timer.setRetryDelay(50000);
 				timer.setSendNull(true);
 				timer.setStart(true);
-				timer.setMonth("1,2,3,4,5,6,7,8,9,10,11,12");
-				timer.setWeek("1,2,3,4,5,6,7");
-				timer.setDay("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31");
-				
-				String[] mailTimeElemArray = mailTime.split(":");
-				
-				timer.setHour(mailTimeElemArray[0]);
-				timer.setMinute(mailTimeElemArray.length > 1 ? mailTimeElemArray[1] : "00");
+				timer.setMonth(CommonUtil.arrayToStr(month));
+				timer.setWeek(CommonUtil.arrayToStr(week));
+				timer.setDay(CommonUtil.arrayToStr(date));
+				timer.setHour(hour);
+				timer.setMinute(minute);
 				das.addTimer(timer);
 			}
-			
+
 			return String.valueOf(das.addTimerAction(timerAction).equals(ErrorCode.success));
 		}else {
 			timerAction = das.queryTimerAction(DataAccessFactory.getInstance().createUUID(statId));
 			//更新统计
 			timerAction.setName(statName);
 			timerAction.setParam(params);
-			
+
 			Timer[] timerArray = das.queryTimersByActionId(timerAction.getId());
-			
+
 			if (timerArray.length > 0) {
 				//己存在定时器更新定时器
 				for(int i = 0; i < timerArray.length; i++){
@@ -104,15 +108,17 @@ public class StatisticController extends BaseController{
 						timer = timerArray[i];
 						timer.setActionParam(timerAction.getParam());
 						timer.setName(timerAction.getName());
-						
-						if (mailTime == null || mailTime.equals("")) {
+
+						if (isSendMail != null && isSendMail.equals("false")) {
 							//时间为空则直接删除timer
 							das.removeTimer(timer.getId());
 						}else {
 							//否则更新timer时间
-							String[] mailTimeElemArray = mailTime.split(":");
-							timer.setHour(mailTimeElemArray[0]);
-							timer.setMinute(mailTimeElemArray.length > 1 ? (mailTimeElemArray[1]) : "00");
+							timer.setMonth(CommonUtil.arrayToStr(month));
+							timer.setWeek(CommonUtil.arrayToStr(week));
+							timer.setDay(CommonUtil.arrayToStr(date));
+							timer.setHour(hour);
+							timer.setMinute(minute);
 							das.modifyTimer(timer);
 						}
 						break;
@@ -120,7 +126,7 @@ public class StatisticController extends BaseController{
 				}
 			}else {
 				//不存在，创建定时器
-				if (mailTime != null && !mailTime.equals("") && recievers != null && !recievers.equals("")) {
+				if (isSendMail != null && isSendMail.equals("true") && recievers != null && !recievers.equals("")) {
 					timer = das.createTimer(key.getUsername());
 					timer.setActionId(timerAction.getId());
 					timer.setActionParam(timerAction.getParam());
@@ -130,18 +136,16 @@ public class StatisticController extends BaseController{
 					timer.setRetryDelay(50000);
 					timer.setSendNull(true);
 					timer.setStart(true);
-					timer.setMonth("1,2,3,4,5,6,7,8,9,10,11,12");
-					timer.setWeek("1,2,3,4,5,6,7");
-					timer.setDay("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31");
-					
-					String[] mailTimeElemArray = mailTime.split(":");
-					
-					timer.setHour(mailTimeElemArray[0]);
-					timer.setMinute(mailTimeElemArray.length > 1 ? mailTimeElemArray[1] : "00");
+					timer.setMonth(CommonUtil.arrayToStr(month));
+					timer.setWeek(CommonUtil.arrayToStr(week));
+					timer.setDay(CommonUtil.arrayToStr(date));
+					timer.setHour(hour);
+					timer.setMinute(minute);
 					das.addTimer(timer);
 				}
+
 			}
-			
+
 			return String.valueOf(das.modifyTimerAction(timerAction).equals(ErrorCode.success));
 		}
 	}
