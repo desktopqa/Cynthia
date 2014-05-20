@@ -619,3 +619,8 @@ table th.sort-up:after
 	line-height: 12px;
 }
 
+.active_link
+{
+	color:red !important;
+	font-weight:bold !important;
+}

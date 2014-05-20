@@ -476,8 +476,8 @@ function allFiltersIconClick()
 /*bind item click in navigation*/
 function navItemClick(e)
 {
-	$('#left-tree , #allFiltersDiv').find('.filter').removeClass('active_link');
-	$(this).addClass("active_link");
+	$('#left-tree , #allFiltersDiv').find('.filter a').removeClass('active_link');
+	$(this).find("a").addClass("active_link");
 	openFilter($(this).attr("id"));
 	hideAllFilterMenu();
 }
@@ -863,8 +863,6 @@ function openTagFilter(tagId,page,sortField,sortType,reDrawHead)
 
 	$("#tagMoveOut").show();
 	document.title= tagArray[tagId].tagName;
-	$('#left-tree , #allFiltersDiv').find('.filter').removeClass('active_link');
-	$("#left-tag-list").find("li[value='"+tagId+"']").addClass('active_link');
 	grid.refreshGrid();
 	return false;
 }
@@ -1136,32 +1134,6 @@ function bindClickEvents()
 		if(filterId != null){
 			window.open(getRootDir() + 'editFilter.html?filterId=' + filterId);
 		}
-	});
-
-	//全部过滤器
-	$("#allFiltersList .filter").live('click',function(e){
-		var link = $(this).children("a");
-		var openIcon = $(link).find(".icon-open-win");
-		var editFilterIcon = $(link).find(".icon-edit");
-		if(openIcon.length > 0)
-		{
-			openIcon.show();
-		}else
-		{
-			$(link).prepend("<i class='icon-open-win' title='新窗口打开'></i>");
-		}
-		if(editFilterIcon.length > 0)
-		{
-			editFilterIcon.show();
-		}else
-		{
-			$(link).prepend("<i class='icon-edit' title='编辑'></i>");
-		}
-		return false;
-	}).live('mouseout',function(){
-		var link = $(this).children("a");
-		$(link).find("i").hide();
-		return false;
 	});
 
 }
@@ -2159,7 +2131,7 @@ function initFavoriteFilterMenu(data)
 
 		if($(node).attr("id")==currentFilterId)
 		{
-			$(node).addClass('active_link');
+			$(node).find("a").addClass('active_link');
 		}
 	});
 }
