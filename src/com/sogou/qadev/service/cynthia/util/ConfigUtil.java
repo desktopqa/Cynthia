@@ -69,13 +69,20 @@ public class ConfigUtil {
 	// 配置所有系统过滤器
 	public static List<UUID> allSysFilterList = new ArrayList<UUID>();
 
+	public static Map<String, String> allSysFilterMap = new LinkedHashMap<String, String>();
+	
 	static {
 		allSysFilterList.add(DataAccessFactory.getInstance().createUUID("119695"));
 		allSysFilterList.add(DataAccessFactory.getInstance().createUUID("119891"));
 		allSysFilterList.add(DataAccessFactory.getInstance().createUUID("119892"));
 		allSysFilterList.add(DataAccessFactory.getInstance().createUUID("119893"));
+		
+		allSysFilterMap.put("119695", "待处理");
+		allSysFilterMap.put("119891", "待跟踪");
+		allSysFilterMap.put("119892", "己处理[未关闭]");
+		allSysFilterMap.put("119893", "己处理[己关闭]");
 	}
-
+	
 	public static Map<String, String> templateTypeIconMap = new HashMap<String, String>();
 	static {
 		templateTypeIconMap.put("缺陷", "Bug.gif");

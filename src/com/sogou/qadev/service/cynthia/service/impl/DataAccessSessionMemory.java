@@ -161,7 +161,7 @@ public class DataAccessSessionMemory extends AbstractDataAccessSession
 	 */
 	public Map<String,String> queryFilterIdNameMap(String userName)
 	{
-		return new FilterAccessSessionMySQL().queryFilterIdAndName();
+		return new FilterAccessSessionMySQL().queryFilterIdAndName(userName);
 	}
 	
 	/**

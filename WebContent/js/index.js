@@ -2,11 +2,6 @@
 var grid = null;
 var actionModifyUser = null;
 var curTagId = null;
-var imeTemplateArray = [];
-imeTemplateArray.push("371779");
-imeTemplateArray.push("161154");
-imeTemplateArray.push("2436");
-imeTemplateArray.push("3422");
 var tagArray = null;
 var favorateFilterArray = null;
 var sysFilter = {'119695':'待处理','119891':'待跟踪','119892':'己处理[未关闭]','119893':'己处理[己关闭]'};
@@ -876,11 +871,9 @@ function openTagFilter(tagId,page,sortField,sortType,reDrawHead)
 
 function initTagData(tagId,page,sortField,sortType,reDrawHead)
 {
-
 	$.ajax({
 		url: 'tag/getTagDatas.do',
 		type:'POST',
-		async: false,
 		data:{'tagId' : tagId},
 		success: function(dataArray){
 			var searchType = "id";
@@ -890,9 +883,11 @@ function initTagData(tagId,page,sortField,sortType,reDrawHead)
 			}
 			else
 				queryData("", page,sortField,sortType,reDrawHead,searchType,dataArray);
+			showLoading(false);
 		},
 		error: function(data){
 			showInfoWin("error","服务器异常!");
+			showLoading(false);
 		}
 	});
 
@@ -944,7 +939,6 @@ function queryData(filterId,page,sortField,sortType,reDrawHead,searchType, keywo
 	$.ajax({
 		url: 'task/searchTask.jsp',
 		type:'POST',
-		async: false,
 		data:params,
 		dataType:'json',
 		success: function(queryDataResult){
@@ -966,9 +960,11 @@ function queryData(filterId,page,sortField,sortType,reDrawHead,searchType, keywo
 				//标签查询
 				showFilterData(searchData, null, defaultHeader, '', reDrawHead);
 			}
+			showLoading(false);
 		},
 		error: function(data){
 			showInfoWin('error','服务器内部错误!');
+			showLoading(false);
 		}
 	});
 }
@@ -1557,19 +1553,19 @@ function initFilterData(filterId,page,sortField,sortType,reDrawHead)
 	$.ajax({
 		url: "filter/filter.jsp",
 		type:'POST',
-		async: false,
 		data:params,
+		dataType:'json',
 		success: function(data){
-			var filterData = eval('(' + data + ')');
+			var filterData = data;
 			var params = "filterId=" + filterId;
 			$.ajax({
 				url: "filter/getFilterShowInfo.do",
 				type:'POST',
-				async: false,
 				data:params,
 				success: function(data){
 					var filterField = eval('(' + data + ')');
 					showFilterData(filterData, filterField.groupField, filterField.showFields, filterField.backFields, reDrawHead);
+					showLoading(false);
 				}
 			});
 		}
@@ -1834,38 +1830,6 @@ function getLengthOfTagArr(dataTagArray)
 //显示filter数据 绘制表格
 function showFilterData(filterData,groupField,showFields,backFields, reDrawHead)
 {
-	//检测是否有ime相关的表单，如果没有则取消测试定义bug严重级别的显示
-	if(isSysFilter($("#filterId").val()))
-	{
-		var isImeTemplate = false;
-		var actualData = filterData.rows;
-		actualData = actualData == undefined ? new Array() : actualData;
-
-		for(var i=0 ;i < actualData.length;i++)
-		{
-			if(inArrayIndex(actualData[i].templateId,imeTemplateArray) != -1)
-			{
-				isImeTemplate = true;
-				break;
-			}
-		}
-
-		if(isImeTemplate == false)
-		{
-			var index = -1;
-			for(var j = 0; j<showFields.length; j ++)
-			{
-				if(showFields[j].fieldId == "bugLevel")
-				{
-					index = j;
-					break;
-				}
-			}
-			if(index != -1)
-				showFields.splice(index,1);
-		}
-	}
-
 	if(reDrawHead == undefined || !reDrawHead == "false")
 	{
 		//画标头

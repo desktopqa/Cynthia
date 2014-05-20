@@ -95,7 +95,7 @@
 	xmlb.append("<root>");
 	xmlb.append("<filters>");
 	
-	Map<String,String> filterIdNameMap = new FilterAccessSessionMySQL().queryFilterIdAndName();
+	Map<String,String> filterIdNameMap = das.queryFilterIdNameMap(key.getUsername());
 	
 	for(String filterId : filterDatas.keySet()){
 		if(filterIdNameMap.get(filterId) == null)
