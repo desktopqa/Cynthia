@@ -143,9 +143,11 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 
 .main-container .column .box .configuration {
 	position: relative;
-	top: 3px;
+	top: 5px;
 	right: 5px;
 	white-space: nowrap;
+	cursor:pointer;
+	margin-right:5px;
 }
 
 
