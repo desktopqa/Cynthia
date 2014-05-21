@@ -852,6 +852,9 @@ function saveTagClassifyModifyResult()
 //打开标签数据
 function openTagFilter(tagId,page,sortField,sortType,reDrawHead)
 {
+	$('#left-tree , #allFiltersDiv, #left-tag-list').find('.filter a').removeClass('active_link');
+	$("#left-tag-list li[value=\"" + tagId + "\"] a").addClass("active_link");
+	
 	grid.setCurrentPage(1);
 	$("#curTagId").val(tagId);
 	$("#filterId").val("");
@@ -1098,8 +1101,8 @@ function bindClickEvents()
 	});
 	
 	//打开标签
-	$("#left-tag-list").delegate('.tag-filter a','click',function(){
-		openTagFilter($(this).parent().attr("value"));
+	$("#left-tag-list").delegate('.tag-filter','click',function(){
+		openTagFilter($(this).attr("value"));
 		return false;
 	});
 
