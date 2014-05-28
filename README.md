@@ -29,9 +29,9 @@
 		4. 新建和处理问题
 Demo 地址
 --------
-http://opencynthia.duapp.com/index.html
-测试管理员账号 admin 密码：admin
-测试普通用户 test1@test.com test2@test.com 密码：123456
+		http://opencynthia.duapp.com/index.html
+		测试管理员账号 admin 密码：admin
+		测试普通用户 test1@test.com;test2@test.com 密码：123456
 
 交流、反馈和建议
 ---------------
