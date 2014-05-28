@@ -117,7 +117,7 @@
 			com.sogou.qadev.service.cynthia.util.ApplicationInitLoader
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
-	</servlet>
+	</servlet> 
 
 	<servlet>
   		<servlet-name>DisplayChart</servlet-name>
