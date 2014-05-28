@@ -9,6 +9,7 @@ logs/
 classes/
 .settings/
 .svn/
+admin/
 
 *classpath
 *.properties
