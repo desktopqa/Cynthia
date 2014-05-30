@@ -491,20 +491,31 @@ function saveStat()
 	
 	//发信时间
 	var mailTimeNode = rootDoc.createElement("mailTime");
-	var mailTimeValue = "";
-	if($.trim($("#hour").val()) !== ""){
-		mailTimeValue += $.trim($("#hour").val());
-		mailTimeValue += ":";
-	}
+	//是否定时发信
+	var isSendMailNode = rootDoc.createElement("isSendMail");
+	setTextContent(isSendMailNode,$("input[type=radio][name=sendMail]:checked").val());
+	mailTimeNode.appendChild(isSendMailNode);
+	//月份
+	var monthNode = rootDoc.createElement("month");
+	setTextContent(monthNode,$("#month").val());
+	mailTimeNode.appendChild(monthNode);
+	//日期
+	var dateNode = rootDoc.createElement("date");
+	setTextContent(dateNode,$("#date").val());
+	mailTimeNode.appendChild(dateNode);
+	//周几
+	var weekNode = rootDoc.createElement("week");
+	setTextContent(weekNode,$("#week").val());
+	mailTimeNode.appendChild(weekNode);
+	//时钟
+	var hourNode = rootDoc.createElement("hour");
+	setTextContent(hourNode,$("#hour").val());
+	mailTimeNode.appendChild(hourNode);
+	//分钟
+	var minuteNode = rootDoc.createElement("minute");
+	setTextContent(minuteNode,$("#minute").val());
+	mailTimeNode.appendChild(minuteNode);
 	
-	if($.trim($("#minute").val()) !== "")
-		mailTimeValue += $.trim($.trim($("#minute").val()));
-	else{
-		if(mailTimeValue !== "")
-			mailTimeValue += "00";
-	}
-	
-	setTextContent(mailTimeNode,mailTimeValue);
 	rootNode.appendChild(mailTimeNode);
 	
 	
@@ -531,7 +542,12 @@ function saveStat()
 			statName:statName,
 			params:finalXml,
 			recievers:$("#recievers").val(),
-			mailTime:mailTimeValue
+			isSendMail:$("input[type=radio][name=sendMail]:checked").val(),
+			month:$("#month").val(),
+			date:$("#date").val(),
+			week:$("#week").val(),
+			hour:$("#hour").val(),
+			minute:$("#minute").val()
     };
 	
 	$.ajax({
@@ -618,6 +634,21 @@ function deleteStat(statId)
 	return false;
 }
 
+//设置时间值
+function setTimeValue(timeSelectId, minTime, maxTime,choosedArr)
+{
+	var $timeNode = $("#" + timeSelectId);
+	$timeNode.empty();
+	
+	for(var i = minTime ; i <= maxTime; i ++ )
+	{
+		if(inArrayIndex(i,choosedArr)>=0)
+			$timeNode.append("<option value='"+i+"' selected='selected'>"+i+"</option>");
+		else
+			$timeNode.append("<option value='"+i+"'>"+i+"</option>");
+	}
+}
+
 function initCreateDiv()
 {
 	$("#statdiv select").val('');
@@ -628,6 +659,13 @@ function initCreateDiv()
 	$("#my_statistic_h").text('新建统计项');
 	$("#statdiv input[type!=button][type!=radio]").val('');
 	$("input[type=radio][name=betweenField][value=and]").attr("checked","checked");
+	$('#mail_cfg').hide();
+	$("input[type=radio][name=sendMail][value=false]").attr("checked","checked");
+	setTimeValue('month',1,12,new Array());
+	setTimeValue('date',1,31,new Array());
+	setTimeValue('week',1,7,new Array());
+	setTimeValue('hour',0,23,new Array());
+	setTimeValue('minute',0,59,new Array());
 	enableSelectSearch();
 	$("#statdiv").modal('show');
 }
@@ -698,23 +736,9 @@ function editStat(statId)
 		$("#stat_options option[value='"+value+"']").remove();
 	});
 	
-	var time = $(rootNode).find("mailTime").text();
-	time = $.trim(time);
-	if(time.indexOf(":") == -1){
-		$("#minute").val(time);
-	}else{
-		var timeArr = time.split(":");
-		if(timeArr.length > 0){
-			$("#hour").val(timeArr[0]);
-			if(timeArr.length > 1)
-				$("#minute").val(timeArr[1]);
-		}
-	}
-	
 	$("#recievers").val($(rootNode).find("reciever").text());
 	$("#chartType").val($(rootNode).find("graph").text());
-	enableSelectSearch();
-	
+
 	//设置过滤条件
 	clearConditionTable();
 	$(rootNode).find("conditions").find("field").each(function(index,node){
@@ -726,6 +750,26 @@ function editStat(statId)
 		}
 	});
 	
+	//设置发信时间
+	var mailTimeNode = $(rootNode).find("mailTime");
+	var isSendMail = mailTimeNode.find("isSendMail").text();
+	setTimeValue('month',1,12,mailTimeNode.find("month").text().split(","));
+	setTimeValue('date',1,31,mailTimeNode.find("date").text().split(","));
+	setTimeValue('week',1,7,mailTimeNode.find("week").text().split(","));
+	setTimeValue('hour',0,23,mailTimeNode.find("hour").text().split(","));
+	setTimeValue('minute',0,59,mailTimeNode.find("minute").text().split(","));
+	
+	if(isSendMail === "true"){
+		$('#mail_cfg').show();
+		$("input[type=radio][name=sendMail][value=true]").attr("checked","checked")
+	}else{
+		$('#mail_cfg').hide();
+		$("input[type=radio][name=sendMail][value=false]").attr("checked","checked");
+	}
+	
+	$("#recievers").val($(rootNode).find("reciever").text());
+	
+	enableSelectSearch();	
 	$("#statdiv").modal('show');
 }
 
@@ -820,6 +864,15 @@ function bindEvents()
 	
 	$("#search_stat_btn").click(function(){
 		searchStat();
+	});
+	
+	//绑定发信是否
+	$("input[name='sendMail']").bind("click",function(){
+		var sendMail = $(this).val();
+		if(sendMail === "true")
+			$('#mail_cfg').show();
+		else
+			$('#mail_cfg').hide();
 	});
 }
 

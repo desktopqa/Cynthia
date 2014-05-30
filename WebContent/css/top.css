@@ -74,13 +74,13 @@ select
 .icon-group-collapse
 {
 	background : url(../images/group-collapse.gif)  no-repeat;
-	margin-top: 4px;
+	margin-top: 2px;
 }
 
 .icon-group-expand
 {
 	background : url(../images/group-expand.gif)  no-repeat;
-	margin-top: 4px;
+	margin-top: 2px;
 }
 
 .icon-open-win

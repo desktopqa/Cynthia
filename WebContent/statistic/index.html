@@ -28,7 +28,17 @@
 <script type="text/javascript" src="../lib/highchart/no-data-to-display.js"></script>
 <script type="text/javascript" src="../lib/highchart/draggable-legend.js"></script>
 <script type="text/javascript" src='../js/cynthiaHighChart.js'></script>
+<style>
+	#conditions_table table tbody tr td:first-child
+	{
+		width:125px !important;
+	}
 	
+	#conditions_table table tbody tr td:nth-child(2)
+	{
+		width:106px !important;
+	}
+</style>	
 </head>
 
 <body>
@@ -246,16 +256,6 @@
 	 <div style="margin-top:10px;">
 	  	<table class="table-condensed">
 	  		<tbody>
-		  		<tr><td><label>发信时间:</label></td>
-			  		<td>
-				  		每天：<input type="text" style="width:20px;height:15px;" id="hour"/>时<input type="text" style="width:20px;height:15px;" id="minute"/>分
-			  		</td>
-		  		</tr>
-		  		<tr><td><label>收件人:</label></td>
-			  		<td>
-				  		<input type="text" id="recievers" placeholder="多个收件人英文分号;隔开">
-			  		</td>
-		  		</tr>
 		  		<tr><td><label>图表类型:</label></td>
 			  		<td>
 				  		<select id="chartType" class="select-width">
@@ -266,10 +266,42 @@
 				  		</select>
 			  		</td>
 		  		</tr>
+		  		
+		  		<tr><td><label>发送邮件:</label></td>
+			  		<td>
+				  		<input type="radio" style="margin:0px;" name="sendMail" value="true">是&nbsp;&nbsp;<input type="radio" style="margin:0px;" name="sendMail" value="false" checked>否
+			  		</td>
+		  		</tr>
 		     </tbody>
 		  </table>
 	  </div>
 	  
+	  <div style="margin-top:10px;" id="mail_cfg">
+	  	<table class="table-condensed">
+	  		<tbody>
+		  		<tr><td style="vertical-align:sub;"><label>发信时间:</label></td>
+			  		<td>
+			  			<table>
+			  				<tr><td>月份</td><td>日期</td><td>周几</td><td>小时</td><td>分钟</td></tr>
+			  				<tr>
+			  					<td><select class="noSearch" name='month' id='month' multiple="multiple" style="WIDTH:6em" size=8></select></td>
+			  					<td><select class="noSearch" name='date' id='date' multiple="multiple" style="WIDTH:6em" size=8></select></td>
+			  					<td><select class="noSearch" name='day' id='week' multiple="multiple" style="WIDTH:6em" size=8></select></td>
+			  					<td><select class="noSearch" name='hour' id='hour' multiple="multiple" style="WIDTH:6em" size=8></select></td>
+			  					<td><select class="noSearch" name='minute' id='minute' multiple="multiple" style="WIDTH:6em" size=8></select></td>
+			  				</tr>
+			  			</table>
+			  		</td>
+		  		</tr>
+		  		<tr><td><label>收件人:</label></td>
+			  		<td>
+				  		<input type="text" id="recievers" placeholder="多个收件人英文分号;隔开">
+			  		</td>
+		  		</tr>
+		  		
+		     </tbody>
+		  </table>
+	  </div>
   </div>
   
   </form>

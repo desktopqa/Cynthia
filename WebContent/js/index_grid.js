@@ -92,8 +92,6 @@ function Grid(element,options)
 				}
 			}
 		}catch(e){}
-		
-		showLoading(false);
 	};
 	
 	this.refreshData = function()

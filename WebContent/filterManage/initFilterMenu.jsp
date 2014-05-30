@@ -135,7 +135,7 @@ String getFolderXMLString(int nodeId,DataAccessSession das,String userName , Map
 	xmlb.append("<root>");
 	xmlb.append("<isError>false</isError>");
 	
-	Map<String,String> filterIdNameMap = new FilterAccessSessionMySQL().queryFilterIdAndName();
+	Map<String,String> filterIdNameMap = das.queryFilterIdNameMap(key.getUsername());
 	
 	if(rootChildren == null||rootChildren.size()==0)
 	{

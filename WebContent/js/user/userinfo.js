@@ -2,17 +2,17 @@
 
 /********用户注册开始****/
 function register(){
-	var userMail = $.trim($("#userMail").val());
-	var userPassword = $.trim($("#userPassword").val());
+	var userMail = trim($("#userMail").val());
+	var userPassword = trim($("#userPassword").val());
 	checkLoginInfo(userMail,userPassword);
-	var userPasswordAgain = $.trim($("#userPasswordAgain").val());
+	var userPasswordAgain = trim($("#userPasswordAgain").val());
 	if(userPassword != userPasswordAgain)
 	{
 		msgTips("两次密码不相同!");
 		return;
 	}
 	
-	var userAlias = $.trim($("#userAlias").val());
+	var userAlias = trim($("#userAlias").val());
 	if(userAlias === "")
 	{
 		$("#register_info").text("请输入中文名!");
@@ -121,7 +121,7 @@ function initUser(targetUrl,errorLogMsg)
 
 function login()
 {
-	var userName = $.trim($("#user_mail_login").val());
+	var userName = trim($("#user_mail_login").val());
 	var password = $("#user_password_login").val();
 	var targetUrl = request('targetUrl');
 	remember = $("#remerber_password")[0].checked;

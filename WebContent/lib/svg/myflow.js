@@ -14,7 +14,6 @@
 	var svg_id = null;
 	var panZoom = null;
 	
-
  	a.config={
 		editable:true,
 		lineHeight:15,
@@ -1021,8 +1020,9 @@
 		
 		//ctrl +s 保存
 		$(document).bind('keydown', 'ctrl+s', function (e) {
+			
 	        if (e.ctrlKey && (e.which == 83)) {
-	            e.preventDefault();
+	        	stopDefault(e);
 	            if(saveSvgCode())
 	            	showInfoWin("success","保存成功!");
 	            else
@@ -1030,6 +1030,7 @@
 	            return false;
 	        }
 	    });
+		
 	}
 	
 	//缩放后坐标转化
@@ -1269,6 +1270,7 @@
 		svgCode += ",viewBox_width:" + rap._viewBox[2];
 		svgCode += ",viewBox_height:" + rap._viewBox[3];
 		svgCode += "}";
+		
 		return saveFlowSvg(svgCode); //保存至数据库
 	}
 	

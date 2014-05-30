@@ -28,6 +28,7 @@ import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
 import com.sogou.qadev.service.cynthia.service.DataAccessSession;
 import com.sogou.qadev.service.cynthia.service.DataAccessSession.ErrorCode;
 import com.sogou.qadev.service.cynthia.service.DbPoolConnection;
+import com.sogou.qadev.service.cynthia.util.ConfigUtil;
 import com.sohu.rd.td.util.xml.XMLUtil;
 
 /**
@@ -499,7 +500,7 @@ public class FilterAccessSessionMySQL
 		return filterList.toArray(new Filter[filterList.size()]);
 	}
 
-	public Map<String, String> queryFilterIdAndName()
+	public Map<String, String> queryFilterIdAndName(String userName)
 	{
 		Map<String, String> idNameMap = new LinkedHashMap<String, String>();
 		Statement stat = null;
@@ -509,7 +510,14 @@ public class FilterAccessSessionMySQL
 		{
 			conn = DbPoolConnection.getInstance().getReadConnection();
 			stat = conn.createStatement();
-			rs = stat.executeQuery("select id ,name from filter order by name");
+			
+			String sql = "select id ,name from filter where is_valid=1 ";
+			if (userName != null && userName.length() > 0) {
+				sql += " and id in (select DISTINCT filter_id from user_focus_filter where user = '" + userName + "') ";
+			}
+			sql += " order by name";
+			
+			rs = stat.executeQuery(sql);
 			while(rs.next())
 			{
 				idNameMap.put(rs.getString("id"), rs.getString("name"));
@@ -523,6 +531,10 @@ public class FilterAccessSessionMySQL
 		{
 			DbPoolConnection.getInstance().closeAll(rs, stat, conn);
 		}
+		
+		//添加系统过滤器
+		idNameMap.putAll(ConfigUtil.allSysFilterMap);
+		
 		return idNameMap;
 	}
 	public Filter queryFilter(UUID id)

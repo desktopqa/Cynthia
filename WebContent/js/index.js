@@ -2,11 +2,6 @@
 var grid = null;
 var actionModifyUser = null;
 var curTagId = null;
-var imeTemplateArray = [];
-imeTemplateArray.push("371779");
-imeTemplateArray.push("161154");
-imeTemplateArray.push("2436");
-imeTemplateArray.push("3422");
 var tagArray = null;
 var favorateFilterArray = null;
 var sysFilter = {'119695':'待处理','119891':'待跟踪','119892':'己处理[未关闭]','119893':'己处理[己关闭]'};
@@ -481,8 +476,8 @@ function allFiltersIconClick()
 /*bind item click in navigation*/
 function navItemClick(e)
 {
-	$('#left-tree , #allFiltersDiv').find('.filter').removeClass('active_link');
-	$(this).addClass("active_link");
+	$('#left-tree , #allFiltersDiv').find('.filter a').removeClass('active_link');
+	$(this).find("a").addClass("active_link");
 	openFilter($(this).attr("id"));
 	hideAllFilterMenu();
 }
@@ -857,6 +852,9 @@ function saveTagClassifyModifyResult()
 //打开标签数据
 function openTagFilter(tagId,page,sortField,sortType,reDrawHead)
 {
+	$('#left-tree , #allFiltersDiv, #left-tag-list').find('.filter a').removeClass('active_link');
+	$("#left-tag-list li[value=\"" + tagId + "\"] a").addClass("active_link");
+	
 	grid.setCurrentPage(1);
 	$("#curTagId").val(tagId);
 	$("#filterId").val("");
@@ -868,19 +866,15 @@ function openTagFilter(tagId,page,sortField,sortType,reDrawHead)
 
 	$("#tagMoveOut").show();
 	document.title= tagArray[tagId].tagName;
-	$('#left-tree , #allFiltersDiv').find('.filter').removeClass('active_link');
-	$("#left-tag-list").find("li[value='"+tagId+"']").addClass('active_link');
 	grid.refreshGrid();
 	return false;
 }
 
 function initTagData(tagId,page,sortField,sortType,reDrawHead)
 {
-
 	$.ajax({
 		url: 'tag/getTagDatas.do',
 		type:'POST',
-		async: false,
 		data:{'tagId' : tagId},
 		success: function(dataArray){
 			var searchType = "id";
@@ -890,9 +884,11 @@ function initTagData(tagId,page,sortField,sortType,reDrawHead)
 			}
 			else
 				queryData("", page,sortField,sortType,reDrawHead,searchType,dataArray);
+			showLoading(false);
 		},
 		error: function(data){
 			showInfoWin("error","服务器异常!");
+			showLoading(false);
 		}
 	});
 
@@ -944,7 +940,6 @@ function queryData(filterId,page,sortField,sortType,reDrawHead,searchType, keywo
 	$.ajax({
 		url: 'task/searchTask.jsp',
 		type:'POST',
-		async: false,
 		data:params,
 		dataType:'json',
 		success: function(queryDataResult){
@@ -966,9 +961,11 @@ function queryData(filterId,page,sortField,sortType,reDrawHead,searchType, keywo
 				//标签查询
 				showFilterData(searchData, null, defaultHeader, '', reDrawHead);
 			}
+			showLoading(false);
 		},
 		error: function(data){
 			showInfoWin('error','服务器内部错误!');
+			showLoading(false);
 		}
 	});
 }
@@ -1104,8 +1101,8 @@ function bindClickEvents()
 	});
 	
 	//打开标签
-	$("#left-tag-list").delegate('.tag-filter a','click',function(){
-		openTagFilter($(this).parent().attr("value"));
+	$("#left-tag-list").delegate('.tag-filter','click',function(){
+		openTagFilter($(this).attr("value"));
 		return false;
 	});
 
@@ -1140,32 +1137,6 @@ function bindClickEvents()
 		if(filterId != null){
 			window.open(getRootDir() + 'editFilter.html?filterId=' + filterId);
 		}
-	});
-
-	//全部过滤器
-	$("#allFiltersList .filter").live('click',function(e){
-		var link = $(this).children("a");
-		var openIcon = $(link).find(".icon-open-win");
-		var editFilterIcon = $(link).find(".icon-edit");
-		if(openIcon.length > 0)
-		{
-			openIcon.show();
-		}else
-		{
-			$(link).prepend("<i class='icon-open-win' title='新窗口打开'></i>");
-		}
-		if(editFilterIcon.length > 0)
-		{
-			editFilterIcon.show();
-		}else
-		{
-			$(link).prepend("<i class='icon-edit' title='编辑'></i>");
-		}
-		return false;
-	}).live('mouseout',function(){
-		var link = $(this).children("a");
-		$(link).find("i").hide();
-		return false;
 	});
 
 }
@@ -1557,19 +1528,19 @@ function initFilterData(filterId,page,sortField,sortType,reDrawHead)
 	$.ajax({
 		url: "filter/filter.jsp",
 		type:'POST',
-		async: false,
 		data:params,
+		dataType:'json',
 		success: function(data){
-			var filterData = eval('(' + data + ')');
+			var filterData = data;
 			var params = "filterId=" + filterId;
 			$.ajax({
 				url: "filter/getFilterShowInfo.do",
 				type:'POST',
-				async: false,
 				data:params,
 				success: function(data){
 					var filterField = eval('(' + data + ')');
 					showFilterData(filterData, filterField.groupField, filterField.showFields, filterField.backFields, reDrawHead);
+					showLoading(false);
 				}
 			});
 		}
@@ -1834,38 +1805,6 @@ function getLengthOfTagArr(dataTagArray)
 //显示filter数据 绘制表格
 function showFilterData(filterData,groupField,showFields,backFields, reDrawHead)
 {
-	//检测是否有ime相关的表单，如果没有则取消测试定义bug严重级别的显示
-	if(isSysFilter($("#filterId").val()))
-	{
-		var isImeTemplate = false;
-		var actualData = filterData.rows;
-		actualData = actualData == undefined ? new Array() : actualData;
-
-		for(var i=0 ;i < actualData.length;i++)
-		{
-			if(inArrayIndex(actualData[i].templateId,imeTemplateArray) != -1)
-			{
-				isImeTemplate = true;
-				break;
-			}
-		}
-
-		if(isImeTemplate == false)
-		{
-			var index = -1;
-			for(var j = 0; j<showFields.length; j ++)
-			{
-				if(showFields[j].fieldId == "bugLevel")
-				{
-					index = j;
-					break;
-				}
-			}
-			if(index != -1)
-				showFields.splice(index,1);
-		}
-	}
-
 	if(reDrawHead == undefined || !reDrawHead == "false")
 	{
 		//画标头
@@ -2195,7 +2134,7 @@ function initFavoriteFilterMenu(data)
 
 		if($(node).attr("id")==currentFilterId)
 		{
-			$(node).addClass('active_link');
+			$(node).find("a").addClass('active_link');
 		}
 	});
 }

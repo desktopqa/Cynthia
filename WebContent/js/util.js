@@ -24,6 +24,14 @@ var noAddHeadUrl = new Array();
 noAddHeadUrl.push('login.jsp');
 noAddHeadUrl.push('register.jsp');
 
+String.format = function (src) 
+{
+    if (arguments.length == 0) return null;
+    var args = Array.prototype.slice.call(arguments, 1);
+    return src.replace(/\{(\d+)\}/g, function (m, i) {
+        return args[i];
+    });
+};
 
 //map 类
 var Map = function(){  
@@ -183,10 +191,8 @@ Object.keys = Object.keys || (function () {
 
 //阻止浏览器的默认行为 
 function stopDefault( e ) { 
-    //阻止默认浏览器动作(W3C) 
-    if ( e && e.preventDefault ) 
+    if (e&&e.preventDefault )//IE中阻止函数器默认动作的方式  
         e.preventDefault(); 
-    //IE中阻止函数器默认动作的方式 
     else
         window.event.returnValue = false; 
     return false; 
@@ -245,19 +251,30 @@ if( document.implementation.hasFeature("XPath", "3.0") )
    }
 }
 
-
-function inArrayIndex(val,arr)//返回val在arr中的索引值
+/**
+ * 返回val在arr中的索引值
+ * @param val
+ * @param arr:数组
+ * @returns
+ */
+function inArrayIndex(val,arr)
 {
-   var idx = -1;
-   for(var i=0; i<arr.length;i++)
-   {
-		if(val==arr[i])
+	if(arr==null||arr==undefined)
+		return -1;
+	if(typeof arr === "string"){
+		return arr == val ? 1: -1;
+	}else{
+		var idx = -1;
+		for(var i=0; i<arr.length;i++)
 		{
-		     idx = i;
-		     break;
+			if(val == arr[i])
+			{
+			     idx = i;
+			     break;
+			}
 		}
-   }
-   return idx;
+		return idx;
+	}
 }  
 
 function moveOptions( sourceSelObjId, targetSelObjId )
@@ -319,8 +336,6 @@ function checkIsAllNum( kc )
 
 function getXMLStr(str)
 {
-//	if(str == undefined)
-//		return str;
 	str = replaceAll(str, "&", "&amp;");
 	str = replaceAll(str, "<", "&lt;");
 	str = replaceAll(str, ">", "&gt;");
@@ -427,26 +442,20 @@ function errorInfo()
 	alert("系统出现错误，请稍后刷新重试!");
 }
 
-function stopDefault(e) {
-	if (e&&e.preventDefault )
-		e.preventDefault();
-	else
-		window.event.returnValue = false;
-	return false;
-}
-
-
-
 function inArray(arr,value)
 {
 	if(arr==null||arr==undefined)
 		return false;
-	for(var i=0;i<arr.length;i++)
-	{
-		if(arr[i] == value)
-			return true;
+	if(typeof arr === "string"){
+		return arr == value ? true:false;
+	}else{
+		for(var i=0;i<arr.length;i++)
+		{
+			if(arr[i] == value)
+				return true;
+		}
+		return false;
 	}
-	return false;
 }
 
 function replaceAll(str, replaced, replacement)

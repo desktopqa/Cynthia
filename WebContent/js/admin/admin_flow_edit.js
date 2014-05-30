@@ -185,7 +185,7 @@ function addOrModifyAction(){
 		executeModifyAction();
 }
 	
-
+//修改动作
 function executeModifyAction()
 {
 	var beginStatId = $("#beginStatId").val();
@@ -412,16 +412,17 @@ function setSvg(data){
 }
 
 function saveFlowSvg(svgCode){
-	var success = false;
+	var success = true;
 	$.ajax({
 		url: base_url + 'flow/saveFlowSvg.do',
 		type :'POST',
 		dataType:'text',
-		async : false,
 		data: {'flowId':$("#flowId").val(),'svgCode':svgCode},
 		success: function(data){
 			if(data == "success")
 				success = true;
+			else
+				showInfoWin('error','保存失败!');
 		},
 		error:function(msg){
 		}
@@ -688,6 +689,7 @@ function bindKeyEvents()
 	$("#cfgActionDiv").keydown(function(e){ 
         e=e||window.event;
         if(e.keyCode==13){
+        	stopDefault(e);  
         	addOrModifyAction();
     	    return false;
         }

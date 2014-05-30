@@ -102,9 +102,14 @@ function initContainer(){
 function bindClickEvents()
 {
 	/*左侧收起 展开*/
-	$(".nav-header").click(function() {
-		$(".sidebar-nav .boxes, .sidebar-nav .rows").hide();
-		$(this).next().slideDown();
+	$(".nav-header").live("click",function() {
+		if($(this).find("i").hasClass("icon-plus")){
+			$(this).find("i").removeClass("icon-plus").addClass("icon-minus");
+			$(this).next().slideDown();
+		}else{
+			$(this).find("i").removeClass("icon-minus").addClass("icon-plus");
+			$(this).next().slideUp();
+		}
 	});
 	
 	//绑定删除布局或者元素事件
@@ -250,7 +255,7 @@ var field = null;
 
 function initTemplateEdit(templateId)
 {
-	startLoading();
+	showLoading(true);
 	var param = "id="+templateId;
 	rows = new Array();
 	actions = new Array();
@@ -338,7 +343,7 @@ function onInitTemplateEditComplete(response)
 	});
 
 	drawTemplatePage();
-	endLoading();
+	showLoading(false);
 }
 
 
@@ -423,7 +428,7 @@ function drawEmptyTemplatePage()
 					+ 		"<span>一行三列</span>"
 					+ 	"</div>"
 					+ 	"<span class='drag label'>"
-					+ 		"<i class='icon-move'></i>拖动"
+					+ 		"<i class='icon-move icon-white'></i>拖动"
 					+ 	"</span>"
 					+ 	"<div class='view'>"
 					+ 		"<div class='row-fluid clearfix'>"
@@ -442,9 +447,9 @@ function initSingleInputFieldHtml(field)
 {
 	var html = "<div class='box box-element ui-draggable' style='display: block;' fieldId="+field.id+">"
 			+ 	"<a href='#close' class='remove label label-important'><i class='icon-remove icon-white'></i>删除</a> "
-			+ 	"<span class='drag label'><i class='icon-move'></i>拖动</span>"
-			+ 	"<span class='configuration btn-edit'>"
-			+ 		"<button class='btn btn-mini'>编辑</button>"	
+			+ 	"<span class='drag label'><i class='icon-move icon-white'></i>拖动</span>"
+			+ 	"<span class='configuration btn-edit label label-success'>"
+			+ 		"<i class='icon-edit icon-white'></i>编辑"	
 			+ 	"</span>"
 			+ 	"<div class='preview'></div>"
 			+ 	"<div class='view control-group form-horizontal'>"
@@ -462,9 +467,9 @@ function initTextInputFieldHtml(field)
 {
 	var html = "<div class='box box-element ui-draggable' style='display: block;' fieldId="+field.id+">"
 	+ 	"<a href='#close' class='remove label label-important'><i class='icon-remove icon-white'></i>删除</a> "
-	+ 	"<span class='drag label'><i class='icon-move'></i>拖动</span>"
-	+ 	"<span class='configuration btn-edit'>"
-	+ 		"<button class='btn btn-mini'>编辑</button>"	
+	+ 	"<span class='drag label'><i class='icon-move icon-white'></i>拖动</span>"
+	+ 	"<span class='configuration btn-edit label label-success'>"
+	+ 		"<i class='icon-edit icon-white'></i>编辑"	
 	+ 	"</span>"
 	+ 	"<div class='preview'></div>"
 	+ 	"<div class='view control-group form-horizontal'>"
@@ -486,13 +491,13 @@ function initSingleSelectionFieldHtml(field)
 {
 	var html = "<div class='box box-element ui-draggable' style='display: block;' fieldId="+field.id+">"
 	+ 	"<a href='#close' class='remove label label-important'><i class='icon-remove icon-white'></i>删除</a> "
-	+ 	"<span class='drag label'><i class='icon-move'></i>拖动</span>"
-	+ 	"<span class='configuration btn-edit'>"
-	+ 		"<button class='btn btn-mini'>编辑</button>"
+	+ 	"<span class='drag label'><i class='icon-move icon-white'></i>拖动</span>"
+	+ 	"<span class='configuration btn-edit label label-success'>"
+	+ 		"<i class='icon-edit icon-white'></i>编辑"	
 	+ 	"</span>"
-    + 	"<span class='configuration btn-option'>"
-    + 		"<button class='btn btn-mini'>配置选项</button>"
-    + 	"</span>"
+	+ 	"<span class='configuration btn-option label label-info'>"
+	+ 		"<i class='icon-cog icon-white'></i>配置选项"	
+	+ 	"</span>"
 	+ 	"<div class='preview'></div>"
 	+ 	"<div class='view control-group form-horizontal'>"
 	+ 		"<label class='control-label'>"+field.name+"</label>"
@@ -523,13 +528,13 @@ function initMultiSelectionFieldHtml(field)
 
 	var html = "<div class='box box-element ui-draggable' style='display: block;' fieldId="+field.id+">"
 	+ 	"<a href='#close' class='remove label label-important'><i class='icon-remove icon-white'></i>删除</a> "
-	+ 	"<span class='drag label'><i class='icon-move'></i>拖动</span>"
-	+ 	"<span class='configuration btn-edit'>"
-	+ 		"<button class='btn btn-mini'>编辑</button>"	
+	+ 	"<span class='drag label'><i class='icon-move icon-white'></i>拖动</span>"
+	+ 	"<span class='configuration btn-edit label label-success'>"
+	+ 		"<i class='icon-edit icon-white'></i>编辑"	
 	+ 	"</span>"
-    + 	"<span class='configuration btn-option'>"
-    + 		"<button class='btn btn-mini'>配置选项</button>"
-    + 	"</span>"
+	+ 	"<span class='configuration btn-option label label-info'>"
+	+ 		"<i class='icon-edit icon-white'></i>配置选项"	
+	+ 	"</span>"
 	+ 	"<div class='preview'></div>"
 	+ 	"<div class='view control-group form-horizontal'>"
 	+ 		"<label class='control-label'>"+field.name+"</label>"
@@ -561,9 +566,9 @@ function initTimeStampFieldHtml(field)
 {
 	var html = "<div class='box box-element ui-draggable' style='display: block;' fieldId="+field.id+">"
 	+ 	"<a href='#close' class='remove label label-important'><i class='icon-remove icon-white'></i>删除</a> "
-	+ 	"<span class='drag label'><i class='icon-move'></i>拖动</span>"
-	+ 	"<span class='configuration btn-edit'>"
-	+ 		"<button class='btn btn-mini'>编辑</button>"	
+	+ 	"<span class='drag label'><i class='icon-move icon-white'></i>拖动</span>"
+	+ 	"<span class='configuration btn-edit label label-success'>"
+	+ 		"<i class='icon-edit icon-white'></i>编辑"	
 	+ 	"</span>"
 	+ 	"<div class='preview'></div>"
 	+ 	"<div class='view control-group form-horizontal'>"
@@ -581,9 +586,9 @@ function initAttachmentFieldHtml(field)
 {
 	var html = "<div class='box box-element ui-draggable' style='display: block;' fieldId="+field.id+">"
 	+ 	"<a href='#close' class='remove label label-important'><i class='icon-remove icon-white'></i>删除</a> "
-	+ 	"<span class='drag label'><i class='icon-move'></i>拖动</span>"
-	+ 	"<span class='configuration btn-edit'>"
-	+ 		"<button class='btn btn-mini'>编辑</button>"	
+	+ 	"<span class='drag label'><i class='icon-move icon-white'></i>拖动</span>"
+	+ 	"<span class='configuration btn-edit label label-success'>"
+	+ 		"<i class='icon-edit icon-white'></i>编辑"	
 	+ 	"</span>"
 	+ 	"<div class='preview'></div>"
 	+ 	"<div class='view control-group form-horizontal'>"
@@ -602,9 +607,9 @@ function initSingleReferenceFieldHtml(field)
 {
 	var html = "<div class='box box-element ui-draggable' style='display: block;' fieldId="+field.id+">"
 	+ 	"<a href='#close' class='remove label label-important'><i class='icon-remove icon-white'></i>删除</a> "
-	+ 	"<span class='drag label'><i class='icon-move'></i>拖动</span>"
-	+ 	"<span class='configuration btn-edit'>"
-	+ 		"<button class='btn btn-mini'>编辑</button>"	
+	+ 	"<span class='drag label'><i class='icon-move icon-white'></i>拖动</span>"
+	+ 	"<span class='configuration btn-edit label label-success'>"
+	+ 		"<i class='icon-edit icon-white'></i>编辑"	
 	+ 	"</span>"
 	+ 	"<div class='preview'></div>"
 	+ 	"<div class='view control-group form-horizontal'>"
@@ -623,9 +628,9 @@ function initMultiReferenceFieldHtml(field)
 {
 	var html = "<div class='box box-element ui-draggable' style='display: block;' fieldId="+field.id+">"
 	+ 	"<a href='#close' class='remove label label-important'><i class='icon-remove icon-white'></i>删除</a> "
-	+ 	"<span class='drag label'><i class='icon-move'></i>拖动</span>"
-	+ 	"<span class='configuration btn-edit'>"
-	+ 		"<button class='btn btn-mini'>编辑</button>"	
+	+ 	"<span class='drag label'><i class='icon-move icon-white'></i>拖动</span>"
+	+ 	"<span class='configuration btn-edit label label-success'>"
+	+ 		"<i class='icon-edit icon-white'></i>编辑"	
 	+ 	"</span>"
 	+ 	"<div class='preview'></div>"
 	+ 	"<div class='view control-group form-horizontal'>"
@@ -689,7 +694,7 @@ function initFieldRowHtml(row)
 				+ 	"<a href='#close' class='remove label label-important'><i class='icon-remove icon-white'></i>删除</a>"
 				+ "<div class='preview'></div>"
 				+ 	"<span class='drag label'>"
-				+ 		"<i class='icon-move'></i>拖动"
+				+ 		"<i class='icon-move  icon-white'></i>拖动"
 				+ 	"</span>"
 				+ 	"<div class='view'>"
 				+ 		"<div class='row-fluid clearfix'>";
@@ -1832,10 +1837,5 @@ function startLoading()
 			" background-color:#f1f1f1; position:absolute; " +
 			" filter: alpha(opacity=50); opacity: 0.5;'><img src='../images/loading.gif' style='position: absolute; top:40%; left:40%; margin-left:75px;' /></div>";
 	$("body").append(loading);
-}
-
-function endLoading()
-{
-	$("body").find("#loading").remove();
 }
 
