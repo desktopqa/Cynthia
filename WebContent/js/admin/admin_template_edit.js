@@ -1828,14 +1828,3 @@ function addFieldRow(rowIndex, rowColumnCount)
 	});
 }
 
-
-function startLoading()
-{
-	$("body").find("#loading").remove();
-	var loading = "<div id='loading' style='width:100%;height:100%;" +
-			" border-top:none; z-index:1000;" +
-			" background-color:#f1f1f1; position:absolute; " +
-			" filter: alpha(opacity=50); opacity: 0.5;'><img src='../images/loading.gif' style='position: absolute; top:40%; left:40%; margin-left:75px;' /></div>";
-	$("body").append(loading);
-}
-
