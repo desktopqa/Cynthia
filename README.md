@@ -32,6 +32,9 @@ Demo 地址
 		http://opencynthia.duapp.com/index.html
 		测试管理员账号 admin 密码：admin
 		测试普通用户 test1@test.com;test2@test.com 密码：123456
+文档下载
+--------
+http://git.oschina.net/cynthia/Cynthia/attach_files
 
 交流、反馈和建议
 ---------------
