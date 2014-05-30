@@ -138,7 +138,7 @@ function addAction(fromStatId,toStatId,actionName){
 		url: 'flow/add_Action_xml.jsp',
 		type :'POST',
 		dataType:'xml',
-//		async : false,
+		async : false,
 		data: param,
 		success: function(request){
 			eval("var isError   = " + $(request).find("isError").text());
@@ -231,7 +231,7 @@ function executeModifyAction()
 		url: 'flow/save_RoleRight_xml.jsp',
 		type :'POST',
 		dataType:'xml',
-//		async : false,
+		async : false,
 		data: param,
 		success: function(request){
 			eval("var isError   = " + $(request).find("isError").text());
