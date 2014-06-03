@@ -163,25 +163,23 @@
 		//actionArray
 		Set<Action> actionSet = new LinkedHashSet<Action>();
 		
-		if(task.getChangeLogs().length > 0){
-			Action[] actionArray = flow.queryStatActions(stat.getId());
-			//isClose
-			if(actionArray == null || actionArray.length == 0){
-				//OP例行上线流程的上线取消状态不能被激活
-				if(!task.getStatusId().toString().equals("129251")){
-					Action[] userNodeBeginActionArray = flow.queryUserNodeBeginActions(key.getUsername(), template.getId());
-					for(int i = 0; userNodeBeginActionArray != null && i < userNodeBeginActionArray.length; i++){
-						actionSet.add(userNodeBeginActionArray[i]);
-					}
+		Action[] actionArray = flow.queryStatActions(stat.getId());
+		//isClose
+		if(actionArray == null || actionArray.length == 0){
+			//OP例行上线流程的上线取消状态不能被激活
+			if(!task.getStatusId().toString().equals("129251")){
+				Action[] userNodeBeginActionArray = flow.queryUserNodeBeginActions(key.getUsername(), template.getId());
+				for(int i = 0; userNodeBeginActionArray != null && i < userNodeBeginActionArray.length; i++){
+					actionSet.add(userNodeBeginActionArray[i]);
 				}
 			}
-			//not close
-			else
-			{
-				Action[] userNodeStatActionArray = flow.queryUserNodeStatActions(key.getUsername(), template.getId(), stat.getId());
-				for(int i = 0; userNodeStatActionArray != null && i < userNodeStatActionArray.length; i++){
-					actionSet.add(userNodeStatActionArray[i]);
-				}
+		}
+		//not close
+		else
+		{
+			Action[] userNodeStatActionArray = flow.queryUserNodeStatActions(key.getUsername(), template.getId(), stat.getId());
+			for(int i = 0; userNodeStatActionArray != null && i < userNodeStatActionArray.length; i++){
+				actionSet.add(userNodeStatActionArray[i]);
 			}
 		}
 		
