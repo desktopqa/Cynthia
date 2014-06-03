@@ -159,6 +159,22 @@
 						
 						fieldColumn.addField(field);
 						
+						//复制控制字段
+						if(copyField.getControlFieldId() != null){
+							Field beforeControlField = copyTemplate.getField(copyField.getControlFieldId());
+							if(beforeControlField != null){
+								
+								Field newControlField = template.getField(beforeControlField.getName());
+								field.setControlFieldId(newControlField.getId());
+								
+								for(Option newOption:field.getOptions()){
+									try{
+										Option beforeControlOption = beforeControlField.getOption(copyField.getOption(newOption.getName()).getControlOptionId());
+										newOption.setControlOptionId(newControlField.getOption(beforeControlOption.getName()).getId());
+									}catch(Exception e){}
+								}
+							}
+						}
 						
 						String fieldColName = FieldNameMapMySQL.getInstance().getOneFieldName(field, template.getId().getValue());
 						if(fieldColName == null || fieldColName.length() == 0 )

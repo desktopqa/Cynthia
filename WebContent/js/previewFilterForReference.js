@@ -398,8 +398,8 @@ function onSearchTypeChange()
 //搜索数据
 function searchDatas(){
 	grid.setCurrentPage(1);
-	var searchType = $("#searchRefType").val();
-	var searchData = $("#searchRefWord").val();
+	var searchType = $("#searchType").val();
+	var searchData = $("#searchWord").val();
 	if(searchType=='id' && searchData != "")
 	{
 		if(isNaN(parseInt(searchData,10)))

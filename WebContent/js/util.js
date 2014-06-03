@@ -1133,7 +1133,7 @@ function addHeadHtml()
 	
 	var headHtml = "";
 	headHtml += "<div class=\"row-fluid navbar navbar-fixed-top\">";
-	headHtml += "<div class=\"container\" style=\"width:100%;border: 1px solid #F1F1F1;\">";
+	headHtml += "<div class=\"container\" style=\"width:100%;\">";
 	//图片logo链接
 	headHtml += "<a href='" + rootDir + "index.html' class='pull-left'><img src='" + rootDir + "images/logo.png' style='width:65px;height:40px;margin-left: 20px;'/></a>"; 
 	//专心专注专业

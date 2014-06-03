@@ -365,15 +365,15 @@ function initFilterData(filterId,page,sortField,sortType,reDrawHead)
 function setDefaultSearchType()
 {
 	var defaultSearchValue = readCookie('defalutSearchValue');  //设置默认搜索
-	$("#searchRefType").val(defaultSearchValue);
+	$("#searchType").val(defaultSearchValue);
 	//修改搜索配置
-	$("#searchRefWord").val("");  
+	$("#searchWord").val("");  
 }
 
 //搜索类型改变
 function onSearchTypeChange()
 {
-	createCookie('defalutSearchValue' + "=" + $("#searchRefType").val());
+	createCookie('defalutSearchValue' + "=" + $("#searchType").val());
 }
 
 //搜索数据
