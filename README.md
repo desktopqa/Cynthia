@@ -27,6 +27,17 @@
 		3. 增加用户
 		每个流程中都有定义的角色，这个也是用户根据不同的项目定义的，针对不同的角色用户可以添加不同的人员，这样项目之间和角色之间没有任何影响，权限也更清晰。
 		4. 新建和处理问题
+		
+如何部署
+--------
+		本单主要介绍如何部署cynthia服务，以及配置数据库、定时器等；
+		1. 线上下载cynthia.war包
+		2. 将下载的cynthia.war包放在tomcat webapp目录下面
+		3. 新建数据库，导入doc目录下的cynthia.sql文件
+		4. 打开config目录下的config.properties 根据docs目录下的cynthia参数配置说明进行配置。（必须配置driverClassName、url、username、password参数!!）
+		5. 启动tomcat
+		6. 打开网址 localhost:8080/Cynthia 即可访问!
+		
 Demo 地址
 --------
 		http://opencynthia.duapp.com/index.html
