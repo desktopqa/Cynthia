@@ -245,6 +245,7 @@ $(function(){
     $("#editOptionsTable>tbody").sortable({
         revert: true,
         axis:'y',
+        placeholder: "ui-state-highlight",
         cursor: 'move' //拖动的时候鼠标样式 
     });
 });
