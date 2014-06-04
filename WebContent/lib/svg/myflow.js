@@ -204,10 +204,15 @@
 		};
 		
 		//开始拖动
-		var A=function(F,r){
+		var A=function(dx,dy){
 			if(!a.config.editable){return;}
-			var o=(x+F);
-			var G=(v+r);
+			var scaleX = rap.width  / rap._viewBox[2];//缩放比例
+	        var scaleY = rap.height / rap._viewBox[3];
+	        //按缩放比例编移坐标
+	        dx /= scaleX;
+	        dy /= scaleY;
+			var o=(x+dx);
+			var G=(v+dy);
 			q.x=o-E.margin;
 			q.y=G-E.margin;
 			B();
