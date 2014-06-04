@@ -27,6 +27,14 @@
 		3. 增加用户
 		每个流程中都有定义的角色，这个也是用户根据不同的项目定义的，针对不同的角色用户可以添加不同的人员，这样项目之间和角色之间没有任何影响，权限也更清晰。
 		4. 新建和处理问题
+Demo 地址
+--------
+		http://opencynthia.duapp.com/index.html
+		测试管理员账号 admin 密码：admin
+		测试普通用户 test1@test.com;test2@test.com 密码：123456
+文档下载
+--------
+http://git.oschina.net/cynthia/Cynthia/attach_files
 
 交流、反馈和建议
 ---------------
