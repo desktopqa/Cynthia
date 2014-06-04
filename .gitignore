@@ -17,7 +17,7 @@ admin/
 
 # Package Files #
 # *.jar
-*.war
+# *.war
 *.ear
 
 
