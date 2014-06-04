@@ -4,13 +4,13 @@ Navicat MySQL Data Transfer
 Source Server         : 10.11.202.226 --cythia test机
 Source Server Version : 50077
 Source Host           : 10.11.202.226:3306
-Source Database       : cynthia_open
+Source Database       : cynthia_test
 
 Target Server Type    : MYSQL
 Target Server Version : 50077
 File Encoding         : 65001
 
-Date: 2014-05-05 17:54:29
+Date: 2014-06-04 16:24:21
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -403,7 +403,7 @@ CREATE TABLE `favorite_filters` (
   `user_name` varchar(255) NOT NULL,
   `filters` varchar(255) default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1250 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=1251 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of favorite_filters
@@ -823,7 +823,7 @@ CREATE TABLE `user_info` (
 -- ----------------------------
 -- Records of user_info
 -- ----------------------------
-INSERT INTO `user_info` VALUES ('750732', 'admin', 'admin', '21232f297a57a5a743894a0e4a801fc3', 'super_admin', 'normal', '2014-05-05 00:00:00', '2014-05-04 15:09:20', '');
+INSERT INTO `user_info` VALUES ('750732', 'admin', 'admin', '21232f297a57a5a743894a0e4a801fc3', 'super_admin', 'normal', '2014-06-04 16:20:29', '2014-05-04 15:09:20', '');
 
 -- ----------------------------
 -- Table structure for user_new_data
