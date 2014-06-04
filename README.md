@@ -40,7 +40,7 @@
 		
 Demo 地址
 --------
-		http://opencynthia.duapp.com/index.html
+		http://opencynthia.duapp.com/
 		测试管理员账号 admin 密码：admin
 		测试普通用户 test1@test.com;test2@test.com 密码：123456
 文档下载
