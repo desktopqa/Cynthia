@@ -241,6 +241,12 @@ $(function(){
 	{
 		initTemplateEdit(templateId);
 	}
+	
+    $("#editOptionsTable>tbody").sortable({
+        revert: true,
+        axis:'y',
+        cursor: 'move' //拖动的时候鼠标样式 
+    });
 });
 
 
@@ -506,11 +512,12 @@ function initSingleSelectionFieldHtml(field)
     +               "<option value=''>--请选择--</option>";
 				for(var i=0 ; i<field.options.length ; i++)
 				{
-
-                    if(field.defaultValue && field.defaultValue == field.options[i].id)
-					    html += "<option value='"+field.options[i].id+"' forbidden='"+field.options[i].forbidden+"' selected>"+field.options[i].name+"</option>";
-                    else
-                        html += "<option value='"+field.options[i].id+"' forbidden='"+field.options[i].forbidden+"'>"+field.options[i].name+"</option>";
+					if(field.options[i].forbidden == "f_permit"){
+	                    if(field.defaultValue && field.defaultValue == field.options[i].id)
+						    html += "<option value='"+field.options[i].id+"' forbidden='"+field.options[i].forbidden+"' selected>"+field.options[i].name+"</option>";
+	                    else
+	                        html += "<option value='"+field.options[i].id+"' forbidden='"+field.options[i].forbidden+"'>"+field.options[i].name+"</option>";
+					}
 				}
 	html +=		"</select>"
 	+ 		"</div>"
@@ -543,16 +550,18 @@ function initMultiSelectionFieldHtml(field)
     +            "<option value='' "+(defaultValueArr.length == 0?"selected":"")+">--请选择--</option>";
 				for(var i=0 ; i<field.options.length ; i++)
 				{
-                    var selected = false;
-                    for(var j = 0;j<defaultValueArr.length ; j++)
-                    {
-                        if(defaultValueArr[j] == field.options[i].id)
-                            selected = true;
-                    }
-                    if(selected)
-					    html += "<option value='"+field.options[i].id+"' forbidden='"+field.options[i].forbidden+"' selected>"+field.options[i].name+"</option>";
-                    else
-                        html += "<option value='"+field.options[i].id+"' forbidden='"+field.options[i].forbidden+"'>"+field.options[i].name+"</option>";
+					if(field.options[i].forbidden == "f_permit"){
+	                    var selected = false;
+	                    for(var j = 0;j<defaultValueArr.length ; j++)
+	                    {
+	                        if(defaultValueArr[j] == field.options[i].id)
+	                            selected = true;
+	                    }
+	                    if(selected)
+						    html += "<option value='"+field.options[i].id+"' forbidden='"+field.options[i].forbidden+"' selected>"+field.options[i].name+"</option>";
+	                    else
+	                        html += "<option value='"+field.options[i].id+"' forbidden='"+field.options[i].forbidden+"'>"+field.options[i].name+"</option>";
+					}
 				}
 	html +=		"</select>"
 	+ 		"</div>"
@@ -1439,7 +1448,7 @@ function initEditFieldOptions(fieldId)
         var iFieldOption = iFieldOptions[i];
         if(!(iControlFieldOptionId)||iFieldOption.controlOptionId == iControlFieldOptionId)
         {
-            tbodyHtml += "<tr optionId='"+iFieldOption.id+"'>";
+            tbodyHtml += "<tr class='ui-state-default' style='cursor:move' optionId='"+iFieldOption.id+"'>";
             tbodyHtml += "<td flag='optionName'><a href='#' onclick='return initEditFieldOption(this)'>" + iFieldOption.name + "</a></td>";
             var forbidden = iFieldOption.forbidden;
             
@@ -1448,10 +1457,7 @@ function initEditFieldOptions(fieldId)
             tbodyHtml += "<option value='f_permit' " + (forbidden == "f_permit" ?  "selected" : "" )+ ">否</option>";
 			tbodyHtml += "<option value='f_forbidden' " + (forbidden == "f_forbidden" ?  "selected" : "") + ">是</option>";		
             tbodyHtml += "</select></td>";
-            
 
-            tbodyHtml += "<td><a href='#' onclick='moveUpOption(this)'>上移</a></td>";
-            tbodyHtml += "<td><a href='#' onclick='moveDownOption(this)'>下移</a></td>";
             tbodyHtml += "<td><a href='#' onclick='deleteOption(this)'>删除</a></td>";
             tbodyHtml += '</tr>';
         }
@@ -1495,7 +1501,7 @@ function saveOrUpdateFieldOption()
 	{
 		//表示是新建
 		var trHtml = "";
-        trHtml += "<tr optionId=''>";
+        trHtml += "<tr class='ui-state-default' style='cursor:move' optionId=''>";
         trHtml += "<td flag='optionName'><a href='#' onclick='return initEditFieldOption(this)'>"+newOptionName + "</a></td>";
 		
         trHtml += "<td flag='optionForbidden'>";
@@ -1504,17 +1510,6 @@ function saveOrUpdateFieldOption()
         trHtml += "<option value='f_forbidden' " + (newForbidden == "f_forbidden" ?  "selected" : "" )+">是</option>";		
         	
         trHtml += "</select></td>";
-		/*
-        if(newForbidden == 'f_permit')
-        {
-            trHtml += "<td flag='optionForbidden' value='f_permit'>否</td>";
-        }else
-        {
-            trHtml += "<td flag='optionForbidden' value='f_forbidden'>是</td>";
-        }
-		*/
-        trHtml += "<td><a href='#' onclick='moveUpOption(this)'>上移</a></td>";
-        trHtml += "<td><a href='#' onclick='moveDownOption(this)'>下移</a></td>";
         trHtml += "<td><a href='#' onclick='deleteOption(this)'>删除</a></td>";
         trHtml += "</tr>";
 
@@ -1525,15 +1520,6 @@ function saveOrUpdateFieldOption()
         var curRow = $("#editOptionsTable").find("tr").eq(curRowIndex);
 		$(curRow).children("td[flag=optionName]").children("a").text(newOptionName);
 		$(curRow).children("td[flag=optionForbidden]").find("select").val(newForbidden);
-		/*
-		if(newForbidden == 'f_permit')
-		{
-			$(curRow).children("td[flag=optionForbidden]").html("否").attr("value",'f_permit');
-		}else
-		{
-			$(curRow).children("td[flag=optionForbidden]").html("是").attr("value",'f_forbidden');
-		}
-		*/
 	}
 	$("#editFieldOptionNameDiv").modal('hide');
 	$("#editFieldOptionIndex").val("");
@@ -1748,7 +1734,6 @@ function returnZero(item)
     }
 }
 
-
 function deleteOption(link)
 {
 	var bool = window.confirm("确定删除选项?");
@@ -1757,38 +1742,6 @@ function deleteOption(link)
     var curRow      = $(link).parent().parent();
     $(curRow).remove();
 }
-
-//向上移动一个标签
-function moveUpOption(link)
-{
-	var curRow      = $(link).parent().parent();
-	var curRowIndex = $(curRow).prevAll().length + 1;
-	if (curRowIndex == 1){  
-        alert("已经是第一行了!");  
-   } else {  
-        var preRow = curRow.prev();  //获取当前行的上一行  
-        var preRowClone = preRow.clone(true);  
-        curRow.after(preRowClone);  //在curTr后插入一行  
-        preRow.remove();  
-   }  
-}
-
-//向下移动一个标签
-function moveDownOption(link)
-{
-	var rowCount    = $("#editOptionsTable tr").size();  
-	var curRow      = $(link).parent().parent();
-	var curRowIndex = $(curRow).prevAll().length + 2;
-	if (curRowIndex == rowCount){  
-        alert("已经是最后一行了!");  
-   } else {  
-        var nextRow = curRow.next();  //获取当前行的上一行  
-        var nextRowClone = nextRow.clone(true);  
-        curRow.before(nextRowClone);  //在curTr后插入一行  
-        nextRow.remove();  
-   }  
-}
-
 
 //remove fieldRow
 function removeFieldRow(rowIndex)
