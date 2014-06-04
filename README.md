@@ -30,7 +30,7 @@
 		
 如何部署
 --------
-		本单主要介绍如何部署cynthia服务(以tomcat为例)；
+		本单主要介绍如何部署cynthia服务(以tomcat为例)：
 		1. 线上下载cynthia.war包  或者地址：http://git.oschina.net/cynthia/Cynthia/blob/master/Cynthia.war
 		2. 将下载的cynthia.war包 解压后 放在tomcat的webapps目录下面
 		3. 新建数据库命名为cynthia，导入docs目录下的cynthia.sql文件
