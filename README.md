@@ -30,10 +30,10 @@
 		
 如何部署
 --------
-		本单主要介绍如何部署cynthia服务，以及配置数据库、定时器等；
+		本单主要介绍如何部署cynthia服务(以tomcat为例)；
 		1. 线上下载cynthia.war包  或者地址：http://git.oschina.net/cynthia/Cynthia/blob/master/Cynthia.war
-		2. 将下载的cynthia.war包 解压后 放在tomcat的webapp目录下面
-		3. 新建数据库，导入doc目录下的cynthia.sql文件
+		2. 将下载的cynthia.war包 解压后 放在tomcat的webapps目录下面
+		3. 新建数据库命名为cynthia，导入docs目录下的cynthia.sql文件
 		4. 打开config目录下的config.properties 根据docs目录下的cynthia参数配置说明进行配置。（必须配置driverClassName、url、username、password参数!!）
 		5. 启动tomcat
 		6. 打开网址 localhost:8080/Cynthia 即可访问! 默认系统管理员帐号:admin 密码:admin
