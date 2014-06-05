@@ -46,7 +46,7 @@ function onInitUserListAjax(rootNode)
 		
 		gridHtml += "<tr>";
 		gridHtml += "<td>" + (idx+1) +"</td>";
-		if(userRole === "super_admin")
+		if(userRole === "super_admin" && users[id].email !== "admin")
 			gridHtml += "<td><a href=\"#\" onClick=\"displayModifyDiv('" + users[id].id + "');\">"+users[id].name+"</a></td>";
 		else
 			gridHtml += "<td>" + users[id].name+ "</td>";
