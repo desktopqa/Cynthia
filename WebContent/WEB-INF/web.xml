@@ -20,7 +20,7 @@
 
 	<context-param>  
 	    <param-name>webAppRootKey</param-name>  
-	    <param-value>myapp.root.one</param-value>  
+	    <param-value>cynthia.root</param-value>  
 	</context-param>  
 
 	<context-param>

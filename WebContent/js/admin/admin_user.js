@@ -146,6 +146,7 @@ function displayCreateDiv()
 	$("input[name=input_role][value=normal]").attr("checked",true);
 	$("#input_pass").val('');
 	$("#input_pass_again").val('');
+	$("#msgInfo").text('');
 	$("#addOrModifyUserDiv").modal('show');
 }
 
