@@ -77,9 +77,9 @@
 		String[] controlHiddenFieldsIdStrArray = (String[])ArrayUtil.format(request.getParameterValues("controlHiddenFields"), new String[0]);
 		
 		for(int i = 0;i< controlHiddenFieldsIdStrArray.length; i++){
-			controlHiddenFieldsIdSet.add(DataAccessFactory.getInstance().createUUID(controlHiddenFieldsIdStrArray[i]));
+	controlHiddenFieldsIdSet.add(DataAccessFactory.getInstance().createUUID(controlHiddenFieldsIdStrArray[i]));
 		}
-			
+	
 		field.setControlHiddenFieldsIds(controlHiddenFieldsIdSet);
 	}
 		

@@ -89,7 +89,7 @@
 		tol.setBefore(fieldXmlBefore);
 		tol.setAfter(field.toXMLString());
 		das.addTemplateOpreateLog(tol);
-				
+		
 		out.println(ErrorManager.getCorrectXml());
 	}else{
 		out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));

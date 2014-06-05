@@ -53,6 +53,11 @@ public class UserController extends BaseController{
 		String userPassword = request.getParameter("userPassword");
 		String userAlias = request.getParameter("userAlias");
 		
+		//用户邮箱己存在
+		if (das.queryUserInfoByUserName(userMail) != null) {
+			return String.valueOf(false);
+		}
+		
 		UserInfo userInfo = new UserInfo();
 		userInfo.setCreateTime(new Timestamp(System.currentTimeMillis()));
 		userInfo.setNickName(userAlias);
@@ -76,7 +81,7 @@ public class UserController extends BaseController{
 	 */
 	@RequestMapping("/checkExist.do")
 	@ResponseBody
-	public String addTag(HttpServletRequest request, HttpServletResponse response ,HttpSession session) throws Exception {
+	public String checkExist(HttpServletRequest request, HttpServletResponse response ,HttpSession session) throws Exception {
 		String userMail = request.getParameter("userMail");
 		return String.valueOf(das.queryUserInfoByUserName(userMail)  != null);
 	}

@@ -1,3 +1,4 @@
+<%@page import="com.sogou.qadev.service.cynthia.util.Date"%>
 <%@page import="com.sogou.qadev.service.cynthia.bean.UserInfo"%>
 <%@page import="com.sogou.qadev.service.cynthia.util.CynthiaUtil"%>
 <%@page import="com.sogou.qadev.cache.impl.TemplateCache"%>
@@ -1385,5 +1386,4 @@ public Map<String, String> createTaskDataMap( Data task, DataAccessSession das )
 	}
 	
 	return dataMap;
-}
-%>
+}%>
