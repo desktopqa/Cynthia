@@ -12,14 +12,6 @@
 	
     $("body").append("<div id=\"line\" style=\"width:1px;height:900px; z-index:999999; border-left:1px solid #00000000; position:absolute;display:none\" ></div> ");
 	 
-	/*
-    $("body").bind("mousemove", function(event) {
-         if (lineMove == true) {
-             $("#line").css({ "left": event.clientX }).show();
-         }
-    });
-	*/
-	 
 	$("th").live("mousemove",function(event){
 		if (lineMove == true) {
 			var pos = currTh.offset();

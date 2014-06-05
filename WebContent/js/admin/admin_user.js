@@ -13,6 +13,7 @@ userRoleMap.put('super_admin','系统管理员');
 
 function initUserList(userStat,userName)
 {
+	showLoading(true);
 	$.ajax({
 		url : 'user/get_user_admin_xml.jsp',
 		type : 'POST',
@@ -20,7 +21,7 @@ function initUserList(userStat,userName)
 		data:{'initUser':true,'userStat':userStat,'userName':userName},
 		success : onInitUserListAjax,
 		error : function(data){
-			alert("Server Error!");
+			showLoading(false);
 		}
 	});
 }
@@ -93,8 +94,8 @@ function onInitUserListAjax(rootNode)
 		gridHtml += "</tr>";
 	});
 	$("#userListGrid").find("tbody").html(gridHtml);
-	
-  $("#userListGrid").trigger("update"); 
+	showLoading(false);
+	$("#userListGrid").trigger("update"); 
 }
 
 function changeStat(user,changeToStat)

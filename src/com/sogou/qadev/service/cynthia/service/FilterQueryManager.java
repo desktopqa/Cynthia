@@ -196,7 +196,6 @@ public class FilterQueryManager {
 		
 		if (template == null) {
 			displayFieldsNameSet.add("修改优先级");
-			displayFieldsNameSet.add("测试定义BUG级别");
 			displayFieldsNameSet.add("描述");
 		}else {
 			displayFieldsNameSet.add("标题");
@@ -700,8 +699,6 @@ public class FilterQueryManager {
 			}else {
 				if(isSysFilter && "修改优先级".equals( fieldName )){
 					fieldShowName = "priority";
-				}else if(isSysFilter && "测试定义BUG级别".equals( fieldName )){
-					fieldShowName = "bugLevel";
 				}
 				
 				Field field = template.getField(fieldName);

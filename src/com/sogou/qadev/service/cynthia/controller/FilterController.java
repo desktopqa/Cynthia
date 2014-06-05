@@ -181,9 +181,6 @@ public class FilterController extends BaseController{
 			if (!showFieldId.contains("priority")) {
 				showList.add(2,new FilterField("priority", "修改优先级"));
 			}
-			if (!showFieldId.contains("bugLevel")) {
-				showList.add(3,new FilterField("bugLevel", "测试定义BUG严重级别"));
-			}
 			
 			groupField = new FilterField("node_id", "项目");
 			

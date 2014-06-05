@@ -96,7 +96,6 @@ public class DataFilterMemory extends AbstractDataFilter
 		baseMap.put("action_user", "logcreateUser");
 		baseMap.put("log_create_user", "logcreateUser");
 		baseMap.put("priority", "fieldCom_1");
-		baseMap.put("bugLevel", "fieldCom_2");
 	}
 	
 
@@ -519,7 +518,6 @@ public class DataFilterMemory extends AbstractDataFilter
 			queryFieldSet.addAll(getDisplayFieldSet(node , templateId)); 
 			if (templateNodeList.size() == 0) {  //首页
 				queryFieldSet.add("fieldCom_1");  //修改优先级
-				queryFieldSet.add("fieldCom_2");   //测试定义BUG级别
 				queryFieldSet.add("description");   //描述
 			}
 		}else {

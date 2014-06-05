@@ -125,7 +125,6 @@ public class FieldNameMapMySQL {
 		}
 		if (fieldType != null && fieldType.equals("Com")) {  //保留字段
 			allFieldName.add("fieldCom_1");  //修改优先级	
-			allFieldName.add("fieldCom_2");   //测试定义bug严重级别
 		}
 		return allFieldName;
 	}
@@ -192,8 +191,6 @@ public class FieldNameMapMySQL {
 		
 		if(field.getName().equals("修改优先级")){
 			return "Com";  
-		}else if (field.getName().equals("测试定义BUG严重级别")) {
-			return "Com";  
 		}
 		
 		if (type == Type.t_selection) {
@@ -240,8 +237,6 @@ public class FieldNameMapMySQL {
 		String fieldTypeStr = "";
 		if(field.getName().equals("修改优先级")){
 			return "fieldCom_1";  
-		}else if (field.getName().equals("测试定义BUG严重级别")) {
-			return "fieldCom_2";  
 		}else {
 			fieldTypeStr = getFieldColNameType(field);
 			return getOneFieldName(fieldTypeStr, templateId);
