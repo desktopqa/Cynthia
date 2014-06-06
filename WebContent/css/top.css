@@ -185,7 +185,7 @@ select
 
 #searchWord
 {
-	width: 400px;
+	width: 405px;
 }
 #current-page
 {
@@ -202,4 +202,9 @@ select
 #conditions_table input
 {
 	width:190px;
+}
+
+.tr-checked
+{
+	background-color:rgb(255, 221, 221);;
 }

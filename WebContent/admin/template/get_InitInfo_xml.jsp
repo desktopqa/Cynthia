@@ -1,3 +1,4 @@
+<%@page import="java.util.LinkedHashMap"%>
 <%@page import="com.sogou.qadev.service.cynthia.bean.UserInfo"%>
 <%@page import="java.util.Map"%>
 <%@page import="com.sogou.qadev.service.cynthia.dao.FlowAccessSessionMySQL"%>
@@ -45,7 +46,7 @@
 	}
 	
 	//set templates
-	TreeMap<String, Template> templateMap = new TreeMap<String, Template>();
+	Map<String, Template> templateMap = new LinkedHashMap<String, Template>();
 	
 	Template[] templateArray = das.queryAllTemplates();
 	if(templateArray != null)

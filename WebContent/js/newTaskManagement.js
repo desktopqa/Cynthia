@@ -3350,7 +3350,12 @@ function hideSetDefaultAssignUser()
 
 function afterCompleteInitTaskAssignUsers()
 {
-	document.title = "修改";
+	if (nextActionName) {
+		document.title = nextActionName.substring(1, nextActionName.length -1);
+	}else {
+		document.title = "修改";
+	}
+	
 	$("#input_taskDescription")[0].readOnly = false;
 	addActionName(nextActionName);
 	$("#actionForm").show();

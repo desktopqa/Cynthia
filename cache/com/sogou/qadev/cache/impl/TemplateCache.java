@@ -199,7 +199,7 @@ public class TemplateCache implements Cache<Template> {
 				it.remove();
 			}
 		}
-		allTemplates.add((Template)value);
+		allTemplates.add(0, (Template)value);
 		setAll(allTemplates);
 	}
 

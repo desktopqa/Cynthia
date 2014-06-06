@@ -123,10 +123,10 @@ public class FlowCache implements Cache<Flow> {
 	 */
 	public void putAllDataToCache(){
 		List<Flow> allFlows = new FlowAccessSessionMySQL().queryAllFlow();
-		EhcacheHandler memcachedHanler = EhcacheHandler.getInstance();
+		EhcacheHandler ehcacheHandler = EhcacheHandler.getInstance();
 
 		for (Flow flow : allFlows) {
-			memcachedHanler.set(EhcacheHandler.FOREVER_CACHE,flow.getId().getValue(), flow);
+			ehcacheHandler.set(EhcacheHandler.FOREVER_CACHE,flow.getId().getValue(), flow);
 		}
 		setAll(allFlows);
 	}
@@ -176,7 +176,8 @@ public class FlowCache implements Cache<Flow> {
 				it.remove();
 			}
 		}
-		allFlows.add((Flow)value);
+		
+		allFlows.add(0, (Flow)value);  //刚插入放在第一位
 		setAll(allFlows);
 	}
 

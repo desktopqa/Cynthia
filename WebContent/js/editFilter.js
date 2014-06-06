@@ -24,37 +24,13 @@ function initFilterPageFirst(filterId,filterName)
 	//初始化月份
 	$("#timer_div").css("display","none");	
 	$("#timer_no").attr("checked",true);
-	$("#month").empty();
-	$("#date").empty();
-	$("#day").empty();
-	$("#hour").empty();
-	$("#minute").empty();
 	
-	for(var i=1;i<=12;i++)
-	{
-		$("#month").append("<option value='"+i+"'>"+i+"</option>");
-	}
-	//初始化date
-	for(var i=1;i<=31;i++)
-	{
-		$("#date").append("<option value='"+i+"'>"+i+"</option>");
-	}
+	setTimeValue("month", 1, 12,new Array());
+	setTimeValue("date", 1, 31,new Array());
+	setTimeValue("day", 1, 7,new Array());
+	setTimeValue("hour", 0, 23,new Array());
+	setTimeValue("minute", 0, 59,new Array());
 	
-	//初始化周几
-	for(var i=1;i<=7;i++)
-	{
-		$("#day").append("<option value='"+i+"'>"+i+"</option>");		
-	}
-	//初始化时间
-	for(var i=0;i<24;i++)
-	{
-		$("#hour").append("<option value='"+i+"'>"+i+"</option>");
-	}
-	
-	for(var i=0;i<60;i++)
-	{
-		$("#minute").append("<option value='"+i+"'>"+i+"</option>");
-	}
 	$("#main_content").find("input").removeAttr('disabled');
 	$("#main_content").find("select").removeAttr('disabled');
 	$("#main_content").find("textarea").removeAttr('disabled');
@@ -76,32 +52,12 @@ function initFilterPage(filterId,type)
 	{
 		$("#main_content").hide();
 		$("#filter_manage_welcome").show();
-		//初始化月份
-		for(var i=1;i<=12;i++)
-		{
-			$("#month").append("<option value='"+i+"'>"+i+"</option>");
-		}
-		//初始化date
-		for(var i=1;i<=31;i++)
-		{
-			$("#date").append("<option value='"+i+"'>"+i+"</option>");
-		}
-	
-		//初始化周几
-		for(var i=1;i<=7;i++)
-		{
-			$("#day").append("<option value='"+i+"'>"+i+"</option>");		
-		}
-		//初始化时间
-		for(var i=0;i<24;i++)
-		{
-			$("#hour").append("<option value='"+i+"'>"+i+"</option>");
-		}
-	
-		for(var i=0;i<60;i++)
-		{
-			$("#minute").append("<option value='"+i+"'>"+i+"</option>");
-		}
+		
+		setTimeValue("month", 1, 12,new Array());
+		setTimeValue("date", 1, 31,new Array());
+		setTimeValue("day", 1, 7,new Array());
+		setTimeValue("hour", 0, 23,new Array());
+		setTimeValue("minute", 0, 59,new Array());
 	}
 	$("#topSubmitDiv").show();
 }
@@ -242,102 +198,21 @@ function onCompleteInitFilterPage(data,textStatus)
 		var hourStr = $(timerNode).find("hour").text();
 		var minuteStr = $(timerNode).find("minute").text();
 		
-
-		var months = monthStr.split(",");
-		var dates = dateStr.split(",");
-		var days = dayStr.split(",");
-		var hours = hourStr.split(",");
-		var minutes = minuteStr.split(",");
+		setTimeValue("month", 1, 12,monthStr.split(","));
+		setTimeValue("date", 1, 31,dateStr.split(","));
+		setTimeValue("day", 1, 7,dayStr.split(","));
+		setTimeValue("hour", 0, 23,hourStr.split(","));
+		setTimeValue("minute", 0, 59,minuteStr.split(","));
 		
-		//初始化月份
-		for(var i=1;i<=12;i++)
-		{
-			if(inArrayIndex(i,months)>=0)
-			{
-				$("#month").append("<option value='"+i+"' selected='selected'>"+i+"</option>");
-			}else
-			{
-				$("#month").append("<option value='"+i+"'>"+i+"</option>");
-			}
-			
-		}
-		//初始化date
-		for(var i=1;i<=31;i++)
-		{
-			if(inArrayIndex(i,dates)>=0)
-			{
-				$("#date").append("<option value='"+i+"' selected='selected'>"+i+"</option>");
-			}else
-			{
-				$("#date").append("<option value='"+i+"'>"+i+"</option>");
-			}
-		}
-	
-		//初始化周几
-		for(var i=1;i<=7;i++)
-		{
-			if(inArrayIndex(i,days)>=0)
-			{
-				$("#day").append("<option value='"+i+"' selected='selected'>"+i+"</option>");
-			}else
-			{
-				$("#day").append("<option value='"+i+"'>"+i+"</option>");
-			}
-					
-		}
-		//初始化时间
-		for(var i=0;i<24;i++)
-		{
-			if(inArrayIndex(i,hours)>=0)
-			{
-				$("#hour").append("<option value='"+i+"' selected='selected'>"+i+"</option>");
-			}else
-			{
-				$("#hour").append("<option value='"+i+"'>"+i+"</option>");
-			}
-			
-		}
-	
-		for(var i=0;i<59;i++)
-		{
-			if(inArrayIndex(i,minutes)>=0)
-			{
-				$("#minute").append("<option value='"+i+"' selected='selected'>"+i+"</option>");
-			}else
-			{
-				$("#minute").append("<option value='"+i+"'>"+i+"</option>");
-			}
-			
-		}
 		$("#timer_div").css("display","block");	
 	}else
 	{	
-		//初始化月份
-		for(var i=1;i<=12;i++)
-		{
-			$("#month").append("<option value='"+i+"'>"+i+"</option>");
-		}
-		//初始化date
-		for(var i=1;i<=31;i++)
-		{
-			$("#date").append("<option value='"+i+"'>"+i+"</option>");
-		}
-	
-		//初始化周几
-		for(var i=1;i<=7;i++)
-		{
-			$("#day").append("<option value='"+i+"'>"+i+"</option>");		
-		}
-		//初始化时间
-		for(var i=0;i<24;i++)
-		{
-			$("#hour").append("<option value='"+i+"'>"+i+"</option>");
-		}
-	
-		for(var i=0;i<60;i++)
-		{
-			$("#minute").append("<option value='"+i+"'>"+i+"</option>");
-		}
+		setTimeValue("month", 1, 12,new Array());
+		setTimeValue("date", 1, 31,new Array());
+		setTimeValue("day", 1, 7,new Array());
+		setTimeValue("hour", 0, 23,new Array());
+		setTimeValue("minute", 0, 59,new Array());
+		
 		$("#timer_yes").attr("checked",false);
 		$("#timer_no").attr("checked",true);
 		$("#timer_div").css("display","none");		

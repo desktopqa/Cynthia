@@ -249,13 +249,13 @@ public class UserController extends BaseController{
 		    if (targetUrl != null && !targetUrl.equals("")) {
 		    	return targetUrl;   //跳转到目标页
 			}else {
-				return "/index.html";  //跳转到首页
+				return ConfigUtil.getCynthiaWebRoot() + "index.html";  //跳转到首页
 			}
         }else {
         	 CookieManager.addCookie(response,"login_username","",0);  //清除Cookie
         	 CookieManager.addCookie(response,"login_password","",0);    //清除Cookie
         	 CookieManager.addCookie(response,"login_nickname","",0);    //清除Cookie
-		     return "/userInfo/login.jsp"; //跳转回登陆页
+		     return ConfigUtil.getCynthiaWebRoot() + "userInfo/login.jsp"; //跳转回登陆页
         }
 	}
 	

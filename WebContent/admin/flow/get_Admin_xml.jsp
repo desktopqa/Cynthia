@@ -1,3 +1,5 @@
+<%@page import="java.util.Map"%>
+<%@page import="java.util.LinkedHashMap"%>
 <%@page import="com.sogou.qadev.service.cynthia.bean.UserInfo"%>
 <%@ page contentType="text/xml; charset=UTF-8" %>
 
@@ -54,7 +56,7 @@
 	
 	if(initFlow)
 	{
-		TreeMap<String, Flow> flowMap = new TreeMap<String, Flow>();
+		Map<String, Flow> flowMap = new LinkedHashMap<String, Flow>();
 		
 		Flow[] flowArray = das.queryAllFlows();
 		if(flowArray != null)
