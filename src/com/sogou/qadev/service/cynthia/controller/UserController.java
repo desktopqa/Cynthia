@@ -53,6 +53,11 @@ public class UserController extends BaseController{
 		String userPassword = request.getParameter("userPassword");
 		String userAlias = request.getParameter("userAlias");
 		
+		//用户邮箱己存在
+		if (das.queryUserInfoByUserName(userMail) != null) {
+			return String.valueOf(false);
+		}
+		
 		UserInfo userInfo = new UserInfo();
 		userInfo.setCreateTime(new Timestamp(System.currentTimeMillis()));
 		userInfo.setNickName(userAlias);
@@ -76,7 +81,7 @@ public class UserController extends BaseController{
 	 */
 	@RequestMapping("/checkExist.do")
 	@ResponseBody
-	public String addTag(HttpServletRequest request, HttpServletResponse response ,HttpSession session) throws Exception {
+	public String checkExist(HttpServletRequest request, HttpServletResponse response ,HttpSession session) throws Exception {
 		String userMail = request.getParameter("userMail");
 		return String.valueOf(das.queryUserInfoByUserName(userMail)  != null);
 	}
@@ -244,13 +249,13 @@ public class UserController extends BaseController{
 		    if (targetUrl != null && !targetUrl.equals("")) {
 		    	return targetUrl;   //跳转到目标页
 			}else {
-				return "/index.html";  //跳转到首页
+				return ConfigUtil.getCynthiaWebRoot() + "index.html";  //跳转到首页
 			}
         }else {
         	 CookieManager.addCookie(response,"login_username","",0);  //清除Cookie
         	 CookieManager.addCookie(response,"login_password","",0);    //清除Cookie
         	 CookieManager.addCookie(response,"login_nickname","",0);    //清除Cookie
-		     return "/userInfo/login.jsp"; //跳转回登陆页
+		     return ConfigUtil.getCynthiaWebRoot() + "userInfo/login.jsp"; //跳转回登陆页
         }
 	}
 	

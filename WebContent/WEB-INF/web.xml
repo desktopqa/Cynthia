@@ -18,6 +18,11 @@
     	<param-value>5</param-value>
   	</context-param>
 
+	<context-param>  
+	    <param-name>webAppRootKey</param-name>  
+	    <param-value>cynthia.root</param-value>  
+	</context-param>  
+
 	<context-param>
 		<param-name>cynthia.scriptThreads</param-name>
     	<param-value>4</param-value>

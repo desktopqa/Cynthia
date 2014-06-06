@@ -302,39 +302,6 @@ function getTitleTd(id, templateId , content)
 //显示filter数据 绘制表格
 function showFilterData(filterData,groupField,showFields,backFields, reDrawHead)
 {
-	//检测是否有ime相关的表单，如果没有则取消测试定义bug严重级别的显示
-	if(isSysFilter($("#filterId").val()))
-	{
-		var isImeTemplate = false;
-		var actualData = filterData.rows;
-		actualData = actualData == undefined ? new Array() : actualData;
-		
-		for(var i=0 ;i < actualData.length;i++)
-		{
-			if(inArrayIndex(actualData[i].templateId,imeTemplateArray) != -1)
-			{
-				
-				isImeTemplate = true;
-				break;
-			}
-		}
-			
-		if(isImeTemplate == false)
-		{
-			var index = -1;
-			for(var j = 0; j<showFields.length; j ++)
-			{
-				if(showFields[j].fieldId == "bugLevel")
-				{
-					index = j; 
-					break;
-				}
-			}
-			if(index != -1)
-				showFields.splice(index,1);
-		}
-	}
-	
 	if(reDrawHead == undefined || !reDrawHead == "false")
 	{
 		//画标头

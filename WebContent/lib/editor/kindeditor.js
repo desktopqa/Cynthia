@@ -3345,6 +3345,7 @@ function KWidget(options) {
 }
 _extend(KWidget, {
 	init : function(options) {
+		
 		var self = this;
 		self.name = options.name || '';
 		self.doc = options.doc || document;
@@ -3363,6 +3364,7 @@ _extend(KWidget, {
 		if (self.height) {
 			self.div.css('height', self.height);
 		}
+		
 		if (self.z) {
 			self.div.css({
 				position : 'absolute',
@@ -3926,6 +3928,7 @@ function KMenu(options) {
 }
 _extend(KMenu, KWidget, {
 	init : function(options) {
+	
 		var self = this;
 		options.z = options.z || 811213;
 		KMenu.parent.init.call(self, options);
@@ -5231,9 +5234,15 @@ KEditor.prototype = {
 		var self = this,
 			name = options.name,
 			knode = self.toolbar.get(name),
-			pos = knode.pos();
-		options.x = pos.x;
-		options.y = pos.y + knode.height();
+			pos = knode.pos(),
+			pos1 = $(knode).position();
+		
+		options.x = pos.x||parseInt(pos1.left);
+		options.y = (pos.y||parseInt(pos1.top)) + knode.height();
+		
+		//options.x = pos.x;
+		//options.y = pos.y + knode.height();
+		
 		options.shadowMode = _undef(options.shadowMode, self.shadowMode);
 		if (options.selectedColor !== undefined) {
 			options.cls = 'ke-colorpicker-' + self.themeType;

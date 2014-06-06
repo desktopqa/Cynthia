@@ -3350,7 +3350,12 @@ function hideSetDefaultAssignUser()
 
 function afterCompleteInitTaskAssignUsers()
 {
-	document.title = "修改";
+	if (nextActionName) {
+		document.title = nextActionName.substring(1, nextActionName.length -1);
+	}else {
+		document.title = "修改";
+	}
+	
 	$("#input_taskDescription")[0].readOnly = false;
 	addActionName(nextActionName);
 	$("#actionForm").show();
@@ -3394,30 +3399,36 @@ function onCompleteInitTaskAssignUsers(request)
 	var actionId = $("#select_action").val().split("|")[0];
 
 	var userNodes = $(rootNode).children("users").children("user");
-	for(var i = 0; i < userNodes.length; i++)
-	{
-		var user = $(userNodes[i]).text();
-		var userAlias = $(userNodes[i]).attr("alias");
-		var optionName = (userAlias ? userAlias + "[" + user.split("[")[1] : user);
-		var optionValue = user.split("[")[0];
-		var isFirstUser = $(userNodes[i]).attr("first");
-		$("#select_taskAssignUser")[0].options[i + 1] = new Option(optionName, optionValue);
-		if(operation == "create")
+	
+	if (needAssignUser) {
+		$('#select_taskAssignUser').removeAttr("disabled");
+		for(var i = 0; i < userNodes.length; i++)
 		{
-			var templateId = $("#select_template").val();
-			var cookieValue = readCookie("au" + templateId + actionId);
-			if( cookieValue== optionValue)
+			var user = $(userNodes[i]).text();
+			var userAlias = $(userNodes[i]).attr("alias");
+			var optionName = (userAlias ? userAlias + "[" + user.split("[")[1] : user);
+			var optionValue = user.split("[")[0];
+			var isFirstUser = $(userNodes[i]).attr("first");
+			$("#select_taskAssignUser")[0].options[i + 1] = new Option(optionName, optionValue);
+			if(operation == "create")
+			{
+				var templateId = $("#select_template").val();
+				var cookieValue = readCookie("au" + templateId + actionId);
+				if( cookieValue== optionValue)
+					$("#select_taskAssignUser")[0].options[i + 1].selected = true;
+			}else if((operation == "read" || operation == "modify") && i == 0 && isFirstUser && isFirstUser == "true")
+			{
 				$("#select_taskAssignUser")[0].options[i + 1].selected = true;
-		}else if((operation == "read" || operation == "modify") && i == 0 && isFirstUser && isFirstUser == "true")
-		{
-			$("#select_taskAssignUser")[0].options[i + 1].selected = true;
-		}else if(operation == "read" )
-		{
-			var templateId = task.templateId;
-			var cookieValue = readCookie("au" + templateId + actionId);
-			if( cookieValue== optionValue)
-				$("#select_taskAssignUser")[0].options[i + 1].selected = true;
+			}else if(operation == "read" )
+			{
+				var templateId = task.templateId;
+				var cookieValue = readCookie("au" + templateId + actionId);
+				if( cookieValue== optionValue)
+					$("#select_taskAssignUser")[0].options[i + 1].selected = true;
+			}
 		}
+	}else {
+		$('#select_taskAssignUser').attr("disabled","disabled");
 	}
 
 	if(operation == "create")

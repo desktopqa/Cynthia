@@ -13,6 +13,7 @@ userRoleMap.put('super_admin','系统管理员');
 
 function initUserList(userStat,userName)
 {
+	showLoading(true);
 	$.ajax({
 		url : 'user/get_user_admin_xml.jsp',
 		type : 'POST',
@@ -20,7 +21,7 @@ function initUserList(userStat,userName)
 		data:{'initUser':true,'userStat':userStat,'userName':userName},
 		success : onInitUserListAjax,
 		error : function(data){
-			alert("Server Error!");
+			showLoading(false);
 		}
 	});
 }
@@ -46,7 +47,7 @@ function onInitUserListAjax(rootNode)
 		
 		gridHtml += "<tr>";
 		gridHtml += "<td>" + (idx+1) +"</td>";
-		if(userRole === "super_admin")
+		if(userRole === "super_admin" && users[id].email !== "admin")
 			gridHtml += "<td><a href=\"#\" onClick=\"displayModifyDiv('" + users[id].id + "');\">"+users[id].name+"</a></td>";
 		else
 			gridHtml += "<td>" + users[id].name+ "</td>";
@@ -93,8 +94,8 @@ function onInitUserListAjax(rootNode)
 		gridHtml += "</tr>";
 	});
 	$("#userListGrid").find("tbody").html(gridHtml);
-	
-  $("#userListGrid").trigger("update"); 
+	showLoading(false);
+	$("#userListGrid").trigger("update"); 
 }
 
 function changeStat(user,changeToStat)
@@ -146,6 +147,7 @@ function displayCreateDiv()
 	$("input[name=input_role][value=normal]").attr("checked",true);
 	$("#input_pass").val('');
 	$("#input_pass_again").val('');
+	$("#msgInfo").text('');
 	$("#addOrModifyUserDiv").modal('show');
 }
 

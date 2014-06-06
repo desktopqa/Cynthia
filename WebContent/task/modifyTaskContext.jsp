@@ -23,7 +23,6 @@
 <%@ page import="java.util.Arrays"%>
 <%@ page import="java.util.Enumeration"%>
 <%@ page import="com.sohu.rd.td.util.reference.Pair"%>
-<%@ page import="com.sogou.qadev.service.cynthia.util.Date"%>
 <%!private String getJson(String str)
 	{
 		 String strTemp = str;

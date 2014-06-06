@@ -15,7 +15,6 @@
 <%@page import="java.util.HashSet"%>
 <%@page import="java.util.Set"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.FilterQueryManager"%>
-<%@page import="com.sogou.qadev.service.cynthia.util.Date"%>
 <%@page import="com.sogou.qadev.service.cynthia.bean.Attachment"%>
 <%@page import="com.sogou.qadev.service.cynthia.bean.Option"%>
 <%@page import="com.sogou.qadev.service.cynthia.bean.Field.DataType"%>

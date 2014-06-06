@@ -317,13 +317,10 @@ public class FilterDataAssembleUtil {
 		Map<String, String> map = createMapByTaskFieldValue(task, das);
 
 		boolean hasPriority = false;
-		boolean hasBugLevel = false;// 测试定义BUG严重级别
 
 		for (String fieldName : fieldsName) {
 			if (fieldName.equals("修改优先级"))
 				hasPriority = true;
-			if (fieldName.equals("测试定义BUG严重级别"))
-				hasBugLevel = true;
 
 			element = document.createElement("field");
 			element.setAttribute("name", fieldName);
@@ -363,20 +360,6 @@ public class FilterDataAssembleUtil {
 			taskElement.appendChild(element);
 		}
 
-		// 测试定义BUG严重级别
-		if (!hasBugLevel) {
-			element = document.createElement("field");
-			element.setAttribute("name", "测试定义BUG严重级别");
-			element.setAttribute("uuid", "bugLevel");
-
-			String value = map.get("测试定义BUG严重级别");
-			if (value == null)
-				element.setAttribute("value", " - ");
-			else
-				element.setAttribute("value", value);
-
-			taskElement.appendChild(element);
-		}
 	}
 
 }

@@ -18,7 +18,7 @@
 "use strict";
 
 var menuMaxLength = 22; //菜单最大长度
-
+var divId;
 // top wrapper to prevent multiple inclusion (is this OK?)
 (function () { if(jQuery && jQuery.jstree) { return; }
 	var is_ie6 = false, is_ie7 = false, is_ff2 = false;
@@ -108,6 +108,7 @@ var menuMaxLength = 22; //菜单最大长度
 
 	// jQuery plugin wrapper (thanks to jquery UI widget function)
 	$.fn.jstree = function (settings) {
+		divId = $(this).attr("id");
 		var isMethodCall = (typeof settings == 'string'), // is this a method call like $().jstree("open_node")
 			args = Array.prototype.slice.call(arguments, 1), 
 			returnValue = this;
@@ -3852,6 +3853,8 @@ var menuMaxLength = 22; //菜单最大长度
 			items : function(node){
 				var rel = node.attr("rel");
 				var id = node.attr("id");
+				$('#' + divId + ' a').removeClass('jstree-clicked');
+				node.find(">a").addClass("jstree-clicked");
 				var parentId = node.parent().parent('li').attr('id');
 				if(id=="node_6")
 				{

@@ -33,6 +33,21 @@ String.format = function (src)
     });
 };
 
+//设置时间值
+function setTimeValue(timeSelectId, minTime, maxTime,choosedArr)
+{
+	var $timeNode = $("#" + timeSelectId);
+	$timeNode.empty();
+	
+	for(var i = minTime ; i <= maxTime; i ++ )
+	{
+		if(inArrayIndex(i,choosedArr)>=0)
+			$timeNode.append("<option value='"+i+"' selected='selected'>"+i+"</option>");
+		else
+			$timeNode.append("<option value='"+i+"'>"+i+"</option>");
+	}
+}
+
 //map 类
 var Map = function(){  
 	

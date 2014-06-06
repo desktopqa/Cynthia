@@ -63,22 +63,22 @@
 		//TODO是否需要从field_name_map中删除 
 		String fieldColName = FieldNameCache.getInstance().getFieldName(fieldId , templateId);
 		if(new FieldNameAccessSessionMySQL().removeFieldColNameById(fieldId.getValue(), templateId.getValue())){
-			FieldNameCache.getInstance().remove(fieldId.getValue(),templateId.getValue());
-			das.updateCache(DataAccessAction.update, template.getId().getValue(), template);
-			//记录修改日志
-			TemplateOperateLog tol = new TemplateOperateLog();
-			tol.setTemplateId(templateId.getValue());
-			tol.setFieldId(beforeField.getId().getValue());
-			tol.setFieldName(beforeField.getName());
-			tol.setOperateType(TemplateOperateLog.DELETE);
-			tol.setCreateTime(Timestamp.valueOf(com.sogou.qadev.service.cynthia.util.Date.valueOf(new Date().toLocaleString()).toTimestamp().toString()));
-			tol.setCreateUser(key.getUsername());
-			tol.setBefore(beforeField.toXMLString());
-			tol.setAfter("");
-			das.addTemplateOpreateLog(tol);
-			out.println(ErrorManager.getCorrectXml());
+	FieldNameCache.getInstance().remove(fieldId.getValue(),templateId.getValue());
+	das.updateCache(DataAccessAction.update, template.getId().getValue(), template);
+	//记录修改日志
+	TemplateOperateLog tol = new TemplateOperateLog();
+	tol.setTemplateId(templateId.getValue());
+	tol.setFieldId(beforeField.getId().getValue());
+	tol.setFieldName(beforeField.getName());
+	tol.setOperateType(TemplateOperateLog.DELETE);
+	tol.setCreateTime(Timestamp.valueOf(com.sogou.qadev.service.cynthia.util.Date.valueOf(new Date().toLocaleString()).toTimestamp().toString()));
+	tol.setCreateUser(key.getUsername());
+	tol.setBefore(beforeField.toXMLString());
+	tol.setAfter("");
+	das.addTemplateOpreateLog(tol);
+	out.println(ErrorManager.getCorrectXml());
 		}else{
-			out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));
+	out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));
 		}
 	}
 	else{

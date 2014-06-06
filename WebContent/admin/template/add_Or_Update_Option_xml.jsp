@@ -92,7 +92,7 @@
 		String optionNodeId = XMLUtil.getSingleNodeTextContent(optionNode, "optionId");
 		if(optionNodeId!=null&&!"".equals(optionNodeId))
 		{
-			newOptionIds.add(optionNodeId);
+	newOptionIds.add(optionNodeId);
 		}
 	}
 	
@@ -103,20 +103,20 @@
 	{
 		if(controlFieldOptionIdStr!=null&&!"".equals(controlFieldOptionIdStr))
 		{
-			if(oriOption.getControlOptionId().getValue().equals(controlFieldOptionIdStr))
-			{
-				if(!newOptionIds.contains(oriOption.getId().toString()))
-				{
-					removedOriOptions.add(oriOption);
-				}
-			}
-			
+	if(oriOption.getControlOptionId().getValue().equals(controlFieldOptionIdStr))
+	{
+		if(!newOptionIds.contains(oriOption.getId().toString()))
+		{
+	removedOriOptions.add(oriOption);
+		}
+	}
+	
 		}else
 		{
-			if(!newOptionIds.contains(oriOption.getId().toString()))
-			{
-				removedOriOptions.add(oriOption);
-			}
+	if(!newOptionIds.contains(oriOption.getId().toString()))
+	{
+		removedOriOptions.add(oriOption);
+	}
 		}
 		
 	}
@@ -136,31 +136,31 @@
 		
 		if(optionIdStr == null || "".equals(optionIdStr)) //新增一个option
 		{
-			Option option = field.addOption();
-			if(option == null)
-			{
-				out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
-				return;
-			}
-			option.setName(EscapeUtil.decodeAll(optionNameStr));
-			option.setForbidden(Forbidden.valueOf(optionForbiddenStr));
-			option.setIndexOrder(Integer.parseInt(optionIndexOrder));
-			if(controlFieldOptionIdStr != null&&!"".equals(controlFieldOptionIdStr))
-			{
-				option.setControlOptionId(DataAccessFactory.getInstance().createUUID(controlFieldOptionIdStr));
-			}
+	Option option = field.addOption();
+	if(option == null)
+	{
+		out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
+		return;
+	}
+	option.setName(EscapeUtil.decodeAll(optionNameStr));
+	option.setForbidden(Forbidden.valueOf(optionForbiddenStr));
+	option.setIndexOrder(Integer.parseInt(optionIndexOrder));
+	if(controlFieldOptionIdStr != null&&!"".equals(controlFieldOptionIdStr))
+	{
+		option.setControlOptionId(DataAccessFactory.getInstance().createUUID(controlFieldOptionIdStr));
+	}
 		}else
 		{
-			UUID optionId = DataAccessFactory.getInstance().createUUID(optionIdStr);
-			for(Option oriOption : oriOptions)
-			{
-				if(oriOption.getId().equals(optionId))
-				{
-					oriOption.setName(EscapeUtil.decodeAll(optionNameStr));
-					oriOption.setForbidden(Forbidden.valueOf(optionForbiddenStr));
-					oriOption.setIndexOrder(Integer.parseInt(optionIndexOrder));
-				}
-			}
+	UUID optionId = DataAccessFactory.getInstance().createUUID(optionIdStr);
+	for(Option oriOption : oriOptions)
+	{
+		if(oriOption.getId().equals(optionId))
+		{
+	oriOption.setName(EscapeUtil.decodeAll(optionNameStr));
+	oriOption.setForbidden(Forbidden.valueOf(optionForbiddenStr));
+	oriOption.setIndexOrder(Integer.parseInt(optionIndexOrder));
+		}
+	}
 		}
 	}
 	
@@ -180,7 +180,7 @@
 		tol.setBefore(fieldXmlBefore);
 		tol.setAfter(field.toXMLString());
 		das.addTemplateOpreateLog(tol);
-				
+		
 		out.println(ErrorManager.getCorrectXml());
 	}else{
 		out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));

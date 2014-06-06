@@ -24,13 +24,15 @@ function initFlowList()
 		});
 	}
 	
+	showLoading(true);
+	
 	$.ajax({
 		url : 'flow/get_Admin_xml.jsp',
 		type : 'POST',
 		success : onInitFlowListAjax,
 		data:{'initFlow':true},
 		error : function(){
-			alert("Server Error!");
+			showLoading(false);
 		}
 	});
 }
@@ -62,6 +64,7 @@ function onInitFlowListAjax(rootNode)
 		
 	});
 	$("#flowListGrid").find("tbody").html(gridHtml);
+	showLoading(false);
 	$("#flowListGrid").trigger("update");
 }
 

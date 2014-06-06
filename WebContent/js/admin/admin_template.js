@@ -27,12 +27,13 @@ function initTemplateList()
 				}
 		});
 	}
+	showLoading(true);
 	$.ajax({
 		url : 'template/get_InitInfo_xml.jsp',
 		type : 'POST',
 		success : onInitTemplateListAjax,
 		error : function(){
-			alert("Server Error!");
+			showLoading(false);
 		}
 	});
 }
@@ -100,6 +101,7 @@ function onInitTemplateListAjax(rootNode)
 		
 	});
 	$("#templateBodyDiv").empty();
+	showLoading(false);
 	$("#templateBodyDiv").html(gridHtml);
 	$("#templateListGrid").trigger("update"); 
 }
