@@ -456,6 +456,11 @@ function onCompleteInitTaskManagement(request,type)
 		selectTemplate();
 	}
 	
+	if(/(msie\s|trident.*rv:)([\w.]+)/.test(navigator.userAgent.toLowerCase()))
+	{
+		$("#input_taskTitle").focus();
+	}
+	
 	$(".ke-container").remove();
 	editor = KindEditor.create('textarea[id="input_taskDescription"]', options);
 	
