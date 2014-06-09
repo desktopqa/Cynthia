@@ -11,9 +11,13 @@
 	var viewBox_width = null;
 	var viewBox_height = null;
 	
-	var svg_id = null;
-	var panZoom = null;
+	//画动作
+	var is_start_line;
+	//临时线
+	var tmpPath = null;
+	var $container = null;   //flow容器
 	
+	var panZoom = null;
  	a.config={
 		editable:true,
 		lineHeight:15,
@@ -30,12 +34,12 @@
 				"stroke-width":1
 				},
 			activeAttr:{
-				fill: "#660000", 
-				stroke: "#000", 
-				"stroke-width": 10, 
-				"stroke-opacity": 0.5
-			}
-			,showType:"image&text",
+					fill: "#660000", 
+					stroke: "#000", 
+					"stroke-width": 10, 
+					"stroke-opacity": 0.5
+				},
+			showType:"image&text",
 			type:"state",
 			name:{
 				text:"state",
@@ -51,24 +55,21 @@
 			img:{}
 		},
 		path:{
-			attr:
-			{
-				path:{path:"M10 10L100 100",stroke:"#808080",fill:"none","stroke-width":2},
-				arrow:{path:"M10 10L10 10",stroke:"#808080",fill:"#808080","stroke-width":2,radius:5},
-				fromDot:{width:15,height:15,stroke:"#fff",fill:"#000",cursor:"move","stroke-width":2},
-				toDot:{width:15,height:15,stroke:"#fff",fill:"#000",cursor:"move","stroke-width":2},
-				bigDot:{width:15,height:15,stroke:"#fff",fill:"#000",cursor:"move","stroke-width":2},
-				smallDot:{width:15,height:15,stroke:"#fff",fill:"#000",cursor:"move","stroke-width":3}
-			},
+			attr:{path:{path:"M10 10L100 100",stroke:"#808080",fill:"none","stroke-width":2},
+			arrow:{path:"M10 10L10 10",stroke:"#808080",fill:"#808080","stroke-width":2,radius:5},
+			fromDot:{width:15,height:15,stroke:"#fff",fill:"#000",cursor:"move","stroke-width":2},
+			toDot:{width:15,height:15,stroke:"#fff",fill:"#000",cursor:"move","stroke-width":2},
+			bigDot:{width:15,height:15,stroke:"#fff",fill:"#000",cursor:"move","stroke-width":2},
+			smallDot:{width:15,height:15,stroke:"#fff",fill:"#000",cursor:"move","stroke-width":3}},
+			text:{text:"{to}","font-size":11, cursor:"hand",background:"#000"},
 			
 			activeAttr:{
-				fill: "#660000", 
-				stroke: "#000", 
+				fill: "#000dd0", 
+				stroke: "#ddd", 
 				"stroke-width": 20, 
 				"stroke-opacity": 0.5
 			},
 			
-			text:{text:"{to}","font-size":11, cursor:"hand",background:"#000"},
 			textPos:{x:0,y:-10},
 			props:{text:{name:"text",label:"显示",value:"",editor:function(){return new a.editors.textEditor();}}}
 		},
@@ -162,13 +163,12 @@
 		E=$.extend(true,{},a.config.rect,p),
 		C = m,t,e,n,f,x,v;
 		
+		rap.setStart();
 		t=C.rect(E.attr.x,E.attr.y,E.attr.width,E.attr.height,E.attr.r).hide().attr(E.attr);
 		
 		if(statId === "start")
 			t.attr({stroke: '#660000',"stroke-width":2});  
 		raphaelId.push(t.id);
-		
-//		rap.setStart();
 		
 		//图片
 		e = C.image(a.config.basePath+E.img.src,E.attr.x+E.img.width/2,E.attr.y+(E.attr.height-E.img.height)/2,E.img.width,E.img.height).hide();
@@ -179,16 +179,15 @@
 				.attr({id:g,text:p.attr.name,cursor:"default","font-size":13});
 		raphaelId.push(f.id);
 		
-//		var wholeNode = rap.setFinish();
-//		var over = function () {
-//            this.c = this.c || this.attr("fill");
-//            this.stop().animate({fill: "#bacabd"}, 500);
-//        },
-//        out = function () {
-//            this.stop().animate({fill: this.c}, 500);
-//        };
-//        
-//		wholeNode.hover(over, out);
+		var wholeNode = rap.setFinish();
+		var over = function () {
+            this.c = this.c || this.attr("fill");
+            this.stop().animate({fill: "#bacabd"}, 500);
+        },
+        out = function () {
+            this.stop().animate({fill: this.c}, 500);
+        };
+		wholeNode.hover(over, out);
 		
 		t.drag(function(r,o){A(r,o);},function(){z();},function(){l();});
 		e.drag(function(r,o){A(r,o);},function(){z();},function(){l();});
@@ -206,6 +205,7 @@
 		//开始拖动
 		var A=function(dx,dy){
 			if(!a.config.editable){return;}
+			
 			var scaleX = rap.width  / rap._viewBox[2];//缩放比例
 	        var scaleY = rap.height / rap._viewBox[3];
 	        //按缩放比例编移坐标
@@ -280,8 +280,7 @@
 			if(to_node == null){
 				from_node = u;
 				to_node=u;
-			}
-			else{
+			}else{
 				from_node=to_node;
 				to_node=u;
 			}
@@ -293,6 +292,8 @@
 			case"path":
 				if(from_node&&to_node&&from_node.getId()!=to_node.getId()&&from_node.getId().substring(0,4)=="rect")
 				{
+					
+					is_start_line = false;
 					if(to_node.getType() != "state"){
 						showInfoWin("error","不能回到开始状态!");
 						from_node = null;
@@ -315,6 +316,8 @@
 						$("#actionName").val('');
 						$('#cfgActionDiv').modal('show');
 					}
+				}else {
+					is_start_line = true;
 				}
 				break;
 			}
@@ -326,16 +329,16 @@
 		//定义setTimeout执行方法
 		var TimeFn = null;
 
-		$([t.node,f.node,n.node,e.node]).bind("click",function(e){
-		    // 取消上次延时未执行的方法
+		wholeNode.click(function(e){
+			// 取消上次延时未执行的方法
 		    clearTimeout(TimeFn);
 		    //执行延时
 		    TimeFn = setTimeout(function(){
-		    	clickFunction();
+		    	clickFunction(e);
 		    },300);
 		});
-
-		$([t.node,f.node,n.node,e.node]).bind("dblclick",function(e){
+		
+		wholeNode.dblclick(function(e){
 		    //取消单击事件
 		    clearTimeout(TimeFn);
 		    $(C).trigger("click",u);
@@ -345,8 +348,8 @@
 		
 		var j=function(o,r){
 			if(!a.config.editable){return;}
-			if(r.getId()==g){
-				//$(C).trigger("showprops",[E.props,r]);  //显示属性框
+			if(r.getId && r.getId()==g){
+//				clickFunction();
 			}
 			else{
 				d();
@@ -657,9 +660,13 @@
 		}
 		
 		B=$.extend(true,B,q);
-		i=z.path(B.attr.path.path).attr(B.attr.path);
-		raphaelId.push(i.id);
-		t=z.path(B.attr.arrow.path).attr(B.attr.arrow);
+		
+		rap.setStart();
+		i=z.path(B.attr.path.path).attr(B.attr.path);  //直线
+		raphaelId.push(i.id); 
+		t=z.path(B.attr.arrow.path).attr(B.attr.arrow); //箭头
+		var wholePath = rap.setFinish();
+		
 		x=new j();  //小点
 		x.hide();
 		//动作名字显示
@@ -682,14 +689,14 @@
 		
 		m();
 		
-		var l=function(r,C){
+		var clickEvent = function(r,C){
 			if(!a.config.editable){return;}
-			if(C&&C.getId()==g){
+			if(C&& C.getId && C.getId()==g){
 				x.show();  //显示小点
-				//$(z).trigger("showprops",[B.props,v])
 			}else{
 				x.hide();
 			}
+			
 			var o=$(z).data("mod");
 			switch(o){
 				case"pointer":break;
@@ -708,32 +715,24 @@
 		//定义setTimeout执行方法
 		var TimeFn = null;
 
-		$([i.node,t.node]).bind("click",function(e){
-		    // 取消上次延时未执行的方法
+		wholePath.click(function(e){
+			// 取消上次延时未执行的方法
 		    clearTimeout(TimeFn);
 		    //执行延时
 		    TimeFn = setTimeout(function(){
 		    	clickFunction();
 		    },300);
 		});
-
-		$([i.node,t.node]).bind("dblclick",function(e){
-		    //取消单击事件
+		
+		wholePath.dblclick(function(e){
+			//取消单击事件
 		    clearTimeout(TimeFn);
 		    $(rap).trigger("click",v);
 			$(rap).data("currNode",v);
 			editElement();
 		});
 		
-//		$([i.node,t.node]).bind("mousemove",function(e){
-//			x.show();
-//		});
-//		
-//		$([i.node,t.node]).bind("mouseout",function(e){
-//			x.hide();
-//		});
-		
-		$(z).bind("click",l);
+		$(z).bind("click",clickEvent);
 		
 		var A=function(o,r){
 			if(!a.config.editable){return;}
@@ -834,6 +833,7 @@
 		};
 		
 		this.twinkle = function(){
+			
 			var beforeAttr = 
 			{
 				fill:t.attr("fill"),
@@ -841,8 +841,8 @@
 				"stroke-width":t.attr("stroke-width"),
 				"stroke-opacity":t.attr("stroke-opacity")
 			};
-			t.stop().animate(a.config.rect.activeAttr , 200, function(){
-				t.stop().animate(beforeAttr, 500, "bounce");
+			wholePath.stop().animate(a.config.rect.activeAttr , 200, function(){
+				wholePath.stop().animate(beforeAttr, 500, "bounce");
 			});
 		};
 		
@@ -864,10 +864,10 @@
 	};//end a.path
 	
 	a.init=function(x,r){
-		svg_id = x;
-		var container = $("#" + svg_id);
+		var svg_id = x;
+		$container = $("#" + svg_id);
 		if(rap == null)
-			rap=Raphael(svg_id,container.width(),container.height());
+			rap=Raphael(svg_id,$container.width(),$container.height());
 		
 		rap.safari();  //强制safari渲染
 		rap.renderfix();
@@ -900,7 +900,7 @@
 		}
 		panZoom = rap.panzoom({minZoom:-10, maxZoom:5, initialZoom: panZoom, initialPosition: { x: viewBox_x, y: viewBox_y} });
 		
-		setMouseWheel(container.width(),container.height());  //设置鼠标滚动
+		setMouseWheel($container.width(),$container.height());  //设置鼠标滚动
 		bindEvent();
 		$(rap).css("cursor","default");
 		$.extend(true,a.config,r);
@@ -922,6 +922,7 @@
 			$(".selected").removeClass("selected");
 			$(this).addClass("selected");
 			$(rap).data("mod",this.id);
+			clearDrawLine();
 			return false;
 		});
 		
@@ -964,6 +965,14 @@
 			}
 		}
 	};
+	
+	//清除动作移动连线
+	function clearDrawLine()
+	{
+		is_start_line = false;
+		if(tmpPath)
+			tmpPath.remove();
+	}
 	
 	//设置鼠标滚动调整画布大小
 	function setMouseWheel(width,heigth){
@@ -1011,6 +1020,61 @@
 	function bindEvent(){
 		bindKeyDown();
 		bindClick();
+		bindMouseMove();
+	}
+	
+	//画动作时移动鼠标
+	function bindMouseMove() {
+		
+		if (document.addEventListener) {
+		    document.addEventListener("mousemove", global_mousemove, false);
+		    document.addEventListener("mouseup", global_mouseup, false);
+		} else {
+		    document.attachEvent('onmousemove', global_mousemove);
+		    document.attachEvent('onmouseup', global_mouseup);
+		} 
+	}
+	
+	function global_mousemove(event){
+		var coords,fromPoint,toPoint,path,G,arrow;
+		if(is_start_line == true){
+			if(tmpPath != null)
+				tmpPath.remove();
+			
+			coords = mouseCoordsConvert(event);
+			var clickNode = rap.getElementByPoint(event.pageX,event.pageY);
+			
+			toPoint = {x:coords.x, y:coords.y}; //减去一点避免点击时老晌应箭头而不响应节点的click事件
+			fromPoint = a.util.connPoint(from_node.getBBox(),toPoint);  
+			
+			if(clickNode){
+				var rect = getNodeByRapealId(clickNode.id);
+				if(rect){
+					//直线，保证从矩形框的边沿画线，得到矩形画线的边沿点
+					toPoint = a.util.connPoint(rect.getBBox(),from_node.getBBox());
+				}
+			}
+			
+			path = "M"+fromPoint.x+","+fromPoint.y+"L" + toPoint.x + "," + toPoint.y;
+			//箭头
+			G=a.util.arrow(fromPoint,toPoint,5);
+			
+			arrow ="M"+G[0].x+" "+G[0].y+"L"+G[1].x+" "+G[1].y+"L"+G[2].x+" "+G[2].y+"z";
+			path += arrow;
+			
+			tmpPath = rap.path(path).attr({stroke:"#808080",fill:"#808080","stroke-width":2});
+		}
+	}
+	
+
+	//全局鼠标弹起
+	function global_mouseup(e)
+	{
+		var clickNode = rap.getElementByPoint(e.pageX,e.pageY);
+		if(clickNode != null && from_node != null){
+		}else{
+			clearDrawLine();
+		}
 	}
 	
 	function bindKeyDown(){
@@ -1025,9 +1089,8 @@
 		
 		//ctrl +s 保存
 		$(document).bind('keydown', 'ctrl+s', function (e) {
-			
 	        if (e.ctrlKey && (e.which == 83)) {
-	        	stopDefault(e);
+	            e.preventDefault();
 	            if(saveSvgCode())
 	            	showInfoWin("success","保存成功!");
 	            else
@@ -1035,7 +1098,6 @@
 	            return false;
 	        }
 	    });
-		
 	}
 	
 	//缩放后坐标转化
@@ -1045,46 +1107,58 @@
         var scaleX = rap.width  / rap._viewBox[2];//缩放比例
         var scaleY = rap.height / rap._viewBox[3];
         
-        // Chrome & Safari
-        if (jQuery.browser.webkit){ 
-        	x = mouseEvent.offsetX; 
-        	y = mouseEvent.offsetY;
-        } 
-        // Firefox
-        if (jQuery.browser.mozilla) 
-        {
-        	//由于firefox不支持offsetX/Y,需手动计算,减去父级窗口位置
-        	var offSetDom = mouseEvent.currentTarget.offsetParent;
-        	x = mouseEvent.pageX - offSetDom.offsetLeft;  y = mouseEvent.pageY - offSetDom.offsetTop;  
-        } 
+//        // Chrome & Safari
+//        if (jQuery.browser.webkit){ 
+//        	x = mouseEvent.offsetX; 
+//        	y = mouseEvent.offsetY;
+//        } 
+//        // Firefox
+//        if (jQuery.browser.mozilla) 
+//        {
+//        	//由于firefox不支持offsetX/Y,需手动计算,减去父级窗口位置
+//        	var offSetDom = mouseEvent.currentTarget.offsetParent;
+//        	x = mouseEvent.pageX - offSetDom.offsetLeft;  
+//        	y = mouseEvent.pageY - offSetDom.offsetTop;  
+//        } 
+//        // IE
+//        if (jQuery.browser.msie){
+//        	x = mouseEvent.x;
+//        	y = mouseEvent.y;
+//        } 
+//       
+//        if(mouseEvent.target.localName === "tspan"){
+//        	var topFlowOffset = $('#' + svg_id).offset();
+//        	x = mouseEvent.pageX - topFlowOffset.left;  
+//        	y = mouseEvent.pageY - topFlowOffset.top;  
+//        }
         
-        // IE
-        if (jQuery.browser.msie){
-        	x = mouseEvent.x;
-        	y = mouseEvent.y;
-        } 
-       
+        
+        var topFlowOffset = $container.offset();
+    	x = mouseEvent.pageX - topFlowOffset.left;  
+    	y = mouseEvent.pageY - topFlowOffset.top;  
+    	
         x = (x/scaleX) + rap._viewBox[0];
         y = (y/scaleY) + rap._viewBox[1];
         
-        return {
-            x: x,
-            y: y
-        };
+        return { x: x, y: y };
 	}
 	
 	
 	function bindClick()
 	{
-		$('#'+svg_id).click(function(e){
+		$container.click(function(e){
+			
 			//点击空白处取消选中
 			var choosedNode = $(rap).data("currNode");
 			if(choosedNode){
 				choosedNode.hideEdit();
 			}
+			
 			$(rap).data("currNode",null);
 			var clickNode = rap.getElementByPoint(e.pageX,e.pageY);
+			
 			if(!clickNode){
+				clearDrawLine();
 				//点击新建状态
 				var coords = mouseCoordsConvert(e);
 				if($(rap).data("mod") == "start"){
@@ -1113,6 +1187,12 @@
 							}
 						}
 					}
+				}
+			}else{
+				if(clickNode.id){
+					var node = getNodeByRapealId(clickNode.id);
+					if(!node)
+						clearDrawLine();
 				}
 			}
 		});
@@ -1275,8 +1355,22 @@
 		svgCode += ",viewBox_width:" + rap._viewBox[2];
 		svgCode += ",viewBox_height:" + rap._viewBox[3];
 		svgCode += "}";
-		
 		return saveFlowSvg(svgCode); //保存至数据库
+	}
+	
+	function getNodeByRapealId(id){
+		for(var i in global_node){
+			if(global_node[i] && global_node[i].getRaphaelId().indexOf(id) != -1){
+				return global_node[i];  
+			}
+		}
+		
+		for(var i in global_path){
+			if(global_path[i] && global_path[i].getRaphaelId().indexOf(id) != -1){
+				return global_path[i];  
+			}
+		}
+		return null;
 	}
 	
 	//查找两个状态间动作数
@@ -1443,6 +1537,13 @@
 				showInfoWin("error","状态之间己存在动作!");
 				return;
 			}
+			if($container.checkExistActionName(actionName)){
+				from_node = null;
+				to_node = null;
+				showInfoWin("error","己存在该名字动作,添加失败!");
+				return;
+			}
+			
 			if(from_node.getType() == "start"){
 				actionId = addAction("",to_node.getId().split("_")[1],actionName);
 			}else{
@@ -1517,13 +1618,18 @@
 		if(findNode != null){
 			findNode.twinkle();
 		}
-		
 	};
+	
+	$.fn.cacelModifyAction = function(){
+		from_node = null;
+		to_node = null;
+		clearDrawLine();
+	};
+	
 	$.fn.initFlow=function(container_id){
-		svg_id = container_id;
-		var container = $("#" + svg_id);
+		$container = $("#" + container_id);
 		if(rap == null)
-			rap=Raphael(svg_id,container.width(),container.height());
+			rap=Raphael(container_id,$container.width(),$container.height());
 		rap.safari();
 	};
 	
