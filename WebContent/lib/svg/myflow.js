@@ -683,6 +683,7 @@
 		
 		//单击动作名称编辑
 		f.click(function(){
+			if(!a.config.editable){return;}
 			var actionId = v.getId().split("_")[1];
 			showEditActionDiv(actionId,v.text());
 		});
@@ -904,6 +905,9 @@
 		bindEvent();
 		$(rap).css("cursor","default");
 		$.extend(true,a.config,r);
+		
+		a.config.editable = r.edit;   //设置能否编辑
+		
 		$(rap).data("mod","point"); //设置当前功能键为选择
 		
 		$("#myflow_tools .node").hover(

@@ -395,11 +395,13 @@ function initFlowSvg()
 }
 
 function setSvg(data){
+	var edit = request("edit") ? request("edit") === "true" : true;
 	//新建流程
 	if(data == ""){
 		$('#myflow').myflow(
 		{
-			basePath : ""
+			basePath : "",
+			edit:edit
 		});
 		convertXmlToSvg(getFlowXml());
 	}else{
@@ -407,6 +409,7 @@ function setSvg(data){
 		$('#myflow').myflow(
 		{
 			basePath : "",
+			edit:edit,
 			restore : eval(svgCode)
 		});
 	}
