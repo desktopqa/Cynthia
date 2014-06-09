@@ -95,7 +95,6 @@ function onInitTemplateListAjax(rootNode)
 			{
 				gridHtml += "<td>-</td>";
 			}
-			
 			gridHtml += "</tr>";
 		}
 		
