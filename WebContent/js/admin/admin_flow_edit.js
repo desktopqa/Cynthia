@@ -116,6 +116,7 @@ function executeAddAction()
 		return;
 	}
 	$('#myflow').drawAction(actionName);
+	$("#myflow").cacelModifyAction();
 	$("#cfgActionDiv").modal('hide');
 }
 
@@ -562,6 +563,10 @@ function creatWordStat(){
 	$("#mouse_y").val(center_y);
 	$("#statName").val('');
 	$('#cfgStateDiv').modal('show');
+}
+
+function cacelModifyAction(){
+	$("#myflow").cacelModifyAction();
 }
 
 function addWordAction(){
