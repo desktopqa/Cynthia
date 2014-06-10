@@ -23,37 +23,12 @@ function initFilterPageFirst(filterId,filterName)
 	//初始化月份
 	$("#timer_div").css("display","none");	
 	$("#timer_no").attr("checked",true);
-	$("#month").empty();
-	$("#date").empty();
-	$("#day").empty();
-	$("#hour").empty();
-	$("#minute").empty();
 	
-	for(var i=1;i<=12;i++)
-	{
-		$("#month").append("<option value='"+i+"'>"+i+"</option>");
-	}
-	//初始化date
-	for(var i=1;i<=31;i++)
-	{
-		$("#date").append("<option value='"+i+"'>"+i+"</option>");
-	}
-	
-	//初始化周几
-	for(var i=1;i<=7;i++)
-	{
-		$("#day").append("<option value='"+i+"'>"+i+"</option>");		
-	}
-	//初始化时间
-	for(var i=0;i<24;i++)
-	{
-		$("#hour").append("<option value='"+i+"'>"+i+"</option>");
-	}
-	
-	for(var i=0;i<60;i++)
-	{
-		$("#minute").append("<option value='"+i+"'>"+i+"</option>");
-	}
+	setTimeValue("month", 1, 12,new Array());
+	setTimeValue("date", 1, 31,new Array());
+	setTimeValue("day", 1, 7,new Array());
+	setTimeValue("hour", 0, 23,new Array());
+	setTimeValue("minute", 0, 59,new Array());
 }
 
 function initFilterPage(filterId,type)
@@ -69,32 +44,12 @@ function initFilterPage(filterId,type)
 	}else
 	{
 		$("#filter_manage_welcome").show();
-		//初始化月份
-		for(var i=1;i<=12;i++)
-		{
-			$("#month").append("<option value='"+i+"'>"+i+"</option>");
-		}
-		//初始化date
-		for(var i=1;i<=31;i++)
-		{
-			$("#date").append("<option value='"+i+"'>"+i+"</option>");
-		}
-	
-		//初始化周几
-		for(var i=1;i<=7;i++)
-		{
-			$("#day").append("<option value='"+i+"'>"+i+"</option>");		
-		}
-		//初始化时间
-		for(var i=0;i<24;i++)
-		{
-			$("#hour").append("<option value='"+i+"'>"+i+"</option>");
-		}
-	
-		for(var i=0;i<60;i++)
-		{
-			$("#minute").append("<option value='"+i+"'>"+i+"</option>");
-		}
+		
+		setTimeValue("month", 1, 12,new Array());
+		setTimeValue("date", 1, 31,new Array());
+		setTimeValue("day", 1, 7,new Array());
+		setTimeValue("hour", 0, 23,new Array());
+		setTimeValue("minute", 0, 59,new Array());
 	}
 	$("#topSubmitDiv").show();
 }
