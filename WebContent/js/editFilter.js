@@ -34,6 +34,7 @@ function initFilterPageFirst(filterId,filterName)
 	$("#main_content").find("input").removeAttr('disabled');
 	$("#main_content").find("select").removeAttr('disabled');
 	$("#main_content").find("textarea").removeAttr('disabled');
+	$("#topSubmitDiv").show();
 	enableSelectSearch();
 }
 
