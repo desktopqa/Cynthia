@@ -130,7 +130,6 @@ function changeStat(user,changeToStat)
 				showInfoWin('error','修改用户状态失败,请稍后再试!');
 		},
 		error : function(data){
-			alert("Server Error!");
 		}
 	});
 }
