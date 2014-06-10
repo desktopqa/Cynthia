@@ -12,7 +12,7 @@
 	min-height:200px;
 }
 
-.nav>li>a
+#all_guide a
 {
 	display:initial !important;
 }
