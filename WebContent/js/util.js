@@ -18,6 +18,7 @@ noSearchUrl.push('statistic');
 noSearchUrl.push('taskManagement.html');
 noSearchUrl.push('userConfig.html');
 noSearchUrl.push('feedback.html');
+noSearchUrl.push('guide.html');
 
 //不需要头部导航的页面
 var noAddHeadUrl = new Array();
@@ -1198,6 +1199,7 @@ function addHeadHtml()
 	headHtml += "<ul class='dropdown-menu'>";
 	headHtml += "<li><a href='" + rootDir + "about.html' target='_blank'>关于</a></li>";
 	headHtml += "<li><a href='mailto:cynthiafb@sogou-inc.com&subject=cynthia使用反馈' target='_self'>反馈建议</a></li>";
+	headHtml += "<li><a href='" + rootDir + "guide/guide.html?guideId=start' target='_blank'>使用说明</a></li>";
 	headHtml += "</ul>";
 	headHtml += "</li>";
 	

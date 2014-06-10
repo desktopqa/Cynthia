@@ -12,6 +12,7 @@ import com.sogou.qadev.service.cynthia.bean.ChangeLog;
 import com.sogou.qadev.service.cynthia.bean.Data;
 import com.sogou.qadev.service.cynthia.bean.DataAccessAction;
 import com.sogou.qadev.service.cynthia.bean.Filter;
+import com.sogou.qadev.service.cynthia.bean.GuideBean;
 import com.sogou.qadev.service.cynthia.bean.JSTree;
 import com.sogou.qadev.service.cynthia.bean.Script;
 import com.sogou.qadev.service.cynthia.bean.TagBean;
@@ -27,6 +28,7 @@ import com.sogou.qadev.service.cynthia.dao.EventUserAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.dao.FieldNameAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.dao.FilterAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.dao.FlowAccessSessionMySQL;
+import com.sogou.qadev.service.cynthia.dao.GuideAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.dao.HomeFilterAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.dao.JSTreeAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.dao.LogAccessSessionMySQL;
@@ -1549,5 +1551,36 @@ public class DataAccessSessionMemory extends AbstractDataAccessSession
 		return new BackRightAccessSessionMySQL().deltemplateUserRight(templateId, user);
 	}
 	
+	/**
+	 * (non-Javadoc)
+	 * <p> Title:getAllGuide</p>
+	 * @return
+	 * @see com.sogou.qadev.service.cynthia.service.DataAccessSession#getAllGuide()
+	 */
+	public List<GuideBean> queryAllGuide(){
+		return new GuideAccessSessionMySQL().getAll();
+	}
 	
+	/**
+	 * (non-Javadoc)
+	 * <p> Title:getGuideHtmlByGuideId</p>
+	 * @param guideId
+	 * @return
+	 * @see com.sogou.qadev.service.cynthia.service.DataAccessSession#getGuideHtmlByGuideId(java.lang.String)
+	 */
+	public String queryGuideHtmlByGuideId( String guideId){
+		return new GuideAccessSessionMySQL().getGuideHtmlByGuideId(guideId);
+	}
+	
+	/**
+	 * (non-Javadoc)
+	 * <p> Title:saveGuideHtml</p>
+	 * @param guideId
+	 * @param guideHtml
+	 * @return
+	 * @see com.sogou.qadev.service.cynthia.service.DataAccessSession#saveGuideHtml(java.lang.String, java.lang.String)
+	 */
+	public boolean saveGuideHtml(String guideId , String guideHtml){
+		return new GuideAccessSessionMySQL().saveGuideHtml(guideId, guideHtml);
+	}
 }

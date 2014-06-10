@@ -11,6 +11,7 @@ import com.sogou.qadev.service.cynthia.bean.DataAccessAction;
 import com.sogou.qadev.service.cynthia.bean.Field;
 import com.sogou.qadev.service.cynthia.bean.Filter;
 import com.sogou.qadev.service.cynthia.bean.Flow;
+import com.sogou.qadev.service.cynthia.bean.GuideBean;
 import com.sogou.qadev.service.cynthia.bean.JSTree;
 import com.sogou.qadev.service.cynthia.bean.Option;
 import com.sogou.qadev.service.cynthia.bean.QueryCondition;
@@ -1719,6 +1720,35 @@ public interface DataAccessSession
 	 * @return
 	 */
 	public boolean delTemplateUserRight(String templateId,String user);
+	
+	/********************使用说明开始********************************************/
+	/**
+	 * @description:get all guide
+	 * @date:2014-6-10 上午11:25:33
+	 * @version:v1.0
+	 * @return
+	 */
+	public List<GuideBean> queryAllGuide();
+	
+	/**
+	 * @description：get guide by guideId
+	 * @date:2014-6-10 上午11:25:55
+	 * @version:v1.0
+	 * @param guideId
+	 * @return
+	 */
+	public String queryGuideHtmlByGuideId( String guideId);
+	
+	/**
+	 * @description:save guide by guideid
+	 * @date:2014-6-10 上午11:26:31
+	 * @version:v1.0
+	 * @param guideId
+	 * @param guideHtml
+	 * @return
+	 */
+	public boolean saveGuideHtml(String guideId , String guideHtml);
+	/********************使用说明结束********************************************/
 	
 	public enum ErrorCode
 	{
