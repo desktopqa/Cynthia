@@ -336,9 +336,11 @@ function initFilterData(filterId,page,sortField,sortType,reDrawHead)
 		data:params,
 		success:function(data){
 			showFilterData(data, null, defaultHeader, '');
+			showLoading(false);
 		},
 		error:function(data){
 			showFilterData(eval('(' + data.responseText + ')'), null, defaultHeader, '');
+			showLoading(false);
 		}
 	});
 }
