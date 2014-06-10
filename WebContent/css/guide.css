@@ -1,0 +1,57 @@
+
+.guide-html
+{
+	padding:0px 50px 0px 5px;
+}
+
+#left-tree
+{
+	height:100%;
+	background-color: rgb(240, 235, 235);
+	border: 2px solid rgb(230, 225, 225);
+	min-height:200px;
+}
+
+.nav>li>a
+{
+	display:initial !important;
+}
+
+#guide
+{
+	border-left: 3px solid rgb(230, 230, 230);
+	padding-left: 5px;
+	height:100%;
+}
+
+#all_guide
+{
+	padding-left:10px;
+}
+
+#all_guide li
+{
+	margin:5px 0px !important;	
+}
+
+#guide blockquote
+{
+	border-left:none !important;
+}
+
+#guide blockquote p
+{
+	font-size:13px;
+}
+
+.active
+{
+	color:red !important;
+	font-weight:bold;
+}
+
+.active a
+{
+	color:red !important;
+	font-weight:bold;
+}
