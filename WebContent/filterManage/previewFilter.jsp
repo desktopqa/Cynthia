@@ -90,18 +90,7 @@ if(searchType != null && !searchType.equals("null") && searchType.length() > 0 &
 	queryConditionList.add(qc);
 }
 
-Set<String> specialSet = new LinkedHashSet<String>();
-specialSet.add("id");
-specialSet.add("templateId");
-specialSet.add("title");
-specialSet.add("description");
-specialSet.add("createTime");
-specialSet.add("assignUser");
-specialSet.add("statusId");
-specialSet.add("lastModifyTime");
-specialSet.add("createUser");
-
-String sql = DataFilterMemory.getFilterSql(filterXml, specialSet , queryConditionList);
+String sql = DataFilterMemory.getFilterSql(filterXml, null , queryConditionList);
 
 int totalCount = 0;
 
