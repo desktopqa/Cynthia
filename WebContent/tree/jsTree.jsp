@@ -495,7 +495,7 @@ if("get_children".equals(operation)){
 	if("6".equals(parentIdStr))
 	{
 		boolean result = das.updateDefaultFilters(key.getUsername(),newOrders);
-		if(!result)
+		if(result)
 			out.println(success);
 		else
 	 		out.println(error);
@@ -503,7 +503,7 @@ if("get_children".equals(operation)){
 	{
 		int parentId = Integer.parseInt(parentIdStr);
 		boolean result = das.updateFilterOrders(parentId,key.getUsername(),newOrders);
-		if(!result)
+		if(result)
 			out.println(success);
 		else
 	 		out.println(error);
