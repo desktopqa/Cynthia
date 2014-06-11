@@ -354,7 +354,7 @@ function onCompleteInitTaskManagement(request,type)
 		$("#baseFieldForm").html(baseFieldForm);
 		$("#select_next_action_top").parent().hide();
 		var templateId = $("#select_template").val();
-		var descrition = unescape(readCookie(templateId+"description")==null?"":readCookie(templateId+"description"));
+		var descrition = unescape(allDefaultValueMap.get(templateId+"description")==null ? "" : allDefaultValueMap.get(templateId+"description"));
 		if(venusDesciption != null)
 			descrition += venusDesciption;
 		$("#input_taskDescription").val(descrition);
@@ -944,8 +944,8 @@ function setDefaultDescription()
 {
 	var description = escape(editor.html());
 	var templateId = $("#select_template").val();
-	createCookie( (templateId+"description=") + description);
-	showInfoWin('success','默认描述设置成功!');
+	allDefaultValueMap.put(templateId+"description" ,description);
+	updateDefaultValue();
 }
 
 function executeUpdate_select(selectId)
