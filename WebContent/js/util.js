@@ -942,7 +942,7 @@ function request(paras){
 	if(typeof(returnValue)=="undefined"){
 		return "";
 	}else{
-		return returnValue;
+		return decodeURIComponent(returnValue);
 	}
 }
 

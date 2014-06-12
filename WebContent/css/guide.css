@@ -7,9 +7,16 @@
 #left-tree
 {
 	height:100%;
+	min-height:200px;
+}
+
+#left-tree .nav-all
+{
 	background-color: rgb(240, 235, 235);
 	border: 2px solid rgb(230, 225, 225);
-	min-height:200px;
+	position:fixed;
+	padding-left:10px;
+	width:200px;
 }
 
 #all_guide a
