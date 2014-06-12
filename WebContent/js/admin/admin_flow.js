@@ -52,9 +52,9 @@ function onInitFlowListAjax(rootNode)
 		if(!optionRightControl  || userRole === "super_admin" ||  $.inArray(flows[idx].id, allFlowRight) != -1){
 			gridHtml += "<tr>";
 			gridHtml += "<td>" + index ++ +"</td>";
-			gridHtml += "<td><a href=\"admin_flow_edit.html?flowId="+ flows[idx].id + "&flowName=" + escape(flows[idx].name) + "\" target=\"_blank\">"+ flows[idx].name +"</a></td>";
+			gridHtml += "<td><a href=\"admin_flow_edit.html?flowId="+ flows[idx].id + "&flowName=" + encodeURIComponent(flows[idx].name) + "\" target=\"_blank\">"+ flows[idx].name +"</a></td>";
 			gridHtml += "<td><a href=\"#\" onClick=\"displayModifyDiv('" + flows[idx].id + "','" +flows[idx].name+ "')\">修改</a></td>";
-			gridHtml += "<td><a href=\"admin_flow_edit.html?flowId="+ flows[idx].id +"&flowName=" + escape(flows[idx].name) + "\" target=\"_blank\">编辑</a></td>";
+			gridHtml += "<td><a href=\"admin_flow_edit.html?flowId="+ flows[idx].id +"&flowName=" + encodeURIComponent(flows[idx].name) + "\" target=\"_blank\">编辑</a></td>";
 			if(userRole === "super_admin")
 				gridHtml += "<td><a href=\"#\" onClick=\"removeFlow('" + flows[idx].id + "')\">删除</a></td>";
 			else
