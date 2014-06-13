@@ -21,8 +21,9 @@
 	text-align: left;
 }
 
-.form-horizontal .controls {
+.form-horizontal .control-group .controls {
 	margin-left: 120px;
+	*margin-left: 0px; / IE6¡¢IE7Ö§³Ö */
 }
 
 .form-horizontal .control-group {
