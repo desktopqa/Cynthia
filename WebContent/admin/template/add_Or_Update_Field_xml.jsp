@@ -72,7 +72,7 @@
 	tol.setFieldId(beforeField.getId().getValue());
 	tol.setFieldName(beforeField.getName());
 	tol.setOperateType(TemplateOperateLog.DELETE);
-	tol.setCreateTime(Timestamp.valueOf(com.sogou.qadev.service.cynthia.util.Date.valueOf(new Date().toLocaleString()).toTimestamp().toString()));
+	tol.setCreateTime(new Timestamp(System.currentTimeMillis()));
 	tol.setCreateUser(key.getUsername());
 	tol.setBefore(beforeField.toXMLString());
 	tol.setAfter("");
@@ -180,7 +180,7 @@
 	tol.setFieldId(field.getId().getValue());
 	tol.setFieldName(field.getName());
 	tol.setOperateType(TemplateOperateLog.ADD);
-	tol.setCreateTime(Timestamp.valueOf(com.sogou.qadev.service.cynthia.util.Date.valueOf(new Date().toLocaleString()).toTimestamp().toString()));
+	tol.setCreateTime(new Timestamp(System.currentTimeMillis()));
 	tol.setCreateUser(key.getUsername());
 	tol.setBefore("");
 	tol.setAfter(field.toXMLString());
@@ -205,7 +205,7 @@
 	tol.setFieldId(field.getId().getValue());
 	tol.setFieldName(field.getName());
 	tol.setOperateType(TemplateOperateLog.ADD);
-	tol.setCreateTime(Timestamp.valueOf(com.sogou.qadev.service.cynthia.util.Date.valueOf(new Date().toLocaleString()).toTimestamp().toString()));
+	tol.setCreateTime(new Timestamp(System.currentTimeMillis()));
 	tol.setCreateUser(key.getUsername());
 	tol.setBefore("");
 	tol.setAfter(field.toXMLString());
@@ -275,7 +275,7 @@
 	tol.setFieldId(field.getId().getValue());
 	tol.setFieldName(field.getName());
 	tol.setOperateType(TemplateOperateLog.MODIFY);
-	tol.setCreateTime(Timestamp.valueOf(com.sogou.qadev.service.cynthia.util.Date.valueOf(new Date().toLocaleString()).toTimestamp().toString()));
+	tol.setCreateTime(new Timestamp(System.currentTimeMillis()));
 	tol.setCreateUser(key.getUsername());
 	tol.setBefore(fieldXmlBefore);
 	tol.setAfter(field.toXMLString());
