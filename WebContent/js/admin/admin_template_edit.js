@@ -1298,7 +1298,7 @@ function saveOrUpdateField()
 	if(field == null)
 	{
 		//表示是新建字段
-		params += "&flag = add";
+		params += "&flag=add";
 		var irows = $("#main-container").children(".lyrow");
 		var rowIndex = 0;
 		var columnIndex = 0;
