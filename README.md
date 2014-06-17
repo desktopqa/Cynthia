@@ -38,6 +38,13 @@
 		5. 启动tomcat
 		6. 打开网址 localhost:8080/Cynthia 即可访问! 默认系统管理员帐号:admin 密码:admin
 		
+环境说明
+--------
+		经测试，如下环境下正确运行。如有其它环境不能运行，请加群反馈我们~
+		jdk: 1.6 1.7
+		tomcat: 6&7
+		mysql 5.x
+		
 Demo 地址
 --------
 		http://opencynthia.duapp.com
