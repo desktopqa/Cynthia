@@ -1956,6 +1956,7 @@ function checkSingleSelect(fieldId)
 					}
 					else
 					{
+						tempField.datas = [];  //清除己有数据
 						if(tempField.type == "selection")
 						{
 							$("#field_"+tempField.id+"_div").html(drawSelectionField(tempField));
