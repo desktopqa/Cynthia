@@ -1173,20 +1173,20 @@ function addHeadHtml()
 	//右部导航菜单
 	headHtml += "<div class=\"nav-collapse collapse navbar-inverse-collapse\">";
 	headHtml += "<ul class=\"nav pull-right\" style=\"margin-right:20px;\">";
-	headHtml += "<li><a href=\"" + rootDir + "editFilter.html\" target=\"_blank\">过滤器</a></li>";
+	headHtml += "<li><a href=\"" + rootDir + "editFilter.html\" target=\"_self\">过滤器</a></li>";
 	headHtml += "<li><a href=\"#\">|</a></li>";
 	
 	//管理员增加系统配置菜单
 	if(userInfo && (userInfo.userRole === "super_admin" || userInfo.userRole === "admin")){
-		headHtml += "<li><a href=\"" + rootDir + "admin/admin_index.html\" target=\"_blank\">系统配置</a></li>";
+		headHtml += "<li><a href=\"" + rootDir + "admin/admin_index.html\" target=\"_self\">系统配置</a></li>";
 		headHtml += "<li><a href=\"#\">|</a></li>";
 	}	
 
-	headHtml += "<li><a href=\"" + rootDir + "cplugin/index.jsp\" target=\"_blank\">插件</a></li>";
+	headHtml += "<li><a href=\"" + rootDir + "cplugin/index.jsp\" target=\"_self\">插件</a></li>";
 	headHtml += "<li><a href=\"#\">|</a></li>";
 	
 	//为统计添加new标识
-	headHtml += "<li><a href=\"" + rootDir + "statistic/index.html\" target=\"_blank\">统计";
+	headHtml += "<li><a href=\"" + rootDir + "statistic/index.html\" target=\"_self\">统计";
 	//new样式
 //	headHtml += "<img src=\"" + rootDir + "images/new.gif\" style=\"margin-top: -15px;\"></a>";
 	headHtml += "</li>";
@@ -1197,9 +1197,9 @@ function addHeadHtml()
 	headHtml += "<li class=\"dropdown\">"; 
 	headHtml += "<a href='#' class='dropdown-toggle' data-toggle='dropdown'>更多<b class='caret'></b></a>";
 	headHtml += "<ul class='dropdown-menu'>";
-	headHtml += "<li><a href='" + rootDir + "about.html' target='_blank'>关于</a></li>";
+	headHtml += "<li><a href='" + rootDir + "about.html' target='_self'>关于</a></li>";
 	headHtml += "<li><a href='mailto:cynthiafb@sogou-inc.com&subject=cynthia使用反馈' target='_self'>反馈建议</a></li>";
-	headHtml += "<li><a href='" + rootDir + "guide/guide.html?guideId=start' target='_blank'>使用说明</a></li>";
+	headHtml += "<li><a href='" + rootDir + "guide/guide.html?guideId=start' target='_self'>使用说明</a></li>";
 	headHtml += "</ul>";
 	headHtml += "</li>";
 	
