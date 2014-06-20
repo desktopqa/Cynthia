@@ -104,7 +104,7 @@
 	<!-- Charset Filter Mapping -->
 	<filter-mapping>
 		<filter-name>charsetfilter</filter-name>
-		<url-pattern>*</url-pattern>
+		<url-pattern>/*</url-pattern>
 	</filter-mapping>
  	
 
