@@ -10,7 +10,7 @@ var defaultOption = {
 		cancelImg : 'lib/fileUpload/uploadify-cancel.png',   //指定取消上传的图片，默认‘cancel.png’
 		fileSizeLimit:122880,   //120MB 
 		simUploadLimit :5,         //多文件上传时，同时上传文件数目限制
-		uploader : '../../attachment/upload.jsp;jsessionid='+ readCookie('JSESSIONID'),       //指定服务器端上传处理文件，默认‘upload.php’
+		uploader : base_url + 'attachment/upload.jsp;jsessionid='+ readCookie('JSESSIONID'),       //指定服务器端上传处理文件，默认‘upload.php’
 //		fileExt   : '*.rar;*.zip',      //控制可上传文件的扩展名，启用本项时需同时声明fileDesc
 //		buttonCursor : 'hander',
 //		'folder'    : '/uploads'          //要上传到的服务器路径，默认‘/’

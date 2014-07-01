@@ -26,7 +26,7 @@ var nextActionName = "";
 
 var options = {
 	filterMode : true,
- 	uploadJson:'../attachment/upload_json.jsp',
+ 	uploadJson: base_url + 'attachment/upload_json.jsp',
 	allowFileManager : true,
 	urlType : 'relative',
 	formatUploadUrl : false,
