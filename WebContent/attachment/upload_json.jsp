@@ -106,10 +106,12 @@ while (itr.hasNext()) {
 		obj.put("error", 0);
 		if("image".equals(dirName))
 		{
-			obj.put("url", "../attachment/download_json.jsp?param=image_"+attachment.getId());
+// 			obj.put("url", "../attachment/download_json.jsp?param=image_"+attachment.getId());
+			obj.put("url", ConfigUtil.getCynthiaWebRoot() + "attachment/download_json.jsp?param=image_"+attachment.getId());
 		}else
 		{
-			obj.put("url", "../attachment/download_json.jsp?param=file_"+attachment.getId());
+// 			obj.put("url", "../attachment/download_json.jsp?param=file_"+attachment.getId());
+			obj.put("url", ConfigUtil.getCynthiaWebRoot() + "attachment/download_json.jsp?param=file_"+attachment.getId());
 		}
 		obj.put("title",fileName);
 		out.println(obj.toJSONString());

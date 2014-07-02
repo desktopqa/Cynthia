@@ -53,7 +53,7 @@
 					   <div class="controls">
 					      <div id="login">
 						      <button id="login_in_btn" class="btn btn-danger">登录</button>
-						      <a href="register.jsp" style="margin-left:50px;">注册</a>
+						      <a href="register.jsp" style="margin-left:50px;">注册</a> 
 				      	  </div>
 				       </div>
 				</div>
