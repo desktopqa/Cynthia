@@ -1105,7 +1105,7 @@ function displayQueryTaskPage(fieldId)
 		//TODO
 //		initFilterPage('626813');
 //		$("#cfgAddRefDiv").modal("show");
-		window.open("../search/filterPageForAddReference.jsp?filterId=626813&fieldId=" + getSafeParam(fieldId) + "&dataType="  + field.dataType + "&alreadyIds=" + alreadyIds);
+		window.open(base_url + "search/filterPageForAddReference.jsp?filterId=626813&fieldId=" + getSafeParam(fieldId) + "&dataType="  + field.dataType + "&alreadyIds=" + alreadyIds);
 	}
 	else{
 //		var filterId = field.defaultValues[0];
@@ -1125,7 +1125,7 @@ function displayQueryTaskPage(fieldId)
 //		queryFilterData(filterXml);
 //		$("#cfgRefQueryDiv").modal('show');
 		user = $("#select_taskAssignUser").val();
-		window.open("/previewFilterResultForReference.jsp?fieldId=" + getSafeParam(fieldId) + "&dataType=" + field.dataType + "&defaultValue=" + getSafeParam(field.defaultValues[0]) + "&alreadyIds=" + alreadyIds + (user ? "&user=" + user : ""));
+		window.open(base_url + "previewFilterResultForReference.jsp?fieldId=" + getSafeParam(fieldId) + "&dataType=" + field.dataType + "&defaultValue=" + getSafeParam(field.defaultValues[0]) + "&alreadyIds=" + alreadyIds + (user ? "&user=" + user : ""));
 	}
 }
 
@@ -3774,7 +3774,7 @@ function downloadFileById(fileId,link)
 			return;
 		}
 	}
-	window.open("../attachment/download.jsp?method=download&id=" + getSafeParam(fileId) );
+	window.open(base_url + "attachment/download.jsp?method=download&id=" + getSafeParam(fileId) );
 }
 
 function onReadyLoad()
