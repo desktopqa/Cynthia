@@ -3619,7 +3619,7 @@ function displayDownloadFile(fieldId)
 		alert("请先选择下载文件");
 		return;
 	}
-	window.open( "../attachment/download.jsp?method=download&id=" + getSafeParam(fileId) );
+	window.open( base_url + "attachment/download.jsp?method=download&id=" + getSafeParam(fileId) );
 }
 
 function disolayTitleContent(span)
@@ -3770,7 +3770,7 @@ function downloadFileById(fileId,link)
 		var fileName = link.innerHTML;
 		if(fileName&&(fileName.indexOf("JPEG")>=0||fileName.indexOf("GIF")>=0||fileName.indexOf("BMP")>=0||fileName.indexOf("bmp")>=0||fileName.indexOf("JPG")>=0||fileName.indexOf("PNG")>=0||fileName.indexOf("png")>=0||fileName.indexOf("gif")>=0||fileName.indexOf("jpg")>=0||fileName.indexOf("jpeg")>=0))
 		{
-			window.open("../attachment/image.jsp?fileId="+fileId);
+			window.open( base_url + "attachment/image.jsp?fileId="+fileId);
 			return;
 		}
 	}

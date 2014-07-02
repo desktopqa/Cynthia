@@ -1,13 +1,6 @@
-<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<%
-String path = request.getContextPath();
-String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
-%>
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <base href="<%=basePath%>">
     <title>My JSP 'image.jsp' starting page</title>
 	<meta http-equiv="pragma" content="no-cache">
 	<meta http-equiv="cache-control" content="no-cache">
@@ -15,10 +8,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
 	<meta http-equiv="description" content="This is my page">
   </head>
+  <script type="text/javascript" src='../js/util.js'></script>
+  
   <script type="text/javascript">
   	function displayImage(fileId)
   	{
-  		document.getElementById("image").src="../attachment/download.jsp?method=download&id="+fileId;
+  		document.getElementById("image").src = base_url + "attachment/download.jsp?method=download&id="+fileId;
   	}
   </script>
   <body onload="displayImage(<%=request.getParameter("fileId") %>)">
