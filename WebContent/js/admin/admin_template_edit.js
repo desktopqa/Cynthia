@@ -1229,7 +1229,7 @@ function saveOrUpdateField()
 	var controlFieldId = $("#select_controlFieldId").val();
 	if(controlFieldId != "")
 	{
-		params += "&controlFieldId = "+controlFieldId;
+		params += "&controlFieldId="+controlFieldId;
 	}
 	
 	//设置默认值

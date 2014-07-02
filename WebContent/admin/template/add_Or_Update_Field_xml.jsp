@@ -132,8 +132,10 @@
 		field.setFieldSize(request.getParameter("fieldSize"));
 		field.setDefaultValue(request.getParameter("defaultValue"));
 		String controlFieldIdStr = request.getParameter("controlFieldId");
+		
 		if(controlFieldIdStr != null)
 	field.setControlFieldId(DataAccessFactory.getInstance().createUUID(controlFieldIdStr));
+		
 		
 		//control option ids
 		Set<UUID> controlOptionIdSet = new LinkedHashSet<UUID>();
