@@ -668,7 +668,7 @@ function initWordActionRole(actionId)
 function initFlowId(){
 	var flowId = request('flowId');
 	var flowName = request('flowName');
-	window.document.title = unescape(flowName);
+	window.document.title = decodeURIComponent(flowName);
 	if(flowId){
 		 $("#flowId").val(flowId);
 	}else{
