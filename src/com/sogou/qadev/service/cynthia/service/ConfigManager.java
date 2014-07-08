@@ -112,14 +112,10 @@ public class ConfigManager {
 		if (null == fullFile || fullFile.equals(""))
 			throw new IllegalArgumentException(
 					"Properties file path can not be null : " + fullFile);
-		webRootPath = ConfigManager.class.getClassLoader().getResource("")
-				.getPath();
-		webRootPath = new File(webRootPath).getPath();
 		InputStream inputStream = null;
 		Properties p = null;
 		try {
-			inputStream = new FileInputStream(new File(webRootPath
-					+ File.separator + fullFile));
+			inputStream = ConfigManager.class.getClassLoader().getResourceAsStream(fullFile);
 			p = new Properties();
 			p.load(inputStream);
 		} catch (FileNotFoundException e) {
