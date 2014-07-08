@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50077
 File Encoding         : 65001
 
-Date: 2014-07-01 11:16:56
+Date: 2014-07-08 11:21:20
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -181,7 +181,6 @@ CREATE TABLE `data` (
   KEY `templateId` USING BTREE (`templateId`),
   KEY `createTime` USING BTREE (`createTime`),
   KEY `lastModifyTime` USING BTREE (`lastModifyTime`),
-  KEY `statsId` USING BTREE (`statusId`),
   KEY `status_index` USING BTREE (`statusId`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
