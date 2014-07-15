@@ -1571,9 +1571,9 @@ function getFilterTableWidth(showFields)
 	for(var i = 0 ; i < showFields.length ; i ++)
 	{
 		var fieldId = showFields[i].fieldId;
-		if(fieldId == "id" || fieldId == "assign_user" || fieldId == "create_user") //编号
+		if(fieldId == "id" || fieldId == "create_user") //编号
 			widthHtml+="<col class='mini-col'></col>";
-		else if(fieldId == "priority" || fieldId == "status_id")
+		else if(fieldId == "status_id")
 			widthHtml+="<col class='middle-mini-col'></col>";
 		else if(fieldId == "title") //标题
 			widthHtml+="<col class='x-large-col'></col>";
@@ -1597,6 +1597,9 @@ function showFilterDataHead(showFields)
 
 	for(var i = 0 ;i < showFields.length; i++)
 	{
+		if(showFields[i].fieldId === "priority")
+			continue;
+		
 		html+="<th class='sort-header mini-col ";
 		if(showFields[i].fieldId == grid.getSortField() && grid.getSortType() == "asc")
 			html += "sort-down";
@@ -1694,6 +1697,9 @@ function getDataTr(index,data,showFields)
 	trHtml += "<td><i class='i-checkbox icon-input-checkbox-unchecked'></i></td><td>" + index + "</td>";
 	for(var j = 0 ;j < showFields.length; j++)
 	{
+		if(showFields[j].fieldId === "priority")
+			continue;
+		
 		var content = data[showFields[j].fieldId];
 		if(content == undefined || content == "")
 			content = "-";

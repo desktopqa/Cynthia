@@ -178,10 +178,6 @@ public class FilterController extends BaseController{
 				showList.add(new FilterField(XMLUtil.getAttribute(node,"id"), XMLUtil.getAttribute(node,"name")));
 			}
 			
-			if (!showFieldId.contains("priority")) {
-				showList.add(2,new FilterField("priority", "修改优先级"));
-			}
-			
 			groupField = new FilterField("node_id", "项目");
 			
 			for (String fieldId : baseFieldNameMap.keySet()) {
