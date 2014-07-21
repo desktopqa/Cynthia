@@ -2389,6 +2389,7 @@ function updateDefaultValue()
 	$.ajax({
 		url:'defaultValue/setdefaultValues.do',
 		async:true,
+		type:'POST',
 		data:{'templateId':t_template_id, 'defaultValueJson' : allDefaultValueMap.toJson()},
 		success:function(data){
 			if(data == 'true')
