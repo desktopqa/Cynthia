@@ -495,7 +495,7 @@ CREATE TABLE `guide` (
   `guide_html` longtext character set utf8,
   `isDeleted` int(1) default '0',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1112 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1112 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of guide
@@ -610,7 +610,7 @@ CREATE TABLE `tag_data` (
   `tag_data` int(10) NOT NULL default '0',
   `filter_id` int(15) default NULL,
   PRIMARY KEY  (`tag_id`,`tag_data`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of tag_data
@@ -791,7 +791,7 @@ CREATE TABLE `user_default_template` (
   `user_name` varchar(256) character set utf8 NOT NULL,
   `template_id` varchar(20) character set utf8 NOT NULL,
   PRIMARY KEY  (`user_name`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of user_default_template
