@@ -36,7 +36,7 @@
 		3. 新建数据库命名为cynthia，导入docs目录下的cynthia.sql文件
 		4. 打开config目录下的config.properties 根据docs目录下的cynthia参数配置说明进行配置。（必须配置driverClassName、url、username、password参数!!）
 		5. 启动tomcat
-		6. 打开网址 localhost:8080/Cynthia 即可访问! 默认系统管理员帐号:admin 密码:admin
+		6. 打开网址 localhost:8080/Cynthia/index.html 即可访问! 默认系统管理员帐号:admin 密码:admin
 		
 环境说明
 --------
