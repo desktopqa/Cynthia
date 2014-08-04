@@ -103,6 +103,7 @@ public class LoginFilter implements Filter {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpSession session = httpRequest.getSession();
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
+		
 		if (ConfigManager.deployPath == null || CookieManager.getCookieByName(httpRequest, "webRootDir") == null) {
 			ConfigManager.deployPath = httpRequest.getContextPath();
 			CookieManager.addCookie(httpResponse, "webRootDir", ConfigUtil.getCynthiaWebRoot(), 60*60*24*14);

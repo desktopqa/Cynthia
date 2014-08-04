@@ -18,10 +18,9 @@ cookie.setPath(request.getContextPath());
 
 CookieManager.delCookie(response, "login_username");
 CookieManager.delCookie(response, "jpassport-sp");
+CookieManager.delCookie(response, "jpassport-sp");
 CookieManager.delCookie(response, "login_nickname");
 CookieManager.delCookie(response, "login_password");
-CookieManager.delCookie(response, "login_sign");
-
 
 session.removeAttribute("key");
 session.removeAttribute("userName");

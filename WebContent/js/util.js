@@ -1139,8 +1139,7 @@ function addHeadHtml()
 	
 	if(!userMail)  
 	{
-		//cookie不存在重新登陆
-		window.location = base_url + 'logout.jsp';
+		window.location.reload(); //cookie不存在重新登陆
 	}
 	
 	var userName = readCookie("login_nickname");
