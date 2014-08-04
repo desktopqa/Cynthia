@@ -32,11 +32,12 @@
 --------
 		本单主要介绍如何部署cynthia服务(以tomcat为例)：
 		1. 线上下载cynthia.war包  或者地址：http://git.oschina.net/cynthia/Cynthia/blob/master/Cynthia.war
-		2. 将下载的cynthia.war包 解压后 放在tomcat的webapps目录下面
+		2. 将下载的cynthia.war包  放在tomcat的webapps目录下面
 		3. 新建数据库命名为cynthia，导入docs目录下的cynthia.sql文件
-		4. 打开config目录下的config.properties 根据docs目录下的cynthia参数配置说明进行配置。（必须配置driverClassName、url、username、password参数!!）
-		5. 启动tomcat
-		6. 打开网址 localhost:8080/Cynthia/index.html 即可访问! 默认系统管理员帐号:admin 密码:admin
+		4. 启动tomcat应用,tomcat会自动解压Cynthia.war包 为Cynthia文件夹
+		5. 打开webapps/Cynthia/WEB-INF/classes目录下的config.properties 根据docs目录下的cynthia参数配置说明进行配置。（必须配置driverClassName、url、username、password参数!!）
+		6. 重启tomcat
+		7. 打开网址 localhost:8080/Cynthia/index.html 即可访问! 默认系统管理员帐号:admin 密码:admin
 		
 环境说明
 --------
@@ -45,6 +46,10 @@
 		tomcat: 6&7 暂不支持tomcat8, 有些tomcat的版本有问题，我们测试7.0.53没有问题，大家部署的时候尽量去官网下载最新的7.x版本
 		下载地址：http://tomcat.apache.org/download-70.cgi
 		mysql 5.x
+		
+常见错误问题
+--------
+		1.部署地址非本机地址，需配置config.properties deployHost deployPort 为部署的ip地址和端口
 		
 Demo 地址
 --------
