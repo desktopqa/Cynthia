@@ -1514,7 +1514,7 @@ function getHomeFilter()
 			});
 		}
 	}
-	$("#filterId").val(filterId);
+	$("#filterId").val((filterId || "" ).trim());
 }
 
 function initFilterData(filterId,page,sortField,sortType,reDrawHead)
@@ -1524,7 +1524,7 @@ function initFilterData(filterId,page,sortField,sortType,reDrawHead)
 	 params += "&limit=" + grid.getPageSize();
 	 params += "&sort=" + (sortField == undefined ? "" : sortField);
 	 params += "&dir=" + (sortType == undefined ? "" : sortType);
-
+	 
 	$.ajax({
 		url: "filter/filter.jsp",
 		type:'POST',
@@ -1537,8 +1537,8 @@ function initFilterData(filterId,page,sortField,sortType,reDrawHead)
 				url: "filter/getFilterShowInfo.do",
 				type:'POST',
 				data:params,
-				success: function(data){
-					var filterField = eval('(' + data + ')');
+				dataType:'json',
+				success: function(filterField){
 					showFilterData(filterData, filterField.groupField, filterField.showFields, filterField.backFields, reDrawHead);
 					showLoading(false);
 				}

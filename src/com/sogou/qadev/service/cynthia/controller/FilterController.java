@@ -102,7 +102,7 @@ public class FilterController extends BaseController{
 		String userName = session.getAttribute("userName").toString();
 		DataAccessSession das = DataAccessFactory.getInstance().getSysDas();
 		String filterId = das.queryHomeFilter(userName);
-		if (filterId == null || filterId.length() == 0) {
+		if (filterId == null || filterId.equals("")) {
 			return "119695";
 		}else {
 			return filterId;
@@ -164,92 +164,97 @@ public class FilterController extends BaseController{
 		
 		if(filter == null)
 			return "";
-		Document filterXmlDoc = XMLUtil.string2Document(filter.getXml(), "UTF-8");
 		
-		if (FilterQueryManager.isSysFilter(filter.getId().getValue())) {
-			//系统过滤器
-			List<Node> displayFieldNodes = XMLUtil.getNodes(filterXmlDoc, "query/templateType/display/field");
-			showList.add(new FilterField("id", "编号"));
-			showFieldId.add("id");
-			for (Node node : displayFieldNodes) {
-				if(XMLUtil.getAttribute(node,"id").equals("node_id"))
-					continue;
-				showFieldId.add(XMLUtil.getAttribute(node,"id"));
-				showList.add(new FilterField(XMLUtil.getAttribute(node,"id"), XMLUtil.getAttribute(node,"name")));
-			}
+		try {
+			Document filterXmlDoc = XMLUtil.string2Document(filter.getXml(), "UTF-8");
 			
-			groupField = new FilterField("node_id", "项目");
-			
-			for (String fieldId : baseFieldNameMap.keySet()) {
-				if (!showFieldId.contains(fieldId)) {
-					backList.add(new FilterField(fieldId, baseFieldNameMap.get(fieldId)));
-				}
-			}
-		}else {
-			Node templateNode = XMLUtil.getSingleNode(filterXmlDoc, "query/template");
-			UUID templateId = DataAccessFactory.getInstance().createUUID(XMLUtil.getAttribute(templateNode,"id"));
-			
-			List<Node> displayFieldNodes = XMLUtil.getNodes(templateNode, "display/field");
-			showList.add(new FilterField("id", "编号"));
-			showFieldId.add("id");
-			for (Node node : displayFieldNodes) {
-				String fieldId = XMLUtil.getAttribute(node,"id");
-				if(fieldId == null)
-					continue;
-				showFieldId.add(fieldId);
-				if (CommonUtil.isPosNum(fieldId)) {
-					//判断该字段目前存在
-					if (FieldNameCache.getInstance().getFieldName(fieldId, templateId.getValue()) != null) {
-						fieldId = "FIEL-" + fieldId;
-					}else {
+			if (FilterQueryManager.isSysFilter(filter.getId().getValue())) {
+				//系统过滤器
+				List<Node> displayFieldNodes = XMLUtil.getNodes(filterXmlDoc, "query/templateType/display/field");
+				showList.add(new FilterField("id", "编号"));
+				showFieldId.add("id");
+				for (Node node : displayFieldNodes) {
+					if(XMLUtil.getAttribute(node,"id").equals("node_id"))
 						continue;
-					}
+					showFieldId.add(XMLUtil.getAttribute(node,"id"));
+					showList.add(new FilterField(XMLUtil.getAttribute(node,"id"), XMLUtil.getAttribute(node,"name")));
 				}
 				
-				showList.add(new FilterField(fieldId, XMLUtil.getAttribute(node,"name")));
-			}
-			
-			for (String fieldId : baseFieldNameMap.keySet()) {
-				if (!showFieldId.contains(fieldId)) {
-					backList.add(new FilterField(fieldId, baseFieldNameMap.get(fieldId)));
+				groupField = new FilterField("node_id", "项目");
+				
+				for (String fieldId : baseFieldNameMap.keySet()) {
+					if (!showFieldId.contains(fieldId)) {
+						backList.add(new FilterField(fieldId, baseFieldNameMap.get(fieldId)));
+					}
 				}
-			}
-			
-			Template template = das.queryTemplate(templateId);
-			
-			Set<Field> templateFields = template.getFields();
-			
-			for(Field field : templateFields)
-			{
-				if (!showFieldId.contains(field.getId().getValue())) {
-					backList.add(new FilterField("FIEL-" + field.getId().getValue(), field.getName()));
-				}
-			}
-			
-			//分组字段
-			Map<String, String> groupFieldMap = FilterAccessSession.getInstance().getGroupFieldMap(filter);
-			if(groupFieldMap != null && groupFieldMap.keySet().size() > 0){
-				for (String fieldId : groupFieldMap.keySet()) {
-					String fieldName = groupFieldMap.get(fieldId);
-					if(CommonUtil.isPosNum(fieldId)){
+			}else {
+				Node templateNode = XMLUtil.getSingleNode(filterXmlDoc, "query/template");
+				UUID templateId = DataAccessFactory.getInstance().createUUID(XMLUtil.getAttribute(templateNode,"id"));
+				
+				List<Node> displayFieldNodes = XMLUtil.getNodes(templateNode, "display/field");
+				showList.add(new FilterField("id", "编号"));
+				showFieldId.add("id");
+				for (Node node : displayFieldNodes) {
+					String fieldId = XMLUtil.getAttribute(node,"id");
+					if(fieldId == null)
+						continue;
+					showFieldId.add(fieldId);
+					if (CommonUtil.isPosNum(fieldId)) {
+						//判断该字段目前存在
 						if (FieldNameCache.getInstance().getFieldName(fieldId, templateId.getValue()) != null) {
 							fieldId = "FIEL-" + fieldId;
 						}else {
 							continue;
 						}
 					}
-					groupField = new FilterField(fieldId, fieldName);
-					break;
+					
+					showList.add(new FilterField(fieldId, XMLUtil.getAttribute(node,"name")));
+				}
+				
+				for (String fieldId : baseFieldNameMap.keySet()) {
+					if (!showFieldId.contains(fieldId)) {
+						backList.add(new FilterField(fieldId, baseFieldNameMap.get(fieldId)));
+					}
+				}
+				
+				Template template = das.queryTemplate(templateId);
+				
+				Set<Field> templateFields = template.getFields();
+				
+				for(Field field : templateFields)
+				{
+					if (!showFieldId.contains(field.getId().getValue())) {
+						backList.add(new FilterField("FIEL-" + field.getId().getValue(), field.getName()));
+					}
+				}
+				
+				//分组字段
+				Map<String, String> groupFieldMap = FilterAccessSession.getInstance().getGroupFieldMap(filter);
+				if(groupFieldMap != null && groupFieldMap.keySet().size() > 0){
+					for (String fieldId : groupFieldMap.keySet()) {
+						String fieldName = groupFieldMap.get(fieldId);
+						if(CommonUtil.isPosNum(fieldId)){
+							if (FieldNameCache.getInstance().getFieldName(fieldId, templateId.getValue()) != null) {
+								fieldId = "FIEL-" + fieldId;
+							}else {
+								continue;
+							}
+						}
+						groupField = new FilterField(fieldId, fieldName);
+						break;
+					}
 				}
 			}
+			Map<String, Object> returnMap = new HashMap<String, Object>();
+			returnMap.put("groupField", groupField);
+			returnMap.put("showFields", showList);
+			returnMap.put("backFields", backList);
+			
+			return JSONArray.toJSONString(returnMap);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "";
 		}
-		Map<String, Object> returnMap = new HashMap<String, Object>();
-		returnMap.put("groupField", groupField);
-		returnMap.put("showFields", showList);
-		returnMap.put("backFields", backList);
-		
-		return JSONArray.toJSONString(returnMap);
-		
 	}
 	
 	
