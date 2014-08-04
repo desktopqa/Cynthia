@@ -42,7 +42,8 @@
 --------
 		经测试，如下环境下正确运行。如有其它环境不能运行，请加群反馈我们~
 		jdk: 1.6 1.7
-		tomcat: 6&7 暂不支持tomcat8
+		tomcat: 6&7 暂不支持tomcat8, 有些tomcat的版本有问题，我们测试7.0.53没有问题，大家部署的时候尽量去官网下载最新的7.x版本
+		下载地址：http://tomcat.apache.org/download-70.cgi
 		mysql 5.x
 		
 Demo 地址
