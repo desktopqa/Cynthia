@@ -637,6 +637,14 @@ public interface DataAccessSession
 	public ErrorCode removeUserFocusFilter(String username, UUID filterId);  
 
 	/**
+	 * @description:remove all focus filter
+	 * @date:2014-8-5 下午8:01:47
+	 * @version:v1.0
+	 * @param filterId
+	 * @return
+	 */
+	public ErrorCode removeUserFocusFilter(UUID filterId);  
+	/**
 	 * @description:add user focus filter
 	 * @date:2014-5-6 上午10:46:29
 	 * @version:v1.0

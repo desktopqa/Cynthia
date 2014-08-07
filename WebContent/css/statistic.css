@@ -10,8 +10,6 @@ body,input,select
 {
 	border: 2px solid rgb(218, 218, 218);
 	border-radius:4px;
-	position:fixed;
-	width:230px;
 }
 
 #all_content_div

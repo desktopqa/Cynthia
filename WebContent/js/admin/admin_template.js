@@ -311,6 +311,7 @@ function displayModifyDiv(templateId)
 		$("#input_id_m").attr("uuid",templates[i].id);
 		$("#input_name_m").val(getXMLStr(templates[i].name));
 		$("#select_templateTypeId_m").append("<option value='"+templates[i].templateTypeId+"' selected='selected'>"+getXMLStr(getTemplateType(templates[i].templateTypeId)) +"</option>");
+		$("#select_flowId_m").empty();
 		for(var j = 0; j < flows.length; j++)
 		{
 			var flowOption = "<option value=\"" + flows[j].id + "\"";

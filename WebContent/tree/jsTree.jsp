@@ -280,7 +280,7 @@ if("get_children".equals(operation)){
 		Filter filter = das.queryFilter(filterId);
 		if(filter.getCreateUser().equals(key.getUsername()))
 		{
-				das.removeUserFocusFilter(key.getUsername(), filterId);
+				das.removeUserFocusFilter(filterId);
  				ErrorCode errorCode = das.removeFilter(filterId);
 				
 				if(errorCode.equals(ErrorCode.success))

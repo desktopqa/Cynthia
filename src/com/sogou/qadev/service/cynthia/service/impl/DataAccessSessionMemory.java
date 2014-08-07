@@ -342,6 +342,18 @@ public class DataAccessSessionMemory extends AbstractDataAccessSession
 	
 	/**
 	 * (non-Javadoc)
+	 * <p> Title:removeUserFocusFilter</p>
+	 * @param filterId
+	 * @return
+	 * @see com.sogou.qadev.service.cynthia.service.DataAccessSession#removeUserFocusFilter(com.sogou.qadev.service.cynthia.bean.UUID)
+	 */
+	public ErrorCode removeUserFocusFilter(UUID filterId)
+	{
+		return new FilterAccessSessionMySQL().removeUserFocusFilter(filterId);
+	}
+	
+	/**
+	 * (non-Javadoc)
 	 * <p> Title:addUserFocusFilter</p>
 	 * @param username
 	 * @param filterId

@@ -735,6 +735,35 @@ public class FilterAccessSessionMySQL
 		return errorCode;
 	}
 	
+	public ErrorCode removeUserFocusFilter(UUID filterId)
+	{
+		ErrorCode errorCode = ErrorCode.unknownFail;
+
+		PreparedStatement pstm = null;
+		Connection conn = null;
+		try
+		{
+			conn = DbPoolConnection.getInstance().getConnection();
+			pstm = conn.prepareStatement("DELETE FROM user_focus_filter WHERE filter_id = ?");
+			pstm.setLong(1, Long.parseLong(filterId.getValue()));
+
+			if (pstm.executeUpdate() >0)
+				errorCode = ErrorCode.success;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			errorCode = ErrorCode.dbFail;
+		}
+		finally
+		{
+			DbPoolConnection.getInstance().closeStatment(pstm);
+			DbPoolConnection.getInstance().closeConn(conn);
+		}
+
+		return errorCode;
+	}
+	
 	public ErrorCode removeUserFocusFilter(String user, UUID filterId)
 	{
 		ErrorCode errorCode = ErrorCode.unknownFail;
