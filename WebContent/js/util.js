@@ -1210,7 +1210,7 @@ function addHeadHtml()
 	headHtml += "<div class='row-fluid'>";
 	
 	headHtml += "<div class='span6'>";
-	headHtml += "<img style='border:2px solid #E7E0E0; margin-bottom:10px;' src='" + userPicUrl + "'></a>";
+	headHtml += "<img style='border:2px solid #E7E0E0; height: 100px; width: 100px;margin-bottom:10px;' src='" + userPicUrl + "'></a>";
 	headHtml += "</div>";
 	
 	headHtml += "<div class='span6' style='padding: 0px 5px;'>";

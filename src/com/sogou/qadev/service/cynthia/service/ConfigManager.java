@@ -17,14 +17,11 @@ import java.util.Properties;
 public class ConfigManager {
 	private static Properties properties = null;
 	
-	public static String deployHost = null;
-	public static String deployPort = null;
+	public static String deployUrl = null;
 	public static String deployPath = null;
 	
 	static{
 		properties = loadPropertyFile("config.properties");
-		deployHost = properties.getProperty("deploy.host");
-		deployPort = properties.getProperty("deploy.port");
 	}
 	
 	/**

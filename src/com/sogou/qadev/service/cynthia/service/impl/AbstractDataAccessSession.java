@@ -495,6 +495,13 @@ abstract public class AbstractDataAccessSession implements DataAccessSession
 		return getDataFilter().queryTemplateFieldAttachments(templateId, fieldId);
 	}
 
+	/**
+	 * (non-Javadoc)
+	 * <p> Title:removeData</p>
+	 * @param data
+	 * @return
+	 * @see com.sogou.qadev.service.cynthia.service.DataAccessSession#removeData(com.sogou.qadev.service.cynthia.bean.Data)
+	 */
 	public ErrorCode removeData(Data data)
 	{
 		// check
@@ -518,6 +525,13 @@ abstract public class AbstractDataAccessSession implements DataAccessSession
 		return ErrorCode.success;
 	}
 
+	/**
+	 * (non-Javadoc)
+	 * <p> Title:modifyData</p>
+	 * @param data
+	 * @return
+	 * @see com.sogou.qadev.service.cynthia.service.DataAccessSession#modifyData(com.sogou.qadev.service.cynthia.bean.Data)
+	 */
 	public Pair<ErrorCode, String> modifyData(Data data)
 	{
 		UUID id = data.getId();
@@ -643,8 +657,12 @@ abstract public class AbstractDataAccessSession implements DataAccessSession
 			DataAccessEntry<Template> entry = new DataAccessEntry<Template>();
 			entry.setData(template);
 			entry.setAction(DataAccessAction.delete);
-			if(!new TemplateAccessSessionMySQL().removeTemplateById(template.getId())) //删除数据库
+			if(!new TemplateAccessSessionMySQL().removeTemplateById(template.getId())) {//删除数据库
 				errorCode = ErrorCode.dbFail;
+			}else{
+				//设置data表以及data_log表相应表单数据 is_valid=0 
+				setValidDataOfTemplate(template.getId(), false);
+			}
 		}catch (Throwable t)
 		{
 			t.printStackTrace();

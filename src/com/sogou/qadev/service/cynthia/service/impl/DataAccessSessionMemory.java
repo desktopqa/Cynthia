@@ -1586,6 +1586,17 @@ public class DataAccessSessionMemory extends AbstractDataAccessSession
 	
 	/**
 	 * (non-Javadoc)
+	 * <p> Title:setValidDataOfTemplate</p>
+	 * @param templateId
+	 * @param isValid
+	 * @see com.sogou.qadev.service.cynthia.service.DataAccessSession#setValidDataOfTemplate(UUID, boolean)
+	 */
+	public boolean setValidDataOfTemplate(UUID templateId , boolean isValid){
+		return new DataAccessSessionMySQL().setValidDataOfTemplate(templateId,isValid);
+	}
+	
+	/**
+	 * (non-Javadoc)
 	 * <p> Title:saveGuideHtml</p>
 	 * @param guideId
 	 * @param guideHtml

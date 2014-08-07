@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import bsh.Console;
+
 import com.sogou.qadev.service.cynthia.bean.UserInfo;
 import com.sogou.qadev.service.cynthia.bean.UserInfo.UserRole;
 import com.sogou.qadev.service.cynthia.bean.UserInfo.UserStat;
@@ -103,9 +105,10 @@ public class LoginFilter implements Filter {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpSession session = httpRequest.getSession();
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
-		
+	
 		if (ConfigManager.deployPath == null || CookieManager.getCookieByName(httpRequest, "webRootDir") == null) {
 			ConfigManager.deployPath = httpRequest.getContextPath();
+			ConfigManager.deployUrl = httpRequest.getHeader("Host");
 			CookieManager.addCookie(httpResponse, "webRootDir", ConfigUtil.getCynthiaWebRoot(), 60*60*24*14);
 		}
 		

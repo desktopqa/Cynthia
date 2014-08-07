@@ -111,10 +111,7 @@ public class ConfigUtil {
 	public static String getCynthiaWebRoot() {
 		StringBuffer webRootBuffer = new StringBuffer();
 		webRootBuffer.append("http://");
-		webRootBuffer.append(ConfigManager.deployHost);
-		if (ConfigManager.deployPort != null && !ConfigManager.deployPort.equals("")) {
-			webRootBuffer.append(":" + ConfigManager.deployPort);
-		}
+		webRootBuffer.append(ConfigManager.deployUrl);
 		if (ConfigManager.deployPath != null && !ConfigManager.deployPath.equals("")) {
 			webRootBuffer.append(ConfigManager.deployPath + "/");
 		}else {

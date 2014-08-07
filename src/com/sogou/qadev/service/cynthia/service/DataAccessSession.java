@@ -302,6 +302,15 @@ public interface DataAccessSession
 	public ErrorCode removeData(Data data); 
 
 	/**
+	 * @description:set all Template Data valid true or false
+	 * @date:2014-8-7 下午5:04:27
+	 * @version:v1.0
+	 * @param templateId
+	 * @param isValid
+	 */
+	public boolean setValidDataOfTemplate(UUID templateId , boolean isValid);
+	
+	/**
 	 * @description:remove data from cache
 	 * @date:2014-5-6 上午10:24:31
 	 * @version:v1.0

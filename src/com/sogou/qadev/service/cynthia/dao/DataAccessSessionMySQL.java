@@ -1476,4 +1476,57 @@ public class DataAccessSessionMySQL {
 		}
 		return dataSet.toArray(new String[0]);
 	}
+
+	/** 
+	 * @description:set tempate data valid
+	 * @date:2014-8-7 下午5:11:02
+	 * @version:v1.0
+	 * @param templateId
+	 * @param isValid
+	 * @return
+	 */
+	public boolean setValidDataOfTemplate(UUID templateId, boolean isValid) {
+		if(templateId == null){
+			return false;
+		}
+		
+		String tableName = TableRuleManager.getInstance().getDataTableName(templateId);
+		String logTableName = TableRuleManager.getInstance().getDataLogTableName(templateId);
+		
+		Connection conn = null;
+		PreparedStatement pstm = null;
+		try {
+			conn = DbPoolConnection.getInstance().getConnection();
+			conn.setAutoCommit(false);
+			//更新data表
+			
+			pstm = conn.prepareStatement("update " + tableName + " set is_valid = ? where templateId = ?");
+			pstm.setBoolean(1, isValid);
+			pstm.setString(2, templateId.getValue());
+			pstm.executeUpdate();
+			
+			//更新log表
+			pstm = conn.prepareStatement("update " + logTableName + " set is_valid = ? where templateId = ?");
+			pstm.setBoolean(1, isValid);
+			pstm.setString(2, templateId.getValue());
+			pstm.executeUpdate();
+			
+			conn.commit();
+			conn.setAutoCommit(true);
+			return true;
+		} catch (Exception e) {
+			try {
+				if (!conn.isClosed()) {
+					conn.rollback();
+					conn.setAutoCommit(true);
+				}
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+			return false;
+		} finally{
+			DbPoolConnection.getInstance().closeAll(pstm, conn);
+		}
+	}
 }
