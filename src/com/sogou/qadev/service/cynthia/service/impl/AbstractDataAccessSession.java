@@ -663,9 +663,9 @@ abstract public class AbstractDataAccessSession implements DataAccessSession
 				//设置data表以及data_log表相应表单数据 is_valid=0 
 				setValidDataOfTemplate(template.getId(), false);
 			}
-		}catch (Throwable t)
+		}catch (Exception e)
 		{
-			t.printStackTrace();
+			e.printStackTrace();
 			errorCode = ErrorCode.dbFail;
 		}
 		return errorCode;

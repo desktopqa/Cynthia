@@ -10,10 +10,8 @@ function uploadImage()
         alert("图片类型必须是.jpeg,jpg,png中的一种");
         return false;
     }
-    
     // 利用ajaxFileUpload js 插件上传图片
     $.ajaxFileUpload({url: base_url + "attachment/upload.jsp",
-       
     	secureuri:false,
         fileElementId:"userPic",
         dataType:"json",

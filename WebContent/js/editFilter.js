@@ -225,6 +225,9 @@ function onCompleteInitFilterPage(data,textStatus)
 		$("#main_content").find("input").attr('disabled','disabled');
 		$("#main_content").find("select").attr('disabled','disabled');
 		$("#main_content").find("textarea").attr('disabled','disabled');
+		console.log(true);
+		$("#topSubmitDiv button").attr('disabled','disabled');
+		$("#submitButtons button:eq(0)").attr('disabled','disabled');
 		$("#main_content").find("span").removeAttr('onclick');
 		$("#main_content").find("td").removeAttr('onclick');
 	}else
