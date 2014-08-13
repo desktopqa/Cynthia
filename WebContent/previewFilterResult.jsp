@@ -33,7 +33,7 @@
 	<div id ="header-nav">
 	</div>
 	<div class="row-fluid mid-toolbar affix">
-		<strong style="font-size:15px;">过滤器查询结果:</strong>
+		<strong style="font-size:15px;margin: 10px 0px 0px 10px; float: left;">过滤器查询结果:</strong>
 			<div class="pull-right" style="margin-top:5px;">
 				<div>
 					<form class="form-inline">
@@ -51,15 +51,10 @@
 		<div class="main-grid-outer affix" id='main-grid-outer' style="left:0px !important; width:100% !important;">
 			<table id="main-grid-header" >
 			</table>
-<!-- 			<div style="padding-top:32px"> -->
-<!-- 			</div> -->
-			
 			<div id="main-grid-div">
 				<table id='main-grid-content' class="table table-hover">
 			    </table>
 			</div>
-<!-- 			<table id='main-grid-content' class="table table-hover"> -->
-<!-- 		    </table> -->
 		</div>
 	</div>
 </div>

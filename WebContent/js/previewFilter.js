@@ -29,16 +29,11 @@ function onWindowResize()
 {
 	var topHeight     = 80;
 	var mainGridHeaderHeight = 30;
-	var leftTreeWidth = $("#left-tree").is(":hidden")?20:200;
-	var windowWidth   = $(window).width();
 	var windowHeight  = $(window).height();
 	$('#left-tree').height(windowHeight - topHeight);
 	$('#left-tree-expand').height(windowHeight - topHeight);
 	$("#main-grid-div").height(windowHeight - topHeight - mainGridHeaderHeight);
 	$("#main-grid-outer").height(windowHeight - topHeight);
-	$("#main-grid-outer").css('left',leftTreeWidth);
-	$("#main-grid-outer").width(windowWidth - leftTreeWidth);
-	//$("#main-grid-div").width($("#main-grid-header").width());
 }
 
 /*窗口重新初始化*/
