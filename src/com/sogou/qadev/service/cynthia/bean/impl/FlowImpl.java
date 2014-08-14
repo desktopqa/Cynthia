@@ -1054,6 +1054,26 @@ public class FlowImpl implements Flow{
 
 	/**
 	 * (non-Javadoc)
+	 * <p> Title:queryNodeUserRight</p>
+	 * @param templateId
+	 * @return
+	 * @see com.sogou.qadev.service.cynthia.bean.Flow#queryNodeUserRight(com.sogou.qadev.service.cynthia.bean.UUID)
+	 */
+	public Right[] queryNodeUserRight(UUID templateId){
+		HashSet<Right> userSet = new HashSet<Right>();
+		for (Right right : this.rightSet)
+		{
+			if(right.templateId.equals(templateId))
+				userSet.add(right);
+		}
+		
+		Right[] userRights = userSet.toArray(new Right[userSet.size()]);
+		Arrays.sort(userRights);
+		return userRights;
+	}
+	
+	/**
+	 * (non-Javadoc)
 	 * <p> Title:queryReadActionRoles</p>
 	 * <p> Description:TODO</p>
 	 * @return

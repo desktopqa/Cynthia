@@ -1407,6 +1407,15 @@ public interface DataAccessSession
 	 * @return
 	 */
 	public UserInfo queryUserInfoByUserName(String userMail); 
+	
+	/**
+	 * @description:query userInfo by usermails
+	 * @date:2014-8-13 下午5:23:56
+	 * @version:v1.0
+	 * @param userMails
+	 * @return
+	 */
+	public Map<String, UserInfo> queryUserInfoByUserNames(String[] userMails); 
 
 	/**
 	 * @description:remove user

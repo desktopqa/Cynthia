@@ -1172,7 +1172,19 @@ public class DataAccessSessionMemory extends AbstractDataAccessSession
 	 */
 	public UserInfo queryUserInfoByUserName(String userName) {
 		return new UserInfoAccessSessionMySQL().queryUserInfoByUserName(userName);
-	};
+	}
+	
+	/**
+	 * 
+	 * @description:TODO
+	 * @date:2014-8-13 下午8:20:54
+	 * @version:v1.0
+	 * @param userMails
+	 * @return
+	 */
+	public Map<String, UserInfo> queryUserInfoByUserNames(String[] userMails){
+		return new UserInfoAccessSessionMySQL().queryUserInfoByUserNames(userMails);
+	}
 	
 	/**
 	 * (non-Javadoc)

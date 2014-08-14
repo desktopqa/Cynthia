@@ -415,6 +415,15 @@ public interface Flow extends BaseType{
 	public String[] queryNodeUsers(UUID templateId);
 
 	/**
+	 * @description:query node user rights
+	 * @date:2014-8-13 下午5:15:42
+	 * @version:v1.0
+	 * @param templateId
+	 * @return
+	 */
+	public Right[] queryNodeUserRight(UUID templateId);
+	
+	/**
 	 * @description:get all users of template and role
 	 * @date:2014-5-6 下午2:08:42
 	 * @version:v1.0
