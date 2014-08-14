@@ -47,10 +47,6 @@
 		下载地址：http://tomcat.apache.org/download-70.cgi
 		mysql 5.x
 		
-常见错误问题
---------
-		1.部署地址非本机地址，需配置config.properties deployHost deployPort 为部署的ip地址和端口
-		
 Demo 地址
 --------
 		http://opencynthia.duapp.com
