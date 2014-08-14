@@ -9,7 +9,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.sogou.qadev.service.cynthia.bean.UserInfo;
 import com.sogou.qadev.service.cynthia.bean.UserInfo.UserRole;
@@ -400,5 +402,55 @@ public class UserInfoAccessSessionMySQL {
 			DbPoolConnection.getInstance().closeAll(rs, stat, conn);
 		}
 		return allUserList;
+	}
+
+	/** 
+	 * @description:TODO
+	 * @date:2014-8-13 下午8:21:10
+	 * @version:v1.0
+	 * @param userMails
+	 * @return
+	 */
+	public Map<String, UserInfo> queryUserInfoByUserNames(String[] userArray) {
+		Map<String, UserInfo> allUserMap = new LinkedHashMap<String,UserInfo>();
+		if (userArray == null || userArray.length == 0) {
+			return allUserMap;
+		}
+		
+		Connection conn = null;
+		Statement stat = null;
+		ResultSet rs = null;
+		
+		StringBuffer userBuffer = new StringBuffer();
+		for (String user : userArray) {
+			if (user != null && user.length() > 0 && !CynthiaUtil.isChinese(user)) {
+				userBuffer.append(userBuffer.length() >0 ?"," :"").append("'").append(user).append("'");
+			}
+		}
+		
+		try {
+			conn = DbPoolConnection.getInstance().getReadConnection();
+			stat = conn.createStatement();
+			rs = stat.executeQuery("select * from user_info where user_name in(" + userBuffer.toString() + ")");
+			while (rs.next()) {
+				UserInfo userInfo = new UserInfo();
+				userInfo.setId(rs.getInt("id"));
+				userInfo.setCreateTime(rs.getTimestamp("create_time"));
+				userInfo.setUserPassword(rs.getString("password"));
+				userInfo.setLastLoginTime(rs.getTimestamp("last_login_time"));
+				userInfo.setNickName(rs.getString("nick_name"));
+				userInfo.setUserName(rs.getString("user_name"));
+				userInfo.setUserRole(UserRole.valueOf(rs.getString("user_role")));
+				userInfo.setUserStat(UserStat.valueOf(rs.getString("user_stat")));
+				userInfo.setPicId(rs.getString("pic_id"));
+				
+				allUserMap.put(rs.getString("user_name"), userInfo);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			DbPoolConnection.getInstance().closeAll(rs, stat, conn);
+		}
+		return allUserMap;
 	}
 }

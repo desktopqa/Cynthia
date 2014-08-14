@@ -2524,7 +2524,7 @@ function setReferenceDefaultValues(fieldId)
 
 function isActionControlled(field)
 {
-	var isControlled = false;
+	var isControlled = true;  //默认为可填
 	var selectedActionId = $("#select_action").val().split("|")[0];
 
 	if(selectedActionId == "")
@@ -2568,7 +2568,6 @@ function isFieldDisplay(field)
 			return true;
 		return false;
 	}
-	
 	
 	var controlFieldSelect = $("#field" + controlField.id)[0];
 	if(controlFieldSelect != null)
@@ -2926,7 +2925,6 @@ function setInputValue(selectId)
 function drawInputField(field)
 {
 	var fieldHtml = "";
-	
 	if(isFieldDisplay(field))
 	{
 		var fieldInitValues = getFieldInitValues(field);

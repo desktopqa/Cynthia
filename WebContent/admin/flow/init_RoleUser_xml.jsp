@@ -1,3 +1,5 @@
+<%@page import="com.sogou.qadev.service.cynthia.bean.UserInfo"%>
+<%@page import="java.util.Map"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.ErrorManager.ErrorType"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.ErrorManager"%>
 <%@ page contentType="text/xml; charset=UTF-8" %>
@@ -57,6 +59,8 @@
 	
 	TreeSet<String> userSet = new TreeSet<String>();
 	String[] userArray = flow.queryNodeUsers(templateId);
+	Map<String,UserInfo> userInfoMap = das.queryUserInfoByUserNames(userArray);
+	
 	if(userArray != null)
 		userSet.addAll(Arrays.asList(userArray));
 	
@@ -71,6 +75,7 @@
 			xmlb.append("<user>");
 			
 			xmlb.append("<name>").append(XMLUtil.toSafeXMLString(user)).append("</name>");
+			xmlb.append("<showName>").append( "[" + XMLUtil.toSafeXMLString( userInfoMap.get(user) == null ? user : userInfoMap.get(user).getNickName()) + "]-" + user).append("</showName>");
 			xmlb.append("<right>").append(roleUserSet.contains(user) ? "yes" : "no").append("</right>");
 			
 			xmlb.append("</user>");

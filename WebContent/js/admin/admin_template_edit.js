@@ -1036,8 +1036,8 @@ function initControlOptions()
             controlEditActionTr += "<tr>";
             controlEditActionTr += "<td>"+actionRole.name+"</td>";
             controlEditActionTr += "<td>";
-            controlEditActionTr += "<input name='edit_role_" + actionRole.id + "' type='radio' value='-1' checked>不可填";
-            controlEditActionTr += "<input name='edit_role_" + actionRole.id + "' type='radio' value='0'>选填";
+            controlEditActionTr += "<input name='edit_role_" + actionRole.id + "' type='radio' value='-1'>不可填";
+            controlEditActionTr += "<input name='edit_role_" + actionRole.id + "' type='radio' value='0' checked>选填";
             controlEditActionTr += "<input name='edit_role_" + actionRole.id + "' type='radio' value='1'>必填";
             controlEditActionTr += "</td>";
             controlEditActionTr += "</tr>";
@@ -1635,8 +1635,8 @@ function initActionRoles()
                 controlActionTr += "<tr>";
                 controlActionTr += "<td>"+actionRole.name+"</td>";
                 controlActionTr += "<td>";
-                controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='-1' checked>不可填";
-                controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='0'>选填";
+                controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='-1'>不可填";
+                controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='0' checked>选填";
                 controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='1'>必填";
                 controlActionTr += "</td>";
                 controlActionTr += "</tr>";

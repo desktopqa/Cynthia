@@ -173,11 +173,12 @@ function onCompleteInitRoleUsers(request){
 	{
 		users[i] = new Object();
 		users[i].name = $(userNodes[i]).children("name").text();
+		users[i].showName = $(userNodes[i]).children("showName").text();
 		users[i].right = $(userNodes[i]).children("right").text();
 		
 		roleUserTd2Html += "<tr>";
 		roleUserTd2Html += "<td>" + (i + 1) + "</td>";
-		roleUserTd2Html += "<td>" + getXMLStr(users[i].name) + "</td>";
+		roleUserTd2Html += "<td value=" + getXMLStr(users[i].name) + ">" + getXMLStr(users[i].showName) + "</td>";
 		roleUserTd2Html += "<td><input type=\"checkBox\"" + (users[i].right == "yes" ? " checked" : "") + "/></td>";
 		roleUserTd2Html += "</tr>";
 	}
@@ -282,7 +283,7 @@ function modifyRoleUser(){
 		param += "&templateId=" + getSafeParam(templates[index].id);
 		
 		$.each($("#user-cfg-table").find("tr"),function(index,node){
-			var userRight = $(node).find("td:eq(1)").text();
+			var userRight = $(node).find("td:eq(1)").attr("value");
 			if($(node).find("td:eq(2)").find("input").attr("checked"))
 			{
 				param += "&userRight=" + userRight + "|true";
@@ -368,7 +369,7 @@ function onInitUserListAjax(rootNode)
 	$(rootNode).find("users").children("user").each(function(idx,node){
 		var userName = $(node).children("name").text(); 
 		var userEmail = $(node).children("email").text();
-		gridHtml += "<option value="+userEmail+">" + userName + "[" + userEmail + "]</option>";
+		gridHtml += "<option value="+userEmail+">[" + userName + "]-" + userEmail + "</option>";
 	});
 	gridHtml += "</select>";
     $("#allUserDiv").html(gridHtml); 
