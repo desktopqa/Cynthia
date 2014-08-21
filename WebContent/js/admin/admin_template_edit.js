@@ -1257,11 +1257,7 @@ function saveOrUpdateField()
 		//设置编辑权限
 		for(var i = 0; i < roles.length; i++)
 		{
-			var editRoles = document.getElementsByName("edit_role_" + roles[i].id);
-			if(editRoles[0].checked)
-				continue;
-
-			params += "&controlRoleId=" + (roles[i].id) + "_" + (editRoles[1].checked ? "0" : "1");
+			params += "&controlRoleId=" + (roles[i].id) + "_" + ($("input[name=edit_role_" + roles[i].id+ "]:checked").val());
 		}
 		
 		var table_controlRoles = $("#controlRoles_table")[0];
@@ -1270,13 +1266,9 @@ function saveOrUpdateField()
 			var action = getActionById(table_controlRoles.rows[i].id.split("_")[2]);
 			for(var j = 0; j < action.roles.length; j++)
 			{
-				var actionRoles = document.getElementsByName("action_" + action.id + "_role_" + action.roles[j].id);
-				if(actionRoles[0].checked)
-					continue;
-
 				params += "&controlActionId=" + (action.id) + "_";
 				params += (action.roles[j].id) + "_";
-				params += actionRoles[1].checked ? "0" : "1";
+				params += ($("input[name=action_" + action.id + "_role_" + action.roles[j].id + "]:checked").val());
 			}
 
 			params += "&actionId=" + (action.id);

@@ -1720,7 +1720,6 @@ function getRoleById(roleId)
 			return roles[i];
 		}
 	}
-
 	return null;
 }
 
@@ -2531,9 +2530,10 @@ function isActionControlled(field)
 	{
 		for(var i = 0; i < field.controlRoleIds.length; i++)
 		{
-			if(getRoleById(field.controlRoleIds[i].split("_")[0]) != null)
-			{
-				isControlled = true;
+			var controlVar = field.controlRoleIds[i].split("_");
+			var role = getRoleById(controlVar[0]);
+			if( role && controlVar && controlVar.length == 2 && controlVar[1] == "-1"){
+				isControlled = false;
 				break;
 			}
 		}
@@ -2544,9 +2544,9 @@ function isActionControlled(field)
 		{
 			if(field.controlActionIds[i].split("_")[0] == selectedActionId)
 			{
-				if(getRoleById(field.controlActionIds[i].split("_")[1]) != null)
-				{
-					isControlled = true;
+				var controlVar = field.controlActionIds[i].split("_");
+				if(controlVar && controlVar.length == 3 && controlVar[2] == "-1"){
+					isControlled = false;
 					break;
 				}
 			}

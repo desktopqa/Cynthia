@@ -25,7 +25,6 @@
 	<div id="main" style="margin-top:50px;">
 		<div id="shortmenu">
 			<ul>
-				<li><a href="editscript.jsp">新建</a></li>
 				<!-- <li><a href="#">全部</a></li>-->
 			</ul>
 		</div>
