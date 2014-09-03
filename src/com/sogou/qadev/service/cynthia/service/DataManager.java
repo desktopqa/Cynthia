@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -19,6 +20,7 @@ import com.sogou.qadev.service.cynthia.bean.CommonField;
 import com.sogou.qadev.service.cynthia.bean.CommonOption;
 import com.sogou.qadev.service.cynthia.bean.Data;
 import com.sogou.qadev.service.cynthia.bean.Field;
+import com.sogou.qadev.service.cynthia.bean.Role;
 import com.sogou.qadev.service.cynthia.bean.Field.DataType;
 import com.sogou.qadev.service.cynthia.bean.Field.Type;
 import com.sogou.qadev.service.cynthia.bean.Flow;
@@ -547,7 +549,7 @@ public class DataManager
 			Flow flow = das.queryFlow(template.getFlowId());
 			if(flow == null)
 				continue;
-
+			
 			Action[] actionArray = flow.queryUserNodeBeginActions(das.getUsername(), template.getId());
 			if(actionArray != null && actionArray.length > 0)
 				templateSet.add(template);
@@ -556,6 +558,72 @@ public class DataManager
 		return templateSet.toArray(new Template[0]);
 	}
 
+	/**
+	 * @description:查询用户可查看权限表单
+	 * @date:2014-9-3 下午2:30:13
+	 * @version:v1.0
+	 * @param templateTypeId
+	 * @param das
+	 * @return
+	 */
+	public Template[] queryUserReadableTemplates(UUID templateTypeId, DataAccessSession das)
+	{
+		Template[] templateArray = das.queryAllTemplates();
+		if(templateArray == null || templateArray.length == 0)
+			return new Template[0];
+
+		Set<Template> templateSet = new LinkedHashSet<Template>();
+		for(Template template : templateArray)
+		{
+			if(templateTypeId != null && !template.getTemplateTypeId().equals(templateTypeId))
+				continue;
+			
+			Flow flow = das.queryFlow(template.getFlowId());
+			if(flow == null)
+				continue;
+			
+			if(flow.isRoleEditAction(Role.everyoneUUID) || flow.isRoleReadAction(Role.everyoneUUID))
+			{
+				//everyone 查看 编辑
+				templateSet.add(template);
+				continue;
+			}
+			
+			//有everyone可操作的动作
+			boolean isAdd = false;
+			Action[] actionArray = flow.getActions();
+			if(actionArray != null)
+			{
+				for(Action action : actionArray)
+				{
+					if(flow.isActionEveryoneRole(action.getId()))
+					{
+						isAdd = true;
+						break;
+					}
+				}
+			}
+			
+			if(isAdd)
+			{
+				templateSet.add(template);
+				continue;
+			}
+			
+			//其它角色查看
+			List<Role> userRoleList = Arrays.asList(flow.queryUserNodeRoles(das.getUsername(), template.getId()));
+			Role[] readActionRoles = flow.queryReadActionRoles();
+			
+			for(Role role : readActionRoles){
+				if(userRoleList.contains(role)){
+					templateSet.add(template);
+				}
+			}
+		}
+
+		return templateSet.toArray(new Template[0]);
+	}
+	
 	/**
 	 * @function：
 	 * @modifyTime：2013-9-9 下午6:22:29

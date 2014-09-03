@@ -403,15 +403,11 @@ abstract public class AbstractDataAccessSession implements DataAccessSession
 	{
 		Data data = null;
 		
-		if (dataStatus.containsKey(dataId))
-		{
+		if (dataStatus.containsKey(dataId)){
 			DataAccessEntry<Data> entry = dataStatus.get(dataId);
 			if (entry.getAction().equals(DataAccessAction.insert) || entry.getAction().equals(DataAccessAction.update))
 				data = entry.getData();
-			
-		}
-		else
-		{
+		}else{
 			if (templateId == null) {
 				return queryData(dataId);
 			}else {

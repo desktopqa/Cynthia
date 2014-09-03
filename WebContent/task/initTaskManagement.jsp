@@ -1,3 +1,4 @@
+<%@page import="com.sogou.qadev.service.cynthia.bean.DataAccessAction"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.ErrorManager.ErrorType"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.ErrorManager"%>
 <%@page import="java.sql.Types"%>
@@ -120,9 +121,16 @@
 		}else{
 			task = das.queryData(dataId);
 		}
-			
+		
+		//数据不存在
 		if(task == null){
 			out.println(ErrorManager.getErrorXml(ErrorType.data_not_found_inDb));
+			return;
+		}
+		
+		//没有可读权限
+		if(!das.checkUserPrivilege(task, DataAccessAction.read)){
+			out.println(ErrorManager.getErrorXml(ErrorType.not_read_right));
 			return;
 		}
 		

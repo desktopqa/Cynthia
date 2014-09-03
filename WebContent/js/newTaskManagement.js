@@ -208,7 +208,7 @@ function onCompleteInitTaskManagement(request,type)
 		}else{
 			errorInfo = "该ID不存在或它的数据有异常!";
 		}
-		errorInfo += ",确定后窗口将关闭..";
+		errorInfo += "确定后窗口将关闭..";
 		alert(errorInfo);
 		window.close();
 		return;
@@ -2525,21 +2525,22 @@ function isActionControlled(field)
 {
 	var isControlled = true;  //默认为可填
 	var selectedActionId = $("#select_action").val().split("|")[0];
-
-	if(selectedActionId == "")
-	{
+	
+	if(selectedActionId == ""){
+		//编辑动作
 		for(var i = 0; i < field.controlRoleIds.length; i++)
 		{
 			var controlVar = field.controlRoleIds[i].split("_");
 			var role = getRoleById(controlVar[0]);
-			if( role && controlVar && controlVar.length == 2 && controlVar[1] == "-1"){
+			if( !role || (role && controlVar && controlVar.length == 2 && controlVar[1] == "-1" )){
 				isControlled = false;
+			}else{
+				isControlled = true;
 				break;
 			}
 		}
-	}
-	else
-	{
+	}else{
+		//流程动作
 		for(var i = 0; i < field.controlActionIds.length; i++)
 		{
 			if(field.controlActionIds[i].split("_")[0] == selectedActionId)
@@ -2547,6 +2548,8 @@ function isActionControlled(field)
 				var controlVar = field.controlActionIds[i].split("_");
 				if(controlVar && controlVar.length == 3 && controlVar[2] == "-1"){
 					isControlled = false;
+				}else{
+					isControlled = true;
 					break;
 				}
 			}

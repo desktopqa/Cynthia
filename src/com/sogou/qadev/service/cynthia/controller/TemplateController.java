@@ -77,6 +77,7 @@ public class TemplateController extends BaseController{
 		if (templateTypeId != null && !templateTypeId.equals("")) {
 			templateTypeUUID = DataAccessFactory.getInstance().createUUID(templateTypeId);
 		}
+		
 		das = DataAccessFactory.getInstance().createDataAccessSession(key.getUsername(), keyId);
 		Template[] allTemplates = DataManager.getInstance().queryUserTemplates(das);
 		
@@ -93,6 +94,41 @@ public class TemplateController extends BaseController{
 		return JSONArray.toJSONString(allTemplateSet);
 	}
 	
+	/**
+	 * @description:get templates of user(can read or modify)
+	 * @date:2014-5-5 下午8:43:09
+	 * @version:v1.0
+	 * @param request
+	 * @param httpSession
+	 * @return
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping("/getUserReadableTemplate.do")
+	public String getUserReadableTemplate(HttpServletRequest request , HttpSession httpSession) throws Exception {
+		Key key   = ((Key)httpSession.getAttribute("key"));
+		Long keyId = (Long)httpSession.getAttribute("kid");
+		String templateTypeId = request.getParameter("templateTypeId");
+		UUID templateTypeUUID = null;
+		if (templateTypeId != null && !templateTypeId.equals("")) {
+			templateTypeUUID = DataAccessFactory.getInstance().createUUID(templateTypeId);
+		}
+		
+		das = DataAccessFactory.getInstance().createDataAccessSession(key.getUsername(), keyId);
+		Template[] allTemplates = DataManager.getInstance().queryUserReadableTemplates(templateTypeUUID,das);
+		
+		Set<Pair<String, String>> allTemplateSet = new HashSet<Pair<String, String>>();
+			
+		for (Template template : allTemplates) {
+			if (templateTypeUUID != null) {
+				if (!template.getTemplateTypeId().equals(templateTypeUUID)) {
+					continue;
+				}
+			}
+			allTemplateSet.add(new Pair<String, String>(template.getId().getValue(),template.getName()));
+		}
+		return JSONArray.toJSONString(allTemplateSet);
+	}
 	/**
 	 * @description:get data id and title of template
 	 * @date:2014-5-5 下午8:43:42

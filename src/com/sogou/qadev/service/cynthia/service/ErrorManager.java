@@ -23,6 +23,9 @@ public class ErrorManager {
 		//数据
 		data_not_found_inDb, //数据在数据库中无法找到
 		time_parse_error,   //时间类型解析异常
+		not_read_right,     //没有查看数据权限
+		not_delete_right,   //没有删除数据权限
+		not_edit_right,     //没有编辑数据权限
 		
 		//用户
 		user_not_fount, //用户无法找到
@@ -71,6 +74,12 @@ public class ErrorManager {
 			errorInfo = "表单解析xml发生错误!";
 		}else if (errorType.equals(ErrorType.user_not_login)) {
 			errorInfo = "用户没有登陆!";
+		}else if (errorType.equals(ErrorType.not_read_right)) {
+			errorInfo = "没有查看数据权限!";
+		}else if (errorType.equals(ErrorType.not_delete_right)) {
+			errorInfo = "没有删除数据权限!";
+		}else if (errorType.equals(ErrorType.not_edit_right)) {
+			errorInfo = "没有编辑数据权限!";
 		}
 		
 		//TODO 是否记录日志

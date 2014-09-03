@@ -79,8 +79,8 @@ public class ConfigUtil {
 		
 		allSysFilterMap.put("119695", "待处理");
 		allSysFilterMap.put("119891", "待跟踪");
-		allSysFilterMap.put("119892", "己处理[未关闭]");
-		allSysFilterMap.put("119893", "己处理[己关闭]");
+		allSysFilterMap.put("119892", "已处理[未关闭]");
+		allSysFilterMap.put("119893", "已处理[己关闭]");
 	}
 	
 	public static Map<String, String> templateTypeIconMap = new HashMap<String, String>();

@@ -33,7 +33,7 @@ function initTemplate()
 	}
 	
 	$.ajax({
-		url: base_url + 'template/getUserTemplate.do',
+		url: base_url + 'template/getUserReadableTemplate.do',
 		type:'POST',
 		dataType:'json',
 		data:param,

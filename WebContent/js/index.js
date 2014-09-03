@@ -4,7 +4,7 @@ var actionModifyUser = null;
 var curTagId = null;
 var tagArray = null;
 var favorateFilterArray = null;
-var sysFilter = {'119695':'待处理','119891':'待跟踪','119892':'己处理[未关闭]','119893':'己处理[己关闭]'};
+var sysFilter = {'119695':'待处理','119891':'待跟踪','119892':'已处理[未关闭]','119893':'已处理[己关闭]'};
 var filterArray = new Array();
 var defaultHeader = null;
 
