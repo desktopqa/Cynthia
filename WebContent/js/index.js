@@ -1514,7 +1514,7 @@ function getHomeFilter()
 			});
 		}
 	}
-	$("#filterId").val((filterId || "" ).trim());
+	$("#filterId").val(trim(filterId || "" ));
 }
 
 function initFilterData(filterId,page,sortField,sortType,reDrawHead)

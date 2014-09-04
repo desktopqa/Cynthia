@@ -1150,7 +1150,7 @@ function addHeadHtml()
 	headHtml += "<div class=\"row-fluid navbar navbar-fixed-top\">";
 	headHtml += "<div class=\"container\" style=\"width:100%;\">";
 	//图片logo链接
-	headHtml += "<a href='" + rootDir + "index.html' class='pull-left'><img src='" + rootDir + "images/logo.png' style='width:65px;height:40px;margin-left: 20px;'/></a>"; 
+	headHtml += "<a href='" + rootDir + "index.html' class='pull-left'><img src='" + rootDir + "images/logo.png' style='width:65px;min-width:65px;height:40px;margin-left: 20px;'/></a>"; 
 	//专心专注专业
 	headHtml += "<a class=\"brand\" href='" + rootDir + "index.html' style=\"font-size:14px;color:#666;padding: 10px 10px 0px;margin-left:0px;\">专心、专注、专业</a>";
     
@@ -1164,7 +1164,7 @@ function addHeadHtml()
 		headHtml += "<option value='description'>描述</option>";
 		headHtml += " </select>";
 		headHtml += "<input id=\"searchWord\" type=\"text\" placeholder=\"Search\">";
-		headHtml += "<button class=\"btn\" type=\"button\" style='height:30px;' id='searchBtn'><img src=\"" + rootDir + "images/search.png\" style=\"width: 16px; vertical-align:text-bottom\"></button>";
+		headHtml += "<button class=\"btn\" type=\"button\" style='height:30px;' id='searchBtn'><img src=\"" + rootDir + "images/search.png\" style=\"width: 16px; min-width:16px;vertical-align:text-bottom\"></button>";
 		headHtml += "</div>";
 	}
 	
