@@ -635,19 +635,20 @@ public class FlowImpl implements Flow{
 				roleIdSet.add(role.getId());
 		}
 
-		if(assignUser != null)
-		{
-			Role[] assignUserRoleArray = queryUserNodeRoles(assignUser, templateId);
-			if(assignUserRoleArray != null)
-			{
-				for(Role assignUserRole : assignUserRoleArray)
-				{
-					if(roleIdSet.contains(assignUserRole.getId()))
-						return true;
-				}
-			}
-		}
-
+//		//同一类角色可以编辑
+//		if(assignUser != null)
+//		{
+//			Role[] assignUserRoleArray = queryUserNodeRoles(assignUser, templateId);
+//			if(assignUserRoleArray != null)
+//			{
+//				for(Role assignUserRole : assignUserRoleArray)
+//				{
+//					if(roleIdSet.contains(assignUserRole.getId()))
+//						return true;
+//				}
+//			}
+//		}
+		
 		Role[] actionUserRoleArray = queryUserNodeRoles(actionUser, templateId);
 		if(actionUserRoleArray != null)
 		{

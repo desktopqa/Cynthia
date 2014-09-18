@@ -65,39 +65,48 @@ var defaultOption = {
         }
 };
 
-//html5 version
-function initUploadify()
-{
-	$('#fileInput').Huploadify($.extend(defaultOption,{
-		showUploadedPercent:true,//是否实时显示上传的百分比，如20%
-//		showUploadedSize:true,
-		removeTimeout:1000,
-		onUploadStart:function(){
-			//alert('开始上传');
-		},
-		onInit:function(){
-			//alert('初始化');
-		},
-		onUploadComplete:function(){
-			$("#uploadFileDiv").modal('hide');
-		},
-		onDelete:function(file){
-		}
-		
-	}));
-}
-
-//flash version
-function initUploadifyNotHtml5()
-{
-	//检测是否安装flash并提示firefox
-	$("#uploadFileDiv").append("<object id='SWFUpload_test' type='application/x-shockwave-flash' data='lib/fileUpload/uploadify.swf?preventswfcaching=1398169140621' width='120' height='30' class='swfupload' style='position: absolute; z-index: 1;display:none;'></object>");
+var g_fileUploadHandler = {
+	//html5 version
+	initUploadify :function (){
+		$('#fileInput').Huploadify($.extend(defaultOption,{
+			showUploadedPercent:true,//是否实时显示上传的百分比，如20%
+//				showUploadedSize:true,
+			removeTimeout:1000,
+			onUploadStart:function(){
+				//alert('开始上传');
+			},
+			onInit:function(){
+				//alert('初始化');
+			},
+			onUploadComplete:function(){
+				$("#uploadFileDiv").modal('hide');
+			},
+			onDelete:function(file){
+			}
+			
+		}));
+	},
 	
-	$('#fileInput').uploadify ($.extend(defaultOption,{
-		//以下参数均是可选
-		buttonCursor : 'hander'
-	}));
-}
+	//flash version
+	initUploadifyNotHtml5 : function (){
+		//检测是否安装flash并提示firefox
+		$("#uploadFileDiv").append("<object id='SWFUpload_test' type='application/x-shockwave-flash' data='lib/fileUpload/uploadify.swf?preventswfcaching=1398169140621' width='120' height='30' class='swfupload' style='position: absolute; z-index: 1;display:none;'></object>");
+		
+		$('#fileInput').uploadify ($.extend(defaultOption,{
+			//以下参数均是可选
+			buttonCursor : 'hander'
+		}));
+	},
+	
+	init : function(){
+		if (typeof(Worker) !== "undefined") {  			
+			//支持html5
+			g_fileUploadHandler.initUploadify();
+		} else { 			
+			g_fileUploadHandler.initUploadifyNotHtml5();
+		} 	
+	}
+};
 
 function executeSubmitUploadFile()
 {
@@ -109,11 +118,3 @@ function executeSubmitUploadFile()
 	} 	
 }
 
-$(function(){
-	if (typeof(Worker) !== "undefined") {  			
-		//支持html5
-		initUploadify();
-	} else { 			
-		initUploadifyNotHtml5();
-	} 	
-});

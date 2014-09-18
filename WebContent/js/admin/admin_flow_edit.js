@@ -266,13 +266,15 @@ function initActionRole(actionId)
 				roles[i] = new Object();
 				roles[i].id = data.allRole[i].fieldId;
 				roles[i].name = data.allRole[i].fieldName;
-				if(roles[i].name == "everyone")
-					$("#actionRoleDiv").append("<label class=\"checkbox\" style=\"color:red;margin-right:15px;\">" +
-							"<input type=\"checkbox\" name=\"actionRole\" value="+roles[i].id+">"+roles[i].name+"</label>");
-				else
+				if(roles[i].name != "everyone")
+//					$("#actionRoleDiv").append("<label class=\"checkbox\" style=\"color:red;margin-right:15px;\">" +
+//							"<input type=\"checkbox\" name=\"actionRole\" value="+roles[i].id+">"+roles[i].name+"</label>");
+//				else
 					$("#actionRoleDiv").append("<label class=\"checkbox\" style=\"margin-right:15px;\">" +
 							"<input type=\"checkbox\" name=\"actionRole\" value="+roles[i].id+">"+roles[i].name+"</label>");
 			}
+			
+			$("#actionRoleDiv").append("<div class='addMoreRole' data-toggle='modal' data-target='#addRoleDiv'><a href='javascript:;' class='addComp' onclick=''><i class='icon-plus'></i><span>添加角色</span></a></div>");
 			
 			for(var i in data.actionRole){
 				$("input[name='actionRole'][value='"+data.actionRole[i].fieldId+"']").attr("checked", 'true');
@@ -312,6 +314,7 @@ function addRole(){
 			if(!isError)
 			{
 				initActionRole($("#actionId").val());
+				initWordActionRole($("#actionId").val());
 			}
 			else
 			{
@@ -645,6 +648,7 @@ function addWordAction(){
 
 function initWordActionRole(actionId)
 {
+	roles = new Array();
 	$.ajax({
 		url: base_url + 'flow/getActionRole.do',
 		type :'POST',
@@ -654,11 +658,18 @@ function initWordActionRole(actionId)
 		success: function(data){
 			$("#wordActionRoleDiv").html("");
 			for(var i in data.allRole){
-				if(data.allRole[i].fieldName == "everyone")
-					$("#wordActionRoleDiv").append("<label class=\"checkbox\" style=\"color:red;margin-right:15px;\"><input type=\"checkbox\" name=\"wordActionRole\" value="+data.allRole[i].fieldId+">"+data.allRole[i].fieldName+"</label>");
-				else
+				roles[i] = new Object();
+				roles[i].id = data.allRole[i].fieldId;
+				roles[i].name = data.allRole[i].fieldName;
+				
+				if(data.allRole[i].fieldName != "everyone")
+//					$("#wordActionRoleDiv").append("<label class=\"checkbox\" style=\"color:red;margin-right:15px;\"><input type=\"checkbox\" name=\"wordActionRole\" value="+data.allRole[i].fieldId+">"+data.allRole[i].fieldName+"</label>");
+//				else
 					$("#wordActionRoleDiv").append("<label class=\"checkbox\" style=\"margin-right:15px;\"><input type=\"checkbox\" name=\"wordActionRole\" value="+data.allRole[i].fieldId+">"+data.allRole[i].fieldName+"</label>");
 			}
+			
+			$("#wordActionRoleDiv").append("<div class='addMoreRole' data-toggle='modal' data-target='#addRoleDiv'><a href='javascript:;' class='addComp' onclick=''><i class='icon-plus'></i><span>添加角色</span></a></div>");
+			
 		},
 		error:function(msg){
 		}

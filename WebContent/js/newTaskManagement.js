@@ -1020,8 +1020,13 @@ function executeCancel()
 	window.location.reload();
 }
 
+var g_initUploadFile = false;
 function displayUploadFile(fieldId)
 {
+	if(!g_initUploadFile){
+		g_fileUploadHandler.init();
+		g_initUploadFile = true;
+	}
 	$("#uploadFileDiv input[type=file]").val("");
 	$("#objId").val(fieldId);
 	$("#uploadFileDiv").modal('show');
@@ -3985,8 +3990,8 @@ function sendMailSubmit()
 	sendMailContent += "<style type=\"text/css\">table{border:1px #E1E1E1 solid;}td{border:1px #E1E1E1 solid;padding:10px;}</style></head>";
 	sendMailContent += "<body><table>";
 	sendMailContent += "<tr><td>邮件正文 </td><td>" + replaceAll(getXMLStr($("#sendMailContent").val()), "\n", "<br>") + "</td>";
-	sendMailContent += "<tr><td>bug编号</td><td><a href=\"" + getWebRootDir() + "taskManagement.html?operation=read&taskid="+taskId+"\">"+taskId+"</a></td>";
-	sendMailContent += "<tr><td>bug描述</td><td>" + replaceAll($("#input_taskDescription").val(),"../attachment/download_json.jsp", getWebRootDir() + "attachment/download_json.jsp") +"</td>";
+	sendMailContent += "<tr><td>问题编号</td><td><a href=\"" + getWebRootDir() + "taskManagement.html?operation=read&taskid="+taskId+"\">"+taskId+"</a></td>";
+	sendMailContent += "<tr><td>问题描述</td><td>" + replaceAll($("#input_taskDescription").val(),"../attachment/download_json.jsp", getWebRootDir() + "attachment/download_json.jsp") +"</td>";
 	sendMailContent += "</table></body></html>";
 
 	var params = "sendMailReceivers=" + getSafeParam(sendMailReceivers);

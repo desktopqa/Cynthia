@@ -105,3 +105,29 @@ body {
 	font-size: 15px;
 	border: 1px solid #AAA;
 }
+
+.addMoreRole
+{
+	display: inline-block;
+	border: 1px solid rgb(222, 222, 222);
+	background: #f6f6f6;
+	padding: 4px 10px;
+	border-radius: 5px;
+}
+
+.addMoreRole a
+{
+	text-decoration:none;
+}
+
+.addMoreRole:hover
+{
+	background: #FFF;
+}
+
+.list-add
+{
+	background:url('../images/list-add.png');
+	height: 15px;
+	width: 15px;
+}
