@@ -1139,7 +1139,12 @@ function addHeadHtml()
 	
 	if(!userMail)  
 	{
-		window.location.reload(); //cookie不存在重新登陆
+		//cookie失效重新跳转到登录页
+		if(window.parent){
+			window.parent.location.href = rootDir + "userInfo/login.jsp";  
+		}else{
+			window.location.href = rootDir + "userInfo/login.jsp";
+		}
 	}
 	
 	var userName = readCookie("login_nickname");
