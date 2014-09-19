@@ -172,6 +172,14 @@ public interface Flow extends BaseType{
 	 * @return
 	 */
 	public Action[] getEndActions();
+	
+	/**
+	 * @description:get all start actions
+	 * @date:2014-5-6 下午12:35:03
+	 * @version:v1.0
+	 * @return
+	 */
+	public Set<Action> getStartActions();
 
 	/**
 	 * @description:get all actions

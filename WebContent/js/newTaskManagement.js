@@ -2537,10 +2537,8 @@ function isActionControlled(field)
 		{
 			var controlVar = field.controlRoleIds[i].split("_");
 			var role = getRoleById(controlVar[0]);
-			if( !role || (role && controlVar && controlVar.length == 2 && controlVar[1] == "-1" )){
+			if(role && controlVar && controlVar.length == 2 && controlVar[1] == "-1" ){
 				isControlled = false;
-			}else{
-				isControlled = true;
 				break;
 			}
 		}
@@ -2551,10 +2549,9 @@ function isActionControlled(field)
 			if(field.controlActionIds[i].split("_")[0] == selectedActionId)
 			{
 				var controlVar = field.controlActionIds[i].split("_");
-				if(controlVar && controlVar.length == 3 && controlVar[2] == "-1"){
+				var role = getRoleById(controlVar[1]);
+				if(role && controlVar && controlVar.length == 3 && controlVar[2] == "-1" ){
 					isControlled = false;
-				}else{
-					isControlled = true;
 					break;
 				}
 			}
@@ -2570,6 +2567,7 @@ function isFieldDisplay(field)
 		return false;
 
 	var controlField = getFieldById(field.controlFieldId);
+	
 	if(controlField == null)
 	{
 		if(isActionControlled(field))

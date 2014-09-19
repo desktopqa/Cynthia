@@ -401,6 +401,22 @@ public class FlowImpl implements Flow{
 
 		return actionSet.toArray(new Action[actionSet.size()]);
 	}
+	
+	/**
+	 * (non-Javadoc)
+	 * <p> Title:getStartActions</p>
+	 * @return
+	 * @see com.sogou.qadev.service.cynthia.bean.Flow#getStartActions()
+	 */
+	public Set<Action> getStartActions(){
+		HashSet<Action> actionSet = new HashSet<Action>();
+		for(Action action : this.actionMap.values()){
+			if(action.getBeginStatId()==null)
+				actionSet.add(action);
+		}
+
+		return actionSet;
+	}
 
 	/**
 	 * (non-Javadoc)
@@ -1198,7 +1214,7 @@ public class FlowImpl implements Flow{
 		Action[] beginActionArray = queryBeginActions();
 		for(int i = 0; beginActionArray != null && i < beginActionArray.length; i++)
 		{
-			if(isActionEveryoneRole(beginActionArray[i].getId()))
+			if(isActionEveryoneRole(beginActionArray[i].getId()))   //取消everyone控制
 				actionMap.put(beginActionArray[i].getId(), beginActionArray[i]);
 		}
 

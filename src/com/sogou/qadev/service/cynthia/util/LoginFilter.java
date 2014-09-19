@@ -54,9 +54,6 @@ public class LoginFilter implements Filter {
 			.createDataAccessSession(ConfigUtil.sysEmail,
 					DataAccessFactory.magic);
 
-	private String errorUrl = ConfigUtil.getCynthiaWebRoot() + "error.jsp";
-
-
 	public void destroy() {
 	}
 
@@ -165,7 +162,7 @@ public class LoginFilter implements Filter {
 		}
 
 		if (!authUserRole(dataAndEventId, userName)) {
-			httpResponse.sendRedirect(errorUrl);
+			httpResponse.sendRedirect(ConfigUtil.getCynthiaWebRoot() + "error.jsp");
 			return;
 		}
 

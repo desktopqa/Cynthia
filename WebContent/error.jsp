@@ -7,7 +7,6 @@
 <title>权限错误</title>
 </head>
 <body>
-	<h3 align='center'>对不起，您没有权限执行该操作。</h3>
-	
+	<h3 align='center'>对不起，您没有权限执行该操作。您可以<a href='index.html'>尝试返回首页</a>，也可以联系管理员</h3>
 </body>
 </html>

@@ -107,6 +107,10 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
  	
+ 	<filter-mapping>
+		<filter-name>LoginFilterManagement</filter-name>
+		<url-pattern>/admin/*</url-pattern>
+	</filter-mapping>
 
 	<filter-mapping>
 		<filter-name>LoginFilterFront</filter-name>

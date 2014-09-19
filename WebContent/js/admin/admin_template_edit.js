@@ -317,9 +317,11 @@ function onInitTemplateEditComplete(response)
 	});
 	
 	$(roleNodes).each(function(idx,roleNode){
-		roles[idx] = new Object();
-		roles[idx].id = $(roleNode).children("id").text();
-		roles[idx].name = $(roleNode).children("name").text();
+		if($(roleNode).children("id").text() != '82') {  //everyone取消
+			roles[idx] = new Object();
+			roles[idx].id = $(roleNode).children("id").text();
+			roles[idx].name = $(roleNode).children("name").text();
+		}
 	});
 	
 	$(actionNodes).each(function(idx,actionNode){
@@ -1006,14 +1008,16 @@ function initControlOptions()
                 for(var j = 0; j < action.roles.length; j++)
                 {
                     var actionRole = action.roles[j];
-                    controlActionTr += "<tr>";
-                    controlActionTr += "<td>"+actionRole.name+"</td>";
-                    controlActionTr += "<td>";
-                    controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='-1' checked>不可填";
-                    controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='0'>选填";
-                    controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='1'>必填";
-                    controlActionTr += "</td>";
-                    controlActionTr += "</tr>";
+                    if(actionRole.id != '82'){  //everyone
+	                    controlActionTr += "<tr>";
+	                    controlActionTr += "<td>"+actionRole.name+"</td>";
+	                    controlActionTr += "<td>";
+	                    controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='-1' checked>不可填";
+	                    controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='0'>选填";
+	                    controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='1'>必填";
+	                    controlActionTr += "</td>";
+	                    controlActionTr += "</tr>";
+                    }
                 }
                 controlActionTr += "</table>";
                 controlActionTr += "</td></tr>";
@@ -1624,14 +1628,16 @@ function initActionRoles()
             for(var j = 0; j < action.roles.length; j++)
             {
                 var actionRole = action.roles[j];
-                controlActionTr += "<tr>";
-                controlActionTr += "<td>"+actionRole.name+"</td>";
-                controlActionTr += "<td>";
-                controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='-1'>不可填";
-                controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='0' checked>选填";
-                controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='1'>必填";
-                controlActionTr += "</td>";
-                controlActionTr += "</tr>";
+                if(actionRole.id != '82') {  //everyone取消
+	                controlActionTr += "<tr>";
+	                controlActionTr += "<td>"+actionRole.name+"</td>";
+	                controlActionTr += "<td>";
+	                controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='-1'>不可填";
+	                controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='0' checked>选填";
+	                controlActionTr += "<input name='action_" + action.id + "_role_" + action.roles[j].id + "' type='radio' value='1'>必填";
+	                controlActionTr += "</td>";
+	                controlActionTr += "</tr>";
+                }
             }
             $("#controlRoles_table").append(controlActionTr);
             selectControlActionId.remove(i);

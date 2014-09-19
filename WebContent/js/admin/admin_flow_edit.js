@@ -266,10 +266,10 @@ function initActionRole(actionId)
 				roles[i] = new Object();
 				roles[i].id = data.allRole[i].fieldId;
 				roles[i].name = data.allRole[i].fieldName;
-				if(roles[i].name != "everyone")
-//					$("#actionRoleDiv").append("<label class=\"checkbox\" style=\"color:red;margin-right:15px;\">" +
-//							"<input type=\"checkbox\" name=\"actionRole\" value="+roles[i].id+">"+roles[i].name+"</label>");
-//				else
+				if(roles[i].id == "82")  //everyone
+					$("#actionRoleDiv").append("<label class=\"checkbox\" style=\"color:red;margin-right:15px;\">" +
+							"<input type=\"checkbox\" name=\"actionRole\" value="+roles[i].id+">"+roles[i].name+"</label>");
+				else
 					$("#actionRoleDiv").append("<label class=\"checkbox\" style=\"margin-right:15px;\">" +
 							"<input type=\"checkbox\" name=\"actionRole\" value="+roles[i].id+">"+roles[i].name+"</label>");
 			}
@@ -662,9 +662,9 @@ function initWordActionRole(actionId)
 				roles[i].id = data.allRole[i].fieldId;
 				roles[i].name = data.allRole[i].fieldName;
 				
-				if(data.allRole[i].fieldName != "everyone")
-//					$("#wordActionRoleDiv").append("<label class=\"checkbox\" style=\"color:red;margin-right:15px;\"><input type=\"checkbox\" name=\"wordActionRole\" value="+data.allRole[i].fieldId+">"+data.allRole[i].fieldName+"</label>");
-//				else
+				if(data.allRole[i].id == "82")  //everyone
+					$("#wordActionRoleDiv").append("<label class=\"checkbox\" style=\"color:red;margin-right:15px;\"><input type=\"checkbox\" name=\"wordActionRole\" value="+data.allRole[i].fieldId+">"+data.allRole[i].fieldName+"</label>");
+				else
 					$("#wordActionRoleDiv").append("<label class=\"checkbox\" style=\"margin-right:15px;\"><input type=\"checkbox\" name=\"wordActionRole\" value="+data.allRole[i].fieldId+">"+data.allRole[i].fieldName+"</label>");
 			}
 			
