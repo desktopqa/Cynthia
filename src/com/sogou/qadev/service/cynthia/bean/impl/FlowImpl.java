@@ -649,15 +649,15 @@ public class FlowImpl implements Flow{
 //			}
 //		}
 		
-		Role[] actionUserRoleArray = queryUserNodeRoles(actionUser, templateId);
-		if(actionUserRoleArray != null)
-		{
-			for(Role actionUserRole : actionUserRoleArray)
-			{
-				if(roleIdSet.contains(actionUserRole.getId()))
-					return true;
-			}
-		}
+//		Role[] actionUserRoleArray = queryUserNodeRoles(actionUser, templateId);
+//		if(actionUserRoleArray != null)
+//		{
+//			for(Role actionUserRole : actionUserRoleArray)
+//			{
+//				if(roleIdSet.contains(actionUserRole.getId()))
+//					return true;
+//			}
+//		}
 
 		return false;
 	}

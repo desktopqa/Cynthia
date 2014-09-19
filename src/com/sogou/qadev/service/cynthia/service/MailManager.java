@@ -65,7 +65,8 @@ public class MailManager {
             msg.setRecipients(Message.RecipientType.TO, allre);
             
             //设置邮件主题
-            msg.setSubject(subject);
+            msg.setSubject(MimeUtility.encodeText(subject, "UTF-8", "B"));   //中文乱码问题
+//            msg.setSubject(subject);
             
             //设置邮件内容
             BodyPart messageBodyPart = new MimeBodyPart(); 
