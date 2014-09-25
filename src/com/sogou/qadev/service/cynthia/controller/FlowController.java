@@ -77,19 +77,21 @@ public class FlowController extends BaseController{
 		}
 		
 		Action action = flow.getAction(DataAccessFactory.getInstance().createUUID(actionId));
-		if(action == null){
-			return "";
-		}
 		
 		Map<String, Object> roleMap = new HashMap<String, Object>();
 		List<FlowField> allRoleList = new ArrayList<FlowController.FlowField>();
 		
 		Set<Action> allStartActions = flow.getStartActions();
-		for(Action startAction : allStartActions){
-			//只有新建动作有everyone角色
-			if (startAction != null && startAction.getId().getValue().equals(actionId)) {
-				allRoleList.add(new FlowField(Role.everyoneUUID.getValue(), Role.everyoneName));
-				break;
+		
+		if(action == null){
+			allRoleList.add(new FlowField(Role.everyoneUUID.getValue(), Role.everyoneName));
+		}else{
+			for(Action startAction : allStartActions){
+				//只有新建动作有everyone角色
+				if (startAction != null && startAction.getId().getValue().equals(actionId)) {
+					allRoleList.add(new FlowField(Role.everyoneUUID.getValue(), Role.everyoneName));
+					break;
+				}
 			}
 		}
 		
