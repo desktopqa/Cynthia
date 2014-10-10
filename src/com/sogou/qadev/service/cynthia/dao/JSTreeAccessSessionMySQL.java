@@ -300,16 +300,22 @@ public class JSTreeAccessSessionMySQL {
 			
 			JSTree node = this.getNodeById(id);
 
+			//删除关注节点
 			String filterIdsStr = node.getFilters();
 			if (filterIdsStr != null) {
 				String[] filterArray = filterIdsStr.split(",");
 				if(filterArray != null && filterArray.length >0){
 					for (String filterIdStr : filterArray) {
 						DataAccessSession das = DataAccessFactory.getInstance().getSysDas();
-						das.removeUserFocusFilter(userName, DataAccessFactory.getInstance().createUUID(filterIdStr));  //删除关注节点
+						das.removeUserFocusFilter(DataAccessFactory.getInstance().createUUID(filterIdStr));  
 					}
 				}
 			}
+			
+			//删除定时器
+			String deleteTimerSql = "delete from timer where filter_id in (" + filterIdsStr + ")" ;
+			pstm = conn.prepareStatement(deleteTimerSql);
+			pstm.execute();
 			
 			//更新同事节点的位置信息
 			String updatePositionSql = "update tree set position=(position-1) where parent_id=? and position >?";
