@@ -1,5 +1,5 @@
 var userPicUrl,  //用户头像地址
-	WEB_ROOT_URL = getWebRootDir(),//项目部署主路径
+	WEB_ROOT_URL = WEB_ROOT_URL || readCookie('webRootDir') || document.location.href,//项目部署主路径
 	base_url = getRootDir(); //相对路径
 
 var ESCAPE_APOS = "QADEV_ESCAPE_APOS";
@@ -995,7 +995,6 @@ function logout()
 function getRootDir()
 {
 	var contextPath='',count,webBaseUrl=WEB_ROOT_URL,webBaseCount;
-	
 	var pathName = document.location.pathname;
     pathName = pathName.substr(1);
     //求pathName中 / 的个数 多少个则向上返回多少级；
@@ -1102,10 +1101,6 @@ function judgeNeedSearch()
 
 function getWebRootDir()
 {
-	if(!WEB_ROOT_URL){
-		WEB_ROOT_URL = readCookie('webRootDir');
-	}
-		
 	return WEB_ROOT_URL;
 }
 
