@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+	<display-name>cynthia</display-name>
+	<!-- Charset Filter Configuration -->
+	<filter>
+		<filter-name>charsetfilter</filter-name>
+		<filter-class>
+			com.sogou.qadev.service.cynthia.util.CharsetFilter
+		</filter-class>
+		<init-param>
+			<param-name>charset</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+
+	<context-param>
+		<param-name>cynthia.doTimerMaxRetryAccount</param-name>
+    	<param-value>5</param-value>
+  	</context-param>
+
+	<context-param>
+		<param-name>cynthia.scriptThreads</param-name>
+    	<param-value>4</param-value>
+  	</context-param>
+
+  	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath*:spring-beans.xml</param-value>
+	</context-param>
+
+	<listener>
+         <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+    </listener>
+	
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+ 
+	<filter>
+		<filter-name>LoginFilterScriptManagement</filter-name>
+		<filter-class>com.sogou.qadev.service.cynthia.util.LoginFilter</filter-class>
+		<init-param>
+			<param-name>dataAndEventIds</param-name>
+			<param-value>3</param-value>
+		</init-param>
+		<init-param>
+			<param-name>retryAccount</param-name>
+			<param-value>5</param-value>
+		</init-param>
+	</filter>
+
+	<filter>
+		<filter-name>LoginFilterManagement</filter-name>
+		<filter-class>com.sogou.qadev.service.cynthia.util.LoginFilter</filter-class>
+		<init-param>
+			<param-name>dataAndEventIds</param-name>
+			<param-value>2</param-value>
+		</init-param>
+		<init-param>
+			<param-name>retryAccount</param-name>
+			<param-value>5</param-value>
+		</init-param>
+	</filter>
+
+	<filter>
+		<filter-name>LoginFilterFront</filter-name>
+		<filter-class>com.sogou.qadev.service.cynthia.util.LoginFilter</filter-class>
+		<init-param>
+			<param-name>dataAndEventIds</param-name>
+			<param-value>1</param-value>
+		</init-param>
+		<init-param>
+			<param-name>retryAccount</param-name>
+			<param-value>5</param-value>
+		</init-param>
+		<init-param>
+			<param-name>sendRedirectUrl</param-name>
+			<param-value></param-value>
+		</init-param>
+		<init-param>
+			<param-name>magic</param-name>
+			<param-value>jjzzwws</param-value>
+		</init-param>
+		<init-param>
+			<param-name>magicUrls</param-name>
+			<param-value>attachment;getCrashTasks.jsp;client.jsp;login;register;executeFilter.jsp;filter.jsp;getCrashTasks.jsp;login.jsp;register.jsp;logout.jsp</param-value>
+		</init-param>
+		<init-param>
+			<param-name>noIEUrls</param-name>
+			<param-value>filter.jsp</param-value>
+		</init-param>
+	</filter>
+
+	<mime-mapping>
+        <extension>xls</extension>
+        <mime-type>application/vnd.ms-excel</mime-type>
+    </mime-mapping>
+
+	<!-- Charset Filter Mapping -->
+	<filter-mapping>
+		<filter-name>charsetfilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+ 	
+ 	<filter-mapping>
+		<filter-name>LoginFilterManagement</filter-name>
+		<url-pattern>/admin/*</url-pattern>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>LoginFilterFront</filter-name>
+		<url-pattern>*.jsp</url-pattern>  
+        <url-pattern>*.html</url-pattern>  
+        <url-pattern>*.do</url-pattern>  
+	</filter-mapping>
+	
+	<!--
+	<filter-mapping>
+		<filter-name>LoginFilterFront</filter-name>
+		<url-pattern>*.jsp</url-pattern>
+	</filter-mapping>
+	
+	<filter-mapping>
+		<filter-name>LoginFilterFront</filter-name>
+		<url-pattern>*.html</url-pattern>
+	</filter-mapping>
+	
+	<filter-mapping>
+		<filter-name>LoginFilterFront</filter-name>
+		<url-pattern>*.do</url-pattern>
+	</filter-mapping>
+	-->
+	
+	<servlet>
+		<display-name>Cynthia Application Init Loader</display-name>
+		<servlet-name>ApplicationInitLoader</servlet-name>
+		<servlet-class>
+			com.sogou.qadev.service.cynthia.util.ApplicationInitLoader
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet> 
+
+	<servlet>
+  		<servlet-name>DisplayChart</servlet-name>
+		<servlet-class>org.jfree.chart.servlet.DisplayChart</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DisplayChart</servlet-name>
+		<url-pattern>/servlet/DisplayChart</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>dispatcher</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+	     <param-name>contextConfigLocation</param-name>
+	     <param-value>
+	        classpath*:servlet-context.xml
+	    </param-value>
+	   </init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>	
+	<servlet-mapping>
+		<servlet-name>dispatcher</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+</web-app>

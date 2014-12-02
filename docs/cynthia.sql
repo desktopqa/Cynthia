@@ -3,14 +3,14 @@ Navicat MySQL Data Transfer
 
 Source Server         : 10.11.202.226 --cythia test机
 Source Server Version : 50077
-Source Host           : 10.11.202.226:3306
+Source Host           : 10.11.202.226 :3306
 Source Database       : cynthia_open
 
 Target Server Type    : MYSQL
 Target Server Version : 50077
 File Encoding         : 65001
 
-Date: 2014-07-08 11:21:20
+Date: 2014-12-02 15:00:19
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -47,7 +47,7 @@ CREATE TABLE `data` (
   `description` longtext,
   `createTime` varchar(50) default NULL,
   `lastModifyTime` varchar(50) default NULL,
-  `assignUser` varchar(50) default NULL,
+  `assignUser` varchar(1024) default NULL,
   `statusId` int(50) default NULL,
   `fieldInt_1` int(50) default NULL,
   `fieldInt_2` int(50) default NULL,
@@ -177,7 +177,7 @@ CREATE TABLE `data` (
   `is_valid` varchar(1) default '1',
   PRIMARY KEY  (`id`),
   KEY `createUser` USING BTREE (`createUser`),
-  KEY `assignUser` USING BTREE (`assignUser`),
+  KEY `assignUser` USING BTREE (`assignUser`(333)),
   KEY `templateId` USING BTREE (`templateId`),
   KEY `createTime` USING BTREE (`createTime`),
   KEY `lastModifyTime` USING BTREE (`lastModifyTime`),
@@ -207,7 +207,7 @@ CREATE TABLE `data_log` (
   `description` longtext,
   `createTime` varchar(50) default NULL,
   `lastModifyTime` varchar(50) default NULL,
-  `assignUser` varchar(50) default NULL,
+  `assignUser` varchar(1024) default NULL,
   `statusId` int(10) default NULL,
   `fieldInt_1` int(50) default NULL,
   `fieldInt_2` int(50) default NULL,
@@ -489,10 +489,10 @@ INSERT INTO `flow` VALUES ('744289', '缺陷流程模版', '<?xml version=\"1.0\
 DROP TABLE IF EXISTS `guide`;
 CREATE TABLE `guide` (
   `id` int(15) NOT NULL auto_increment,
-  `guide_id` varchar(100) character set utf8 NOT NULL default '0',
-  `guide_name` varchar(100) character set utf8 default NULL,
+  `guide_id` varchar(100) NOT NULL default '0',
+  `guide_name` varchar(100) default NULL,
   `parent_id` int(100) default '0',
-  `guide_html` longtext character set utf8,
+  `guide_html` longtext,
   `isDeleted` int(1) default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1112 DEFAULT CHARSET=utf8;
@@ -788,8 +788,8 @@ INSERT INTO `tree` VALUES ('6', '1', '0', null, '我的过滤器(右击新建)',
 -- ----------------------------
 DROP TABLE IF EXISTS `user_default_template`;
 CREATE TABLE `user_default_template` (
-  `user_name` varchar(256) character set utf8 NOT NULL,
-  `template_id` varchar(20) character set utf8 NOT NULL,
+  `user_name` varchar(256) NOT NULL,
+  `template_id` varchar(20) NOT NULL,
   PRIMARY KEY  (`user_name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
