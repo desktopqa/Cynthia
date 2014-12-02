@@ -12,8 +12,6 @@ classes/
 admin/
 
 *classpath
-*.properties
-
 
 # Package Files #
 # *.jar
