@@ -4,12 +4,9 @@
 .mtj.tmp/
 work/
 tmp/
-conf/
 logs/
-classes/
 .settings/
 .svn/
-admin/
 
 *classpath
 

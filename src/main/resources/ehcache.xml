@@ -24,6 +24,7 @@
         memoryStoreEvictionPolicy="LFU">
     </cache>
     
+    
     <!-- 可以设置过期时间 -->
     <cache name="expiresCache"
         maxElementsInMemory="1000000"
