@@ -53,6 +53,10 @@ body {
 	cursor:pointer;
 }
 
+.node > img{
+	width:16px;
+	height:16px;
+}
 .mover {
 	border: 1px solid #ddd;
 	background-color: #ddd;

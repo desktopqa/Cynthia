@@ -32,6 +32,10 @@
 		
 如何部署
 --------
+	Windows一键安装：
+		v2.0安装包下载地址：http://pan.baidu.com/s/1dD3Y0k5
+		
+	手动部署：
 		本单主要介绍如何部署cynthia服务(以tomcat为例)：
 		1. 线上下载cynthia.war包  或者地址：http://git.oschina.net/cynthia/Cynthia/blob/master/Cynthia.war
 		2. 将下载的cynthia.war包  放在tomcat的webapps目录下面
@@ -40,6 +44,15 @@
 		5. 打开webapps/Cynthia/WEB-INF/classes目录下的config.properties 根据docs目录下的cynthia参数配置说明进行配置。（必须配置driverClassName、url、username、password参数!!）
 		6. 重启tomcat
 		7. 打开网址 localhost:8080/Cynthia/index.html 即可访问! 默认系统管理员帐号:admin 密码:admin
+
+如何升级
+--------
+	Windows版一键升级
+		一键升级包下载地址：http://pan.baidu.com/s/1danTW
+	手动升级：
+		1.关闭tomcat服务
+		2.删除tomcat/webapps下Cynthia目录，下载最新的War包到webapps下
+		3.重启tomcat服务 修改config.properties
 		
 环境说明
 --------

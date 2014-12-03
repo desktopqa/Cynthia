@@ -5,10 +5,9 @@
     <!-- The Basics --> 
     <groupId>com.sogou.qadev</groupId>
     <artifactId>Cynthia_Maven</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>2.0.0</version>
 	<packaging>war</packaging>
 	<name>Cynthia</name>     
-	
 
 	<properties>
 		<!-- 不运行单元测试 -->

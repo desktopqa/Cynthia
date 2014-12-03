@@ -80,20 +80,25 @@ public class ConfigManager {
 	public static Properties getDataBaseProperty()
 	{
 		Properties prop = new Properties();
-		prop.put("driverClassName", properties.get("driverClassName"));
-		prop.put("url", properties.get("url"));
-		prop.put("username", properties.get("username"));
-		prop.put("password", properties.get("password"));
-		prop.put("initialSize", properties.get("initialSize"));
-		prop.put("maxActive", properties.get("maxActive"));
-		prop.put("maxWait", properties.get("maxWait"));
-		prop.put("timeBetweenEvictionRunsMillis", properties.get("timeBetweenEvictionRunsMillis"));
-		prop.put("minEvictableIdleTimeMillis", properties.get("minEvictableIdleTimeMillis"));
-		prop.put("validationQuery", properties.get("validationQuery"));
-		prop.put("testWhileIdle", properties.get("testWhileIdle"));
-		prop.put("testOnReturn", properties.get("testOnReturn"));
-		prop.put("testOnBorrow", properties.get("testOnBorrow"));
-		prop.put("poolPreparedStatements", properties.get("poolPreparedStatements"));
+		try{
+			prop.put("driverClassName", properties.get("driverClassName"));
+			prop.put("url", properties.get("url"));
+			prop.put("username", properties.get("username"));
+			prop.put("password", properties.get("password"));
+			prop.put("initialSize", properties.get("initialSize"));
+			prop.put("maxActive", properties.get("maxActive"));
+			prop.put("maxWait", properties.get("maxWait"));
+			prop.put("timeBetweenEvictionRunsMillis", properties.get("timeBetweenEvictionRunsMillis"));
+			prop.put("minEvictableIdleTimeMillis", properties.get("minEvictableIdleTimeMillis"));
+			prop.put("validationQuery", properties.get("validationQuery"));
+			prop.put("testWhileIdle", properties.get("testWhileIdle"));
+			prop.put("testOnReturn", properties.get("testOnReturn"));
+			prop.put("testOnBorrow", properties.get("testOnBorrow"));
+			prop.put("poolPreparedStatements", properties.get("poolPreparedStatements"));
+		}catch(Exception e){
+			System.out.println("error!!! 请检查您的config.properties数据库配置文件！");
+			e.printStackTrace();
+		}
 		return prop;
 	}
 	

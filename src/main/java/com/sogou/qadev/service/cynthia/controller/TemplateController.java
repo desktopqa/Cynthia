@@ -26,6 +26,7 @@ import com.sogou.qadev.service.cynthia.bean.Flow;
 import com.sogou.qadev.service.cynthia.bean.Key;
 import com.sogou.qadev.service.cynthia.bean.Pair;
 import com.sogou.qadev.service.cynthia.bean.Right;
+import com.sogou.qadev.service.cynthia.bean.Role;
 import com.sogou.qadev.service.cynthia.bean.Template;
 import com.sogou.qadev.service.cynthia.bean.TemplateMailOption;
 import com.sogou.qadev.service.cynthia.bean.UUID;
@@ -221,7 +222,7 @@ public class TemplateController extends BaseController{
 		}
 		returnMap.put("users", usersMap);
 		returnMap.put("templateMailOptions", template.getTemplateMailOption());
-		returnMap.put("roles", flow.queryNodeRoles(template.getId()));
+		returnMap.put("roles", flow.getRoleMap().values().toArray(new Role[0]));
 		return JSONArray.toJSONString(returnMap);
 	}
 
