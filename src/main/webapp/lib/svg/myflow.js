@@ -10,6 +10,8 @@
 	var viewBox_y = null;
 	var viewBox_width = null;
 	var viewBox_height = null;
+	var pathBeforeAttr;
+	var rectBeforeAttr;
 	
 	//画动作
 	var is_start_line;
@@ -64,8 +66,6 @@
 			text:{text:"{to}","font-size":11, cursor:"hand",background:"#000"},
 			
 			activeAttr:{
-				fill: "#000dd0", 
-				stroke: "#ddd", 
 				"stroke-width": 20, 
 				"stroke-opacity": 0.5
 			},
@@ -413,15 +413,17 @@
 		};
 		
 		this.twinkle = function(){
-			var beforeAttr = 
-			{
-				fill:t.attr("fill"),
-				stroke:t.attr("stroke"),
-				"stroke-width":t.attr("stroke-width"),
-				"stroke-opacity":t.attr("stroke-opacity")
-			};
+			if(!rectBeforeAttr){
+				rectBeforeAttr = {
+					fill:t.attr("fill"),
+					stroke:t.attr("stroke"),
+					"stroke-width":t.attr("stroke-width"),
+					"stroke-opacity":t.attr("stroke-opacity")
+				};
+			}
+			
 			t.stop().animate(a.config.rect.activeAttr , 200, function(){
-				t.stop().animate(beforeAttr, 500, "bounce");
+				t.stop().animate(rectBeforeAttr, 500, "bounce");
 			});
 		};
 		
@@ -829,16 +831,15 @@
 		};
 		
 		this.twinkle = function(){
+			if(!pathBeforeAttr){
+				pathBeforeAttr = {
+					"stroke-width":t.attr("stroke-width"),
+					"stroke-opacity":t.attr("stroke-opacity")
+				};
+			}
 			
-			var beforeAttr = 
-			{
-				fill:t.attr("fill"),
-				stroke:t.attr("stroke"),
-				"stroke-width":t.attr("stroke-width"),
-				"stroke-opacity":t.attr("stroke-opacity")
-			};
-			wholePath.stop().animate(a.config.rect.activeAttr , 200, function(){
-				wholePath.stop().animate(beforeAttr, 500, "bounce");
+			wholePath.stop().animate(a.config.path.activeAttr , 200, function(){
+				wholePath.stop().animate(pathBeforeAttr, 500, "bounce");
 			});
 		};
 		
