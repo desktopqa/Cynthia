@@ -29,6 +29,15 @@ public interface ChangeLog extends Serializable{
 	public String getCreateUser();
 	
 	/**
+	 * @Title: setCreateUser
+	 * @Description: set change log create user
+	 * @param createUser
+	 * @return
+	 * @return: String
+	 */
+	public void setCreateUser(String createUser);
+	
+	/**
 	 * @description:get change log create time
 	 * @date:2014-5-6 下午2:40:30
 	 * @version:v1.0

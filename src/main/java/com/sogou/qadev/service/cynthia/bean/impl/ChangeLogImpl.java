@@ -82,6 +82,10 @@ public final class ChangeLogImpl implements ChangeLog
 		return createUser;
 	}
 	
+	public void setCreateUser(String createUser){
+		this.createUser = createUser;
+	}
+	
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:getCreateTime</p>

@@ -34,6 +34,12 @@ public class RoleImpl implements Role{
 		this.id	= id;
 		this.flowId	= flowId;
 	}
+	
+	public RoleImpl(UUID id, UUID flowId,String name){
+		this.id	= id;
+		this.flowId	= flowId;
+		this.name = name;
+	}
 
 	/**
 	 * (non-Javadoc)
