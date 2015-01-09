@@ -130,10 +130,12 @@ function initModifyData()
 		url: 'batchModify/getModifyActionAndUser.do',
 		type :'GET',
 		async : false,
+		dataType : 'json',
 		data: {'dataIds': dataIds, 'filterId': $("#filterId").val()},
 		success: function(data){
-			actionModifyUser = eval('(' + data + ')');
+			actionModifyUser = data ;
 			setAllModifyAction();
+			$('#modifyDataDiv .action_close').show();
 			if(Object.keys(actionModifyUser).length > 0)
 				setModifyActionUser(Object.keys(actionModifyUser)[0]);
 			$("#myLabelModifyData").text("修改数据");
@@ -143,8 +145,6 @@ function initModifyData()
 			showInfoWin("error","服务器内部原因，批量修改失败！");
 		}
 	});
-
-
 }
 
 function initCloseData()
@@ -160,20 +160,19 @@ function initCloseData()
 		url: 'batchModify/getCloseActionAndUser.do',
 		type :'POST',
 		async : false,
+		dataType : 'json',
 		data: {'dataIds': dataIds, 'filterId': $("#filterId").val()},
 		success: function(data){
-			actionModifyUser = eval('(' + data + ')');
+			actionModifyUser = data;
 			setAllModifyAction();
-			if(Object.keys(actionModifyUser).length > 0)
-				setModifyActionUser(Object.keys(actionModifyUser)[0]);
 			$("#myLabelModifyData").text("关闭数据");
+			$('#modifyDataDiv .action_close').hide();
 			$("#modifyDataDiv").modal('show');
 		},
 		error:function(msg){
 			showInfoWin("error","服务器内部原因，关闭失败！");
 		}
 	});
-
 
 }
 
@@ -237,10 +236,14 @@ function setModifyActionUser(actionName)
 {
 	var users = actionModifyUser[actionName];
 	$("#modifyDataAssignUser").empty();
-
-	for(var key in users)
-	{
-		$("#modifyDataAssignUser").append("<option value='" + users[key] + "'> " + users[key] + " </option>");
+	//没有指派人则隐藏指派人框
+	if(Object.keys(users).length > 0){
+		$('#modifyDataDiv .action_close').show();
+		for(var key in users){
+			$("#modifyDataAssignUser").append("<option value='" + key + "'> " + users[key] + " </option>");
+		}
+	}else{
+		$('#modifyDataDiv .action_close').hide();
 	}
 }
 
@@ -351,6 +354,19 @@ function refreshFilter()
 
 
 /************************配置过滤器显示*********************************/
+function saveFilterWidth(filterId,fieldId,width)
+{	
+	$.ajax({
+		url:"filter/saveFilterFieldWidth.do",
+		type:'POST',
+		data :{filterId:filterId,fieldId:fieldId,width:width},
+		success : function(data){
+		},
+		error:function(responseXML){
+		}
+	});
+}
+
 function openCfgDisplayDiv()
 {
 	if(isSysFilter($("#filterId").val()))
@@ -1241,7 +1257,7 @@ function bindHoverEvents()
 	});
 
 	//常用过滤器新窗口打开
-	$("#allFiltersList .filter").live('mouseover',function(){
+	$("#allFiltersList").on('mouseover','.filter',function(){
 		var link = $(this);
 		var openIcon = link.find(".icon-open-win");
 		var editFilterIcon = link.find(".icon-edit");
@@ -1260,14 +1276,14 @@ function bindHoverEvents()
 			link.prepend("<i class='icon-edit' title='编辑'></i>");
 		}
 		return false;
-	}).live('mouseout',function(){
+	}).on('mouseout','.filter',function(){
 		var link = $(this);
 		link.find("i").hide();
 		return false;
 	});
 
 	//常用过滤器移出常用栏
-	$("#favorate_menu .filter").live('mouseover',function(){
+	$("#favorate_menu").on('mouseover','.filter',function(){
 		var link = $(this);
 		var removeFilterIcon = link.find(".icon-clear");
 		var openIcon = link.find(".icon-open-win");
@@ -1296,14 +1312,14 @@ function bindHoverEvents()
 			link.prepend("<i class='icon-clear' title='移出常用栏'></i>");
 		}
 		return false;
-	}).live('mouseout',function(){
+	}).on('mouseout','.filter',function(){
 		var link = $(this);
 		link.find("i").hide();
 		return false;
 	});
 
 	/*左侧tag列表hover事件*/
-	$("#left-tag-list .tag-filter").live('mouseover',function(){
+	$("#left-tag-list").on('mouseover','.tag-filter',function(){
 		var link = $(this);
 		var removeFilterIcon = link.find(".icon-clear");
 		if(removeFilterIcon.length > 0)
@@ -1314,29 +1330,23 @@ function bindHoverEvents()
 			link.prepend("<i class='icon-clear' style='display:block;' title='删除'></i>");
 		}
 		return false;
-	}).live('mouseout',function(){
+	}).on('mouseout','.tag-filter',function(){
 		var link = $(this);
 		link.find("i").hide();
 		return false;
 	});
 	
 	//标签hover出现删除按纽
-	$(".titleTag").live('mouseover',function(){
+	$("#main-grid-div").on('mouseover','.titleTag',function(){
 		$(this).find("span").show();
-	}).live('mouseout',function(){
+	}).on('mouseout','.titleTag',function(){
 		$(this).find("span").hide();
 	});
 
-	$(".closeTag").live('mouseover',function(){
+	$("#main-grid-div").on('mouseover',".closeTag",function(){
 		$(this).addClass('tag-hover');
-	}).live('mouseout',function(){
+	}).on('mouseout',".closeTag",function(){
 		$(this).removeClass('tag-hover');
-	});
-
-	$("#userConfig").live('mouseover',function(){
-		$("#userMenu").show();
-	}).live('mouseout',function(){
-		$("#userMenu").hide();
 	});
 }
 
@@ -1541,14 +1551,18 @@ function initFilterData(filterId,page,sortField,sortType,reDrawHead)
 				success: function(filterField){
 					showFilterData(filterData, filterField.groupField, filterField.showFields, filterField.backFields, reDrawHead);
 					showLoading(false);
+				},error:function(filterField){
+					showFilterData(filterData, filterField.groupField, filterField.showFields, filterField.backFields, reDrawHead);
+					showInfoWin("error","过滤器定义出错，没查询到任何数据！");
+					showLoading(false);
 				}
 			});
 		}
 	});
-
 }
 
 function setFieldBack(showFields, backFields){
+	backFields = backFields || [];
 	$("#leftDisplayFields").empty();
 	for(var i = 0; i < backFields.length; i++)
 	{
@@ -1571,14 +1585,18 @@ function getFilterTableWidth(showFields)
 	for(var i = 0 ; i < showFields.length ; i ++)
 	{
 		var fieldId = showFields[i].fieldId;
-		if(fieldId == "id" || fieldId == "create_user") //编号
-			widthHtml+="<col class='mini-col'></col>";
-		else if(fieldId == "status_id")
-			widthHtml+="<col class='middle-mini-col'></col>";
+		if(fieldId == "id" || fieldId == "assign_user" || fieldId == "create_user") //编号
+			widthHtml+="<col class='mini-col'";
+		else if(fieldId == "priority" || fieldId == "status_id" || showFields[i].fieldName.indexOf("优先级") != -1 )
+			widthHtml+="<col class='middle-mini-col'";
 		else if(fieldId == "title") //标题
-			widthHtml+="<col class='x-large-col'></col>";
+			widthHtml+="<col class='x-large-col'";
 		else
-			widthHtml+="<col class='common-col'></col>";
+			widthHtml+="<col class='common-col'";
+		
+		if(showFields[i].fieldWidth)  //自定义了宽度
+			widthHtml += ' style="width:' + showFields[i].fieldWidth + '" ';
+		widthHtml += "></col>";
 	}
 	widthHtml+="</colgroup>";
 	return widthHtml;
@@ -1628,10 +1646,8 @@ function showFilterDataTable(filterData,groupField,showFields)
 
 	html += "<tbody>";
 
-	var actualData = filterData == null ? new Array : filterData.rows;
-
-	actualData = actualData == undefined ? new Array() : actualData;
-
+	var actualData = filterData? filterData.rows : [];
+	actualData = actualData ? actualData : [];
 	if(groupField == null)
 	{
 		for(var i = 0 ; i < actualData.length; i ++ )
@@ -1693,7 +1709,7 @@ function getGroupHeader(data,showFields,groupField,groupCount)
 function getDataTr(index,data,showFields)
 {
 	var trHtml = "";
-	trHtml += "<tr>";
+	trHtml += "<tr value= " + data.id + ">";
 	trHtml += "<td><i class='i-checkbox icon-input-checkbox-unchecked'></i></td><td>" + index + "</td>";
 	for(var j = 0 ;j < showFields.length; j++)
 	{
@@ -1811,8 +1827,8 @@ function getLengthOfTagArr(dataTagArray)
 //显示filter数据 绘制表格
 function showFilterData(filterData,groupField,showFields,backFields, reDrawHead)
 {
-	if(reDrawHead == undefined || !reDrawHead == "false")
-	{
+	showFields = showFields || [];
+	if(reDrawHead == undefined || !reDrawHead == "false"){
 		//画标头
 		var dataHeadHtml = showFilterDataHead(showFields);
 		$("#main-grid-header").html(dataHeadHtml);
@@ -1823,7 +1839,6 @@ function showFilterData(filterData,groupField,showFields,backFields, reDrawHead)
 	//画内容
 	var dataHeadTable = showFilterDataTable(filterData,groupField,showFields);
 	$("#main-grid-content").html(dataHeadTable);
-
 	onWindowResize();
 }
 

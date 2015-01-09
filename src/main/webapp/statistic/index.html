@@ -53,13 +53,13 @@
 					<div class="box-content" id="all_statistic_div">
 					</div>
 					<div class="box-footer">
-						<input type="checkbox" onclick="changeAllCheck(this);"/>&nbsp;
-						<input type="button" style= "margin:0 auto;" class="btn btn-danger" value="生成报表" onclick="showAllChart();"/>
-						&nbsp;&nbsp;<input type="button" style= "margin-right:0px;" class="btn btn-info" value="新建" onclick="initCreateDiv();"/>
+						<input type="checkbox" id="check-all" name='checkvalue'/>&nbsp;
+						<input type="button" style= "margin:0 auto;" class="btn btn-danger" value="生成报表" onclick="showAllChart();"/>&nbsp;&nbsp;
+						<input type="button" style= "margin-right:0px;" class="btn btn-info" value="新建" onclick="initCreateDiv();"/>
 					</div>
 				</div>
 		</div>
-		<div class="span10">
+		<div>
 			<div id="all_content_div">
 					<div class="box-title">报表</div>
 					<div id = "all_report_div">

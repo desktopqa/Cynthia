@@ -63,11 +63,19 @@ public class FilterController extends BaseController{
 	private class FilterField{
 		private String fieldId;
 		private String fieldName;
-		
+		private String fieldWidth;  //字段显示宽度
+
 		public FilterField(String fieldId, String fieldName){
 			this.fieldId = fieldId;
 			this.fieldName = fieldName;
 		}
+		
+		public FilterField(String fieldId, String fieldName,String fieldWidth){
+			this.fieldId = fieldId;
+			this.fieldName = fieldName;
+			this.fieldWidth = fieldWidth;
+		}
+		
 		public String getFieldId() {
 			return fieldId;
 		}
@@ -79,6 +87,14 @@ public class FilterController extends BaseController{
 		}
 		public void setFieldName(String fieldName) {
 			this.fieldName = fieldName;
+		}
+		
+		public String getFieldWidth() {
+			return fieldWidth;
+		}
+
+		public void setFieldWidth(String fieldWidth) {
+			this.fieldWidth = fieldWidth;
 		}
 	}
 	
@@ -129,8 +145,8 @@ public class FilterController extends BaseController{
 		allDefaultList.add(new FilterField("title", "标题"));
 		allDefaultList.add(new FilterField("status_id", "状态"));
 		allDefaultList.add(new FilterField("create_user", "创建人"));
-		allDefaultList.add(new FilterField("create_time", "创建时间"));
 		allDefaultList.add(new FilterField("assign_user", "指派人"));
+		allDefaultList.add(new FilterField("create_time", "创建时间"));
 		allDefaultList.add(new FilterField("last_modify_time", "修改时间"));
 		
 		return JSONArray.toJSONString(allDefaultList);
@@ -162,6 +178,11 @@ public class FilterController extends BaseController{
 		List<FilterField> backList = new ArrayList<FilterField>();
 		List<String> showFieldId = new ArrayList<String>();
 		
+		Map<String, Object> returnMap = new HashMap<String, Object>();
+		returnMap.put("groupField", groupField);
+		returnMap.put("showFields", showList);
+		returnMap.put("backFields", backList);
+		
 		if(filter == null)
 			return "";
 		
@@ -192,8 +213,6 @@ public class FilterController extends BaseController{
 				UUID templateId = DataAccessFactory.getInstance().createUUID(XMLUtil.getAttribute(templateNode,"id"));
 				
 				List<Node> displayFieldNodes = XMLUtil.getNodes(templateNode, "display/field");
-				showList.add(new FilterField("id", "编号"));
-				showFieldId.add("id");
 				for (Node node : displayFieldNodes) {
 					String fieldId = XMLUtil.getAttribute(node,"id");
 					if(fieldId == null)
@@ -208,7 +227,7 @@ public class FilterController extends BaseController{
 						}
 					}
 					
-					showList.add(new FilterField(fieldId, XMLUtil.getAttribute(node,"name")));
+					showList.add(new FilterField(fieldId, XMLUtil.getAttribute(node,"name"),XMLUtil.getAttribute(node,"width")));
 				}
 				
 				for (String fieldId : baseFieldNameMap.keySet()) {
@@ -218,11 +237,9 @@ public class FilterController extends BaseController{
 				}
 				
 				Template template = das.queryTemplate(templateId);
-				
 				Set<Field> templateFields = template.getFields();
 				
-				for(Field field : templateFields)
-				{
+				for(Field field : templateFields){
 					if (!showFieldId.contains(field.getId().getValue())) {
 						backList.add(new FilterField("FIEL-" + field.getId().getValue(), field.getName()));
 					}
@@ -245,16 +262,10 @@ public class FilterController extends BaseController{
 					}
 				}
 			}
-			Map<String, Object> returnMap = new HashMap<String, Object>();
-			returnMap.put("groupField", groupField);
-			returnMap.put("showFields", showList);
-			returnMap.put("backFields", backList);
-			
-			return JSONArray.toJSONString(returnMap);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "";
 		}
+		return JSONArray.toJSONString(returnMap);
 	}
 	
 	
@@ -300,4 +311,67 @@ public class FilterController extends BaseController{
 			return filter.getXml().replaceAll("\\\r", "").replaceAll("\\\n", "").replaceAll("\\\"", "\\\\\\\"").trim();
 		}
 	}
+	
+	/**
+	 * @Title: saveFilterFieldWidth
+	 * @Description: 修改过滤器显示宽度
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 * @throws Exception
+	 * @return: String
+	 */
+	@RequestMapping("/saveFilterFieldWidth.do")
+	@ResponseBody
+	public String saveFilterFieldWidth(HttpServletRequest request, HttpServletResponse response ,HttpSession session) throws Exception {
+		String filterIdStr = request.getParameter("filterId");
+		if(filterIdStr==null)
+		{
+			return "false";
+		}
+
+		String fieldIdStr = request.getParameter("fieldId");
+
+		if(fieldIdStr.startsWith("FIEL-"))
+			fieldIdStr = fieldIdStr.substring(fieldIdStr.indexOf("FIEL-") + 5);
+
+		String widthStr = request.getParameter("width");
+		
+		UUID filterId = DataAccessFactory.getInstance().createUUID(filterIdStr);
+		Filter filter = das.queryFilter(filterId);
+
+		Document filterXmlDoc = XMLUtil.string2Document(filter.getXml(), "UTF-8");
+
+		List<Node> templateNodeList = XMLUtil.getNodes(filterXmlDoc,"query/template");
+
+		if(templateNodeList==null||templateNodeList.size()==0)
+			return "false";
+
+		Node templateNode = templateNodeList.get(0);
+
+		String templateIdStr = XMLUtil.getAttribute(templateNode, "id");
+
+		UUID templateId = DataAccessFactory.getInstance().createUUID(templateIdStr);
+
+		Template template = das.queryTemplate(templateId);
+		if(template==null)
+			return "false";
+
+		Node displayNode = XMLUtil.getSingleNode(templateNode,"display");
+
+		List<Node> displayFields = XMLUtil.getNodes(displayNode,"field");
+		for(Node node : displayFields)
+		{
+			String nodeId = XMLUtil.getAttribute(node, "id");
+			if(nodeId != null && nodeId.equals(fieldIdStr)){
+				XMLUtil.setAttribute(node, "width", widthStr);
+			}
+		}
+
+		filter.setXml(XMLUtil.document2String(filterXmlDoc,"UTF-8"));
+		das.updateFilter(filter);
+		return "true";
+	}
+	
 }

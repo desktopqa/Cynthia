@@ -47,3 +47,8 @@
 	display:none;
 	z-index: 9999;
 }
+
+#topSubmitDiv button
+{
+	margin-right:15px;
+}

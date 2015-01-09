@@ -68,7 +68,7 @@ function initContainer(){
 	           var fieldId = $(item).attr("fieldId");
 	           var fieldType = $(item).attr("type");
 	           var fieldDataType = $(item).attr("dataType");
-	           
+
 	           if(fieldId == "newField"&&$(item).hasClass("box"))
 	           {
 	               //新建一个field
@@ -102,7 +102,7 @@ function initContainer(){
 function bindClickEvents()
 {
 	/*左侧收起 展开*/
-	$(".nav-header").live("click",function() {
+	$(".nav-header").on("click",function() {
 		if($(this).find("i").hasClass("icon-plus")){
 			$(this).find("i").removeClass("icon-plus").addClass("icon-minus");
 			$(this).next().slideDown();
@@ -363,6 +363,8 @@ function initFieldByNode(fieldNode)
 	tempField.name = $(fieldNode).children("name").text();
 	
 	tempField.description = $(fieldNode).children("description").text();
+	tempField.timestampFormat = $(fieldNode).children("timeFormat").text();
+	tempField.dateCurTime = $(fieldNode).children("dateCurTime").text();
 	tempField.fieldTip = $(fieldNode).children("fieldTip").text();
 	tempField.fieldSize = $(fieldNode).children("fieldSize").text();
 	tempField.type = $(fieldNode).children("type").text(); 
@@ -811,12 +813,14 @@ function bindCancelEditFieldEvt(isCreate)
 
 function clearFieldModal()
 {
+    $("#editTemplateFieldDiv .control_show").hide();
     $("#input_fieldName").val("");
     $("#input_fieldDescription").val("");
     $("#input_fieldTip").val("");
     $("#input_fieldSize").val(1);
     $("#input_defaultValue").val("");
-    $("#select_controlFieldId option:gt(0)").remove()
+    $('#date_curtime').val('false');
+    $("#select_controlFieldId option:gt(0)").remove();
     $("#select_controlOptionId option:gt(0)").remove();
     $("#select_controlActionId").empty();
     $("#controlRoles_table").empty();
@@ -840,6 +844,7 @@ function cancelEditField()
 function initCreateFieldModal(fieldType,fieldDataType)
 {
     clearFieldModal();
+    $('#editTemplateFieldDiv .' + fieldDataType).show();
     bindCancelEditFieldEvt(true);
     //初始化类型和数据类型字段
     $("#fieldType").val(fieldType);
@@ -872,10 +877,14 @@ function initEditFieldModal(fieldId)
     clearFieldModal();
     bindCancelEditFieldEvt(false);
     field = getFieldById(fieldId);
-    
+    if(field.dataType){
+    	$('#editTemplateFieldDiv .' + field.dataType).show();
+    }
     //初始化类型和数据类型字段
     $("#fieldType").val(field.type);
     $("#fieldDataType").val(field.dataType);
+    $("#input_timestampFormat").val(field.timestampFormat);
+    $("#date_curtime").val(field.dateCurTime);
     $("#fieldId").val(field.id);
     $("#input_fieldName").val(field.name);
     $("#input_fieldDescription").val(field.description);
@@ -1216,7 +1225,6 @@ function saveOrUpdateField()
 	var fieldType = $("#fieldType").val();
 	var fieldDataType = $("#fieldDataType").val();
 	
-	
 	var params = "fieldName="+getSafeParam(fieldName);
 	if(fieldDescription != "")
 		params += "&fieldDescription="+getSafeParam(fieldDescription);
@@ -1229,6 +1237,8 @@ function saveOrUpdateField()
 	
 	params += "&templateId="+templateId;
 	params += "&fieldType="+$("#fieldType").val();
+	params += "&timestampFormat="+$("#input_timestampFormat").val();
+	params += "&dateCurTime="+$("#date_curtime").val();
 	params += "&fieldDataType="+$("#fieldDataType").val();
 	var controlFieldId = $("#select_controlFieldId").val();
 	if(controlFieldId != "")

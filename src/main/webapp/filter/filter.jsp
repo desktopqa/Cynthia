@@ -59,34 +59,35 @@
 	if(filter == null)
 		return;
 	
-	Document filterDocument = XMLUtil.string2Document(filter.getXml(),"UTF-8");
-	Node templateTypeNode   = XMLUtil.getSingleNode(filterDocument,"query/templateType");
-	UUID templateTypeId     = null;
-	UUID templateId         = null;
+	StringBuffer result = new StringBuffer();
 	
-	List<Data> dataList= new ArrayList<Data>();
-	HashSet<String>	notNewTaskIdSet	= new HashSet<String>();
-	
-	int totalTaskAccount = 0;	
-	
-	boolean isSysFilter = FilterQueryManager.isSysFilter(filterIdStr);
-		
-	if(!isSysFilter){
-		Node templateNode = XMLUtil.getSingleNode(filterDocument, "query/template");
-		templateId = DataAccessFactory.getInstance().createUUID(XMLUtil.getAttribute(templateNode, "id"));
-	}
-	
-	dataList = FilterQueryManager.queryDataList(das,filter,username,keyId,sort,dir,pagenum,count,null);  //查询数据
-	
-	//现在开始查询旧数据
 	try
 	{
-		UUID[]	filterIdArray  = new UUID[]{filterId};
-		String xmlString	= das.getNewTaskIdsByFilterAndUser(filterIdArray, username);
+		Document filterDocument = XMLUtil.string2Document(filter.getXml(),"UTF-8");
+		Node templateTypeNode   = XMLUtil.getSingleNode(filterDocument,"query/templateType");
+		UUID templateTypeId     = null;
+		UUID templateId         = null;
 		
-		Document	xmlDoc	   = XMLUtil.string2Document(xmlString, "UTF-8");
-		Node filterNode        = XMLUtil.getNodes(xmlDoc,"filters/filter").get(0);
-		String oldIdStrs       = XMLUtil.getSingleNodeTextContent(filterNode,"oldTasks");
+		List<Data> dataList= new ArrayList<Data>();
+		HashSet<String>	notNewTaskIdSet	= new HashSet<String>();
+		
+		int totalTaskAccount = 0;	
+		
+		boolean isSysFilter = FilterQueryManager.isSysFilter(filterIdStr);
+			
+		if(!isSysFilter){
+			Node templateNode = XMLUtil.getSingleNode(filterDocument, "query/template");
+			templateId = DataAccessFactory.getInstance().createUUID(XMLUtil.getAttribute(templateNode, "id"));
+		}
+		
+		dataList = FilterQueryManager.queryDataList(das,filter,username,keyId,sort,dir,pagenum,count,null);  //查询数据
+		
+		UUID[]	filterIdArray = new UUID[]{filterId};
+		String xmlString = das.getNewTaskIdsByFilterAndUser(filterIdArray, username);
+		
+		Document xmlDoc	= XMLUtil.string2Document(xmlString, "UTF-8");
+		Node filterNode = XMLUtil.getNodes(xmlDoc,"filters/filter").get(0);
+		String oldIdStrs = XMLUtil.getSingleNodeTextContent(filterNode,"oldTasks");
 		totalTaskAccount += Integer.parseInt(XMLUtil.getAttribute(filterNode, "totalAccount"));
 		
 		if(oldIdStrs != null){
@@ -94,26 +95,23 @@
 			notNewTaskIdSet.addAll(Arrays.asList(oldIdStrArray));
 		}
 		
+		//开始拼装数据
+		//获得要显示的字段
+		String[] displayFieldsName = FilterQueryManager.getDisplayNamesFilter(filter.getXml(), das);
+		
+		Map<String,String> userClassifyDataMap = das.getUserClassifyDataMap(username);
+		
+		result.append("{").append("\"totalCount\":\"").append(totalTaskAccount).append("\"")
+			  .append(",\"newCount\":\"").append(totalTaskAccount - notNewTaskIdSet.size()).append("\"")
+			  .append(",\"rows\":[");
+		
+		result.append(FilterQueryManager.assembleFilterDataJson(displayFieldsName,dataList,notNewTaskIdSet,userClassifyDataMap , das , isSysFilter));
+		result.append("]").append("}");
+		
 	}catch(Exception e)
 	{
-		e.printStackTrace();
+		result.append("{").append("\"isError\":\"true\"}");
 	}
-	
-	//开始拼装数据
-	//获得要显示的字段
-	String[] displayFieldsName = FilterQueryManager.getDisplayNamesFilter(filter.getXml(), das);
-	
-	Map<String,String> userClassifyDataMap = das.getUserClassifyDataMap(username);
-	
-	StringBuffer result = new StringBuffer();
-	
-	result.append("{").append("\"totalCount\":\"").append(totalTaskAccount).append("\"")
-		  .append(",\"newCount\":\"").append(totalTaskAccount - notNewTaskIdSet.size()).append("\"")
-		  .append(",\"rows\":[");
-	
-	result.append(FilterQueryManager.assembleFilterDataJson(displayFieldsName,dataList,notNewTaskIdSet,userClassifyDataMap , das , isSysFilter));
-	
-	result.append("]").append("}");
 	
 	out.print(result.toString());
 %>

@@ -1552,12 +1552,14 @@ public final class DataImpl implements Data
 	 */
 	public String toXMLString() throws Exception{
 		StringBuffer xmlb = new StringBuffer(10240);
+		Template template = DataAccessFactory.getInstance().getSysDas().queryTemplate(this.getTemplateId());
 		xmlb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
 
 		xmlb.append("<task>");
 
 		xmlb.append("<id>").append(this.getId()).append("</id>");
 		xmlb.append("<templateId>").append(this.getTemplateId()).append("</templateId>");
+		xmlb.append("<flowId>").append(template.getFlowId()).append("</flowId>");
 		xmlb.append("<title>").append(XMLUtil.toSafeXMLString(this.getTitle())).append("</title>");
 		xmlb.append("<createUser>").append(this.getCreateUsername()).append("</createUser>");
 		xmlb.append("<createTime>").append(this.getCreateTime()).append("</createTime>");
@@ -1569,7 +1571,6 @@ public final class DataImpl implements Data
 		Set<Field> validFieldSet = new LinkedHashSet<Field>();
 		if(this.getValidFieldIds() != null)
 		{
-			Template template = TemplateCache.getInstance().get(this.getTemplateId());
 			if(template != null)
 			{
 				for(UUID validFieldId : this.getValidFieldIds())
@@ -1658,7 +1659,7 @@ public final class DataImpl implements Data
 					else if(validField.getDataType().equals(DataType.dt_timestamp))
 					{
 						if(this.getDate(validField.getId()) != null)
-							xmlb.append("<data>").append(this.getDate(validField.getId()) == null ?"":this.getDate(validField.getId()).toTimestamp()).append("</data>");
+							xmlb.append("<data>").append(this.getDate(validField.getId()) == null ?"": Date.formatDate(this.getDate(validField.getId()).toTimestamp().toString(),validField.getTimestampFormat())).append("</data>");
 					}
 				}
 				else if (validField.getType().equals(Type.t_attachment))

@@ -82,7 +82,7 @@
 			Node userNameNode = doc.createElement("username");
 			Node userAliasNode = doc.createElement("useralias");
 			userNameNode.setTextContent(user);
-			String userAlias = CynthiaUtil.getUserAlias(user, das);
+			String userAlias = CynthiaUtil.getUserAlias(user);
 			userNameNode.setTextContent(user);
 			userAliasNode.setTextContent(userAlias);
 			userNode.appendChild(userNameNode);

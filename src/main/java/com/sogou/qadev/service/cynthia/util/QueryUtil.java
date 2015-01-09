@@ -12,10 +12,13 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import com.sogou.qadev.cache.impl.FieldNameCache;
+import com.sogou.qadev.service.cynthia.bean.Field;
 import com.sogou.qadev.service.cynthia.bean.QueryCondition;
 import com.sogou.qadev.service.cynthia.bean.Template;
 import com.sogou.qadev.service.cynthia.bean.UUID;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
+import com.sogou.qadev.service.cynthia.service.ConfigManager;
+import com.sogou.qadev.service.cynthia.service.ProjectInvolveManager;
 import com.sogou.qadev.service.cynthia.service.TableRuleManager;
 
 public class QueryUtil {
@@ -101,6 +104,23 @@ public class QueryUtil {
 		for (String key : requestPair.keySet()) {
 			try {
 				if (requestPair.get(key) != null && requestPair.get(key).size() > 0) {
+					//其它字段都是等于
+					String value = requestPair.get(key).get(0);
+					if (ConfigManager.getProjectInvolved()) {
+						if (key.equals("productId")) {
+							Field productField = template.getField("对应项目");
+							if (productField != null) {
+								key = productField.getId().getValue();
+							}
+						}else if (key.equals("projectId")) {
+							Field projectField = template.getField("对应产品");
+							if (projectField != null) {
+								key = projectField.getId().getValue();
+							}
+						}
+					}
+					
+					
 					//时间字段可能大于 或小于
 					if (key.equals("createTime") || key.equals("lastModifyTime")) {
 						List<String> timeList = requestPair.get(key);
@@ -136,8 +156,6 @@ public class QueryUtil {
 							}
 						}
 					}else {
-						//其它字段都是等于
-						String value = requestPair.get(key).get(0);
 						if (CommonUtil.isPosNum(key)) {
 							if (template == null) {
 								continue;

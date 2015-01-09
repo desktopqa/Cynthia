@@ -30,7 +30,7 @@ public class OptionImpl implements Option
 
 	private UUID fatherOptionId = null;
 
-	private Forbidden forbidden = null;
+	private Forbidden forbidden = Forbidden.f_permit;
 
 	private int indexOrder = 0;
 
@@ -49,6 +49,13 @@ public class OptionImpl implements Option
 	{
 		this.id = id;
 		this.fieldId = fieldId;
+	}
+	
+	public OptionImpl(UUID id, UUID fieldId, String name)
+	{
+		this.id = id;
+		this.fieldId = fieldId;
+		this.name = name;
 	}
 
 	/**

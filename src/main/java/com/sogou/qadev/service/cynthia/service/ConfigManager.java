@@ -16,12 +16,14 @@ import java.util.Properties;
  */
 public class ConfigManager {
 	private static Properties properties = null;
+	private static Properties projectProperties = null;
 	
 	public static String deployUrl = null;
 	public static String deployPath = null;
 	
 	static{
 		properties = loadPropertyFile("config.properties");
+		projectProperties = loadPropertyFile("pro-involve.properties");
 	}
 	
 	/**
@@ -53,6 +55,63 @@ public class ConfigManager {
 	}
 	
 	/**
+	 * @Title: getEnableSso
+	 * @Description: 是否启用单点登录
+	 * @return
+	 * @return: boolean
+	 */
+	public static boolean getEnableSso(){
+		try {
+			return Boolean.parseBoolean(properties.getProperty("sso.enable"));
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	/**
+	 * @Title: getEnableFileSystem
+	 * @Description: 是否启用文件系统
+	 * @return
+	 * @return: boolean
+	 */
+	public static boolean getEnableFileSystem(){
+		try {
+			return Boolean.parseBoolean(properties.getProperty("fdfs.enable"));
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	/**
+	 * @Title: getFileSystemProperties
+	 * @Description: 返回文件系统配置
+	 * @return
+	 * @return: boolean
+	 */
+	public static Properties getFileSystemProperties(){
+		Properties prop = new Properties();
+		prop.put("fdfs.upload.url", properties.get("fdfs.upload.url"));
+		prop.put("fdfs.download.url", properties.get("fdfs.download.url"));
+		return prop;
+	}
+	
+	/**
+	 * @description:return sso config
+	 * @date:2014-5-6 上午10:06:35
+	 * @version:v1.0
+	 * @return
+	 */
+	public static Properties getSsoProperties()
+	{
+		Properties prop = new Properties();
+		
+		prop.put("sso.login.url", properties.get("sso.login.url"));
+		prop.put("sso.logout.url", properties.get("sso.logout.url"));
+		
+		return prop;
+	}
+	
+	/**
 	 * @description:return email config
 	 * @date:2014-5-6 上午10:06:35
 	 * @version:v1.0
@@ -69,6 +128,31 @@ public class ConfigManager {
 		prop.put("mail.protocal", properties.get("mail.protocal"));
 		
 		return prop;
+	}
+	
+	/**
+	 * @Title: getProjectInvolved
+	 * @Description: 是否与项目管理关联
+	 * @return
+	 * @return: boolean
+	 */
+	public static boolean getProjectInvolved(){
+		try {
+			return Boolean.parseBoolean(projectProperties.getProperty("project_involve"));
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	/**
+	 * @description:返回与项目管理相关的配置信息
+	 * @date:2014-5-6 上午10:06:35
+	 * @version:v1.0
+	 * @return
+	 */
+	public static Properties getProInvolvedProperties()
+	{
+		return projectProperties;
 	}
 	
 	/**
@@ -121,8 +205,6 @@ public class ConfigManager {
 			p = new Properties();
 			p.load(inputStream);
 		} catch (FileNotFoundException e) {
-			throw new IllegalArgumentException("Properties file not found: "
-					+ fullFile);
 		} catch (IOException e) {
 			throw new IllegalArgumentException(
 					"Properties file can not be loading: " + fullFile);

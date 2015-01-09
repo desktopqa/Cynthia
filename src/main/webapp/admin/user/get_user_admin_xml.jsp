@@ -50,9 +50,9 @@
 		List<UserInfo> userList = new ArrayList<UserInfo>();
 		
 		String userStat = request.getParameter("userStat");
-		String userName = request.getParameter("userName");
+		String queryUserName = request.getParameter("userName");
 		
-		userList.addAll(das.queryAllUsersByStatAndName(userStat,userName));
+		userList.addAll(das.queryAllUsersByStatAndName(key.getUsername(), userStat,queryUserName));
 		
 		if(userList.size() == 0)
 			xmlb.append("<users/>");

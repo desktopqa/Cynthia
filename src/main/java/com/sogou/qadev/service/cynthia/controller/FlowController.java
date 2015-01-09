@@ -23,6 +23,7 @@ import com.sogou.qadev.service.cynthia.bean.Role;
 import com.sogou.qadev.service.cynthia.bean.Template;
 import com.sogou.qadev.service.cynthia.bean.UUID;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
+import com.sogou.qadev.service.cynthia.service.ProjectInvolveManager;
 import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
 
 /**
@@ -73,6 +74,8 @@ public class FlowController extends BaseController{
 	public String getActionRole(HttpServletRequest request, HttpServletResponse response ,HttpSession session) throws Exception {
 		String actionId = request.getParameter("actionId");
 		String flowId = request.getParameter("flowId");
+		String userName = (String)request.getSession().getAttribute("userName");
+				
 		Flow flow = das.queryFlow(DataAccessFactory.getInstance().createUUID(flowId));
 		if (flow == null) {
 			return "";
@@ -103,11 +106,17 @@ public class FlowController extends BaseController{
 		
 		roleMap.put("allRole", allRoleList);
 		
-		
 		if (actionId != null && actionId != "") {
 			
 			List<FlowField> allActionRoleList = new ArrayList<FlowController.FlowField>();
-			Role[] allActionRoles = flow.queryActionRoles(DataAccessFactory.getInstance().createUUID(actionId));
+			Role[] allActionRoles = null;
+			
+			if (flow.isProFlow()) {
+				allActionRoles = ProjectInvolveManager.getInstance().queryActionRoles(userName,flow,DataAccessFactory.getInstance().createUUID(actionId));
+			}else {
+				allActionRoles = flow.queryActionRoles(DataAccessFactory.getInstance().createUUID(actionId));
+			}
+			
 			for (Role role : allActionRoles) {
 				allActionRoleList.add(new FlowField(role.getId().getValue(), role.getName()));
 			}

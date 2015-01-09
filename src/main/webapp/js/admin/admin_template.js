@@ -60,6 +60,7 @@ function onInitTemplateListAjax(rootNode)
 		flows[idx] = new Object();
 		flows[idx].id = $(node).children("id").text();
 		flows[idx].name = $(node).children("name").text();
+		flows[idx].isProFlow = $(node).children("isProFlow").text();
 	});
 	
 	var gridHtml = "";
@@ -72,8 +73,9 @@ function onInitTemplateListAjax(rootNode)
 		templates[idx].nodeId = $(node).children("nodeId").text();
 		templates[idx].isFocused = $(node).children("isFocused").text();
 		templates[idx].isNew = $(node).children("isNew").text();
+		templates[idx].isProTemplate = $(node).children("isProTemplate").text();
 		
-		if(!optionRightControl  || userRole === "super_admin" || $.inArray(templates[idx].id, allTemplateRight) != -1){
+		if(!optionRightControl  || templates[idx].isProTemplate || userRole === "super_admin" || $.inArray(templates[idx].id, allTemplateRight) != -1){
 			gridHtml += "<tr>";
 			gridHtml += "<td>" + idx +"</td>";
 			if(templates[idx].isNew == "true")
@@ -129,7 +131,6 @@ function initTemplateUsers(templateId)
 			enableSelectSearch();
 		},
 		error : function(){
-			alert("Server Error!");
 		}
 	});
 }
@@ -154,7 +155,6 @@ function deleteTemplateUser(userMail)
 			}
 		},
 		error : function(){
-			alert("Server Error!");
 		}
 	});
 }
@@ -182,7 +182,6 @@ function addUserRight(){
 			}
 		},
 		error : function(){
-			alert("Server Error!");
 		}
 	});
 	$("#addUserDiv").modal('hide');
@@ -220,29 +219,42 @@ function onSelectTemplateType()
 	{
 		if(templates[i].templateTypeId != templateTypeId)
 			continue;
-				
+		if($('#projectInvolve').val() != templates[i].isProTemplate)
+			continue;
 		$("#select_copyTemplateId")[0].options[$("#select_copyTemplateId")[0].options.length] = new Option(templates[i].name, templates[i].id);
 	}
 }
 
-function displayCreateDiv()
+function displayCreateDiv(projectInvolve)
 {
 	$("#input_name").val("");
-	
+	$('#projectInvolve').val(projectInvolve);
 	$("#select_templateTypeId").empty();
 	$("#select_templateTypeId")[0].options[0] = new Option("请选择", "");
-	for(var i = 0; i < templateTypes.length; i++)
+	for(var i = 0; i < templateTypes.length; i++){
 		$("#select_templateTypeId")[0].options[i + 1] = new Option(templateTypes[i].name, templateTypes[i].id);
+	}
 	
 	$("#select_copyTemplateId").empty();
 	$("#select_copyTemplateId")[0].options[0] = new Option("请选择", "");
 	
 	$("#select_flowId").empty();
-	$("#select_flowId")[0].options[0] = new Option("请选择", "");
-	for(var i = 0; i < flows.length; i++)
-		$("#select_flowId")[0].options[i + 1] = new Option(flows[i].name, flows[i].id);
+	for(var i = 0; i < flows.length; i++){
+		if((projectInvolve && flows[i].isProFlow != 'true') || (!projectInvolve && flows[i].isProFlow == 'true'))
+			continue;
+		$("#select_flowId").append('<option value=' + flows[i].id + '>' + flows[i].name + '</option>');
+	}
 	
 	$("#addTemplateDiv").modal('show');
+}
+
+function checkTemplateName(name){
+	for(var i in templates){
+		if(templates[i].name == name){
+			return true;
+		}
+	}
+	return false;
 }
 
 function addTemplate()
@@ -251,6 +263,11 @@ function addTemplate()
 	if(name == "")
 	{
 		alert("请输入表单名称！");
+		return;
+	}
+	
+	if(checkTemplateName(name)){
+		alert('己存在该名称表单,请修改!');
 		return;
 	}
 	
@@ -281,6 +298,7 @@ function addTemplate()
 	if(copyUserRight != "")
 		params += "&copyUserRight=" + getSafeParam(copyUserRight);
 	
+	params += "&projectInvolved=" + getSafeParam($("#projectInvolve").val());
 	$.ajax({
 		url : 'template/add_Template_xml.jsp',
 		type : 'POST',
@@ -541,12 +559,13 @@ function initSystem()
 		dataType:'json',
 		async:false,
 		success:function(data){
-			data = eval('(' + data + ')');
-			for(var key in data){
-				if(key == 'openRight'){
-					optionRightControl = (data[key] == 'true' ? true : false);
-					break;
-				}
+			optionRightControl = (data.openRight == 'true' ? true : false);
+			if(data.projectInvolved == 'true'){
+				$('.project_involved_true').show();
+				$('.project_involved_false').hide();
+			}else{
+				$('.project_involved_true').hide();
+				$('.project_involved_false').show();
 			}
 		}
 	});
@@ -597,7 +616,6 @@ function initAllUsers()
 		data:{'initUser':true,'userRole':'admin'},
 		success : onInitUserListAjax,
 		error : function(data){
-			alert("Server Error!");
 		}
 	});
 }
@@ -611,7 +629,7 @@ function onInitUserListAjax(rootNode)
 		var userName = $(node).children("name").text(); 
 		var userEmail = $(node).children("email").text();
 		var userRole = $(node).children("userRole").text();
-		if(userRole === "normal") //只初始化管理员或超级管理员
+		if(userRole && userRole === "normal") //只初始化管理员或超级管理员
 			return true;
 		gridHtml += "<option value="+userEmail+">" + userName + "[" + userEmail + "]</option>";
 	});

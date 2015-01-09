@@ -20,7 +20,9 @@ import com.sogou.qadev.cache.impl.UserInfoCache;
 import com.sogou.qadev.service.cynthia.bean.UUID;
 import com.sogou.qadev.service.cynthia.bean.UserInfo;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
+import com.sogou.qadev.service.cynthia.service.ConfigManager;
 import com.sogou.qadev.service.cynthia.service.DataAccessSession;
+import com.sogou.qadev.service.cynthia.service.ProjectInvolveManager;
 
 public class CynthiaUtil {
 
@@ -120,42 +122,29 @@ public class CynthiaUtil {
 	 * @param das
 	 * @return
 	 */
-	public static String getUserAlias(String user, DataAccessSession das) {
+	public static String getUserAlias(String user) {
 		if (user == null || user.equals("null")) {
 			return "";
 		}
-		
-		UserInfo userInfo = das.queryUserInfoByUserName(user);
-		if (userInfo != null) {
-			return userInfo.getNickName();
-		}else {
-			if (user.indexOf("@") != -1) {
-				return user.substring(0,user.indexOf("@"));
-			}else {
-				return user;
-			}
-		}
-	}
-
-	/**
-	 * @description:return user nick name
-	 * @date:2014-5-6 下午6:37:05
-	 * @version:v1.0
-	 * @param user
-	 * @param das
-	 * @return
-	 */
-	public static String getUserAlias(String user) {
+		String userName = "";
 		UserInfo userInfo = UserInfoCache.getInstance().get(user);
+		
 		if (userInfo != null && userInfo.getNickName() != null && !userInfo.getNickName().equals("")) {
-			return userInfo.getNickName(); 
+			userName = userInfo.getNickName(); 
 		}else {
-			if (user.indexOf("@") != -1) {
-				return user.substring(0,user.indexOf("@"));
-			}else {
-				return user;
+			if (ConfigManager.getEnableSso()) {
+				userName = ProjectInvolveManager.getInstance().getUserName(user);
+			}
+			
+			if (isNull(userName)) {
+				if (user.indexOf("@") != -1) {
+					userName = user.substring(0,user.indexOf("@"));
+				}else {
+					userName = user;
+				}
 			}
 		}
+		return userName;
 	}
 	
 	/**

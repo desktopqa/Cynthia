@@ -83,6 +83,26 @@
 	
 	template.setName(name);
 	template.setFlowId(flowId);
+	template.setCreateUser(key.getUsername());
+	template.setProTemplate(request.getParameter("projectInvolved") != null && request.getParameter("projectInvolved").equals("true"));
+	
+	if(template.isProTemplate()){
+		ErrorCode errorCode = das.updateTemplate(template);
+		//项目表单初始化 三列
+		template.addFieldRow(0, 3);
+		//添加字段 对应产品 对应项目
+		Field field = template.addField(Field.Type.t_selection, Field.DataType.dt_single);
+		template.addField(field, 0, 0, 0);
+		field.setName("对应产品");
+		String fieldColName = FieldNameMapMySQL.getInstance().getOneFieldName(field, template.getId().getValue());
+		das.addFieldColName(template.getId().getValue(), fieldColName, field.getId().getValue(),  FieldNameMapMySQL.getInstance().getFieldColNameType(field));
+				
+		Field field2 = template.addField(Field.Type.t_selection, Field.DataType.dt_single);
+		template.addField(field2, 0, 1, 0);
+		field2.setName("对应项目");
+		String fieldColName2 = FieldNameMapMySQL.getInstance().getOneFieldName(field2, template.getId().getValue());
+		das.addFieldColName(template.getId().getValue(), fieldColName2, field2.getId().getValue(),  FieldNameMapMySQL.getInstance().getFieldColNameType(field2));
+	}
 	
 	if(copyTemplateId != null)
 	{
@@ -141,9 +161,10 @@
 						field.setName(copyField.getName());
 						field.setDescription(copyField.getDescription());
 					
-						if(copyField.getOptions() != null)
+						Set<Option> allOptions = copyField.getOptions();
+						if(allOptions != null)
 						{
-							for(Option copyOption : copyField.getOptions())
+							for(Option copyOption : allOptions)
 							{
 								Option option = field.addOption();
 								option.setName(copyOption.getName());
@@ -198,12 +219,10 @@
 				newFieldRowList.add(fieldRow);
 			}
 			template.setFieldRowList(newFieldRowList);
-		
 	}
 	
 	ErrorCode errorCode = das.updateTemplate(template);
 	if(errorCode.equals(ErrorCode.success)&&isSuccess){
-		
 		das.updateCache(DataAccessAction.insert, template.getId().getValue(),template);
 		//创建表单人员添加权限
 		das.addUserTemplateRight(new String[]{template.getId().getValue()}, key.getUsername());

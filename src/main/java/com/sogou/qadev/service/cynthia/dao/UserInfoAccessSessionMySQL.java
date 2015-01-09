@@ -19,6 +19,7 @@ import com.sogou.qadev.service.cynthia.bean.UserInfo.UserStat;
 import com.sogou.qadev.service.cynthia.bean.impl.UserInfoImpl;
 import com.sogou.qadev.service.cynthia.service.DataAccessSession.ErrorCode;
 import com.sogou.qadev.service.cynthia.service.DbPoolConnection;
+import com.sogou.qadev.service.cynthia.util.ConfigUtil;
 import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
 
 /**
@@ -133,6 +134,9 @@ public class UserInfoAccessSessionMySQL {
 				userInfo.setUserRole(UserRole.valueOf(rs.getString("user_role")));
 				userInfo.setUserStat(UserStat.valueOf(rs.getString("user_stat")));
 				userInfo.setPicId(rs.getString("pic_id"));
+				if (CynthiaUtil.isNull(userInfo.getPicId())) {
+					userInfo.setPicUrl(ConfigUtil.getCynthiaWebRoot() + "attachment/download.jsp?method=download&id=" + userInfo.getPicId());
+				}
 				return userInfo;
 			}
 		}catch(Exception e)
@@ -176,6 +180,9 @@ public class UserInfoAccessSessionMySQL {
 				userInfo.setUserRole(UserRole.valueOf(rs.getString("user_role")));
 				userInfo.setUserStat(UserStat.valueOf(rs.getString("user_stat")));
 				userInfo.setPicId(rs.getString("pic_id"));
+				if (!CynthiaUtil.isNull(userInfo.getPicId())) {
+					userInfo.setPicUrl(ConfigUtil.getCynthiaWebRoot() + "attachment/download.jsp?method=download&id=" + userInfo.getPicId());
+				}
 				return userInfo;
 			}
 		}catch(Exception e)
@@ -278,6 +285,9 @@ public class UserInfoAccessSessionMySQL {
 				userInfo.setUserRole(UserRole.valueOf(rs.getString("user_role")));
 				userInfo.setUserStat(UserStat.valueOf(rs.getString("user_stat")));
 				userInfo.setPicId(rs.getString("pic_id"));
+				if (CynthiaUtil.isNull(userInfo.getPicId())) {
+					userInfo.setPicUrl(ConfigUtil.getCynthiaWebRoot() + "attachment/download.jsp?method=download&id=" + userInfo.getPicId());
+				}
 				relatedUserList.add(userInfo);
 			}
 		}catch(Exception e)
@@ -346,6 +356,9 @@ public class UserInfoAccessSessionMySQL {
 				userInfo.setUserRole(UserRole.valueOf(rs.getString("user_role")));
 				userInfo.setUserStat(UserStat.valueOf(rs.getString("user_stat")));
 				userInfo.setPicId(rs.getString("pic_id"));
+				if (CynthiaUtil.isNull(userInfo.getPicId())) {
+					userInfo.setPicUrl(ConfigUtil.getCynthiaWebRoot() + "attachment/download.jsp?method=download&id=" + userInfo.getPicId());
+				}
 				allUserList.add(userInfo);
 			}
 		} catch (Exception e) {
@@ -395,6 +408,9 @@ public class UserInfoAccessSessionMySQL {
 				userInfo.setUserRole(UserRole.valueOf(rs.getString("user_role")));
 				userInfo.setUserStat(UserStat.valueOf(rs.getString("user_stat")));
 				userInfo.setPicId(rs.getString("pic_id"));
+				if (CynthiaUtil.isNull(userInfo.getPicId())) {
+					userInfo.setPicUrl(ConfigUtil.getCynthiaWebRoot() + "attachment/download.jsp?method=download&id=" + userInfo.getPicId());
+				}
 				allUserList.add(userInfo);
 			}
 		} catch (Exception e) {
@@ -444,6 +460,10 @@ public class UserInfoAccessSessionMySQL {
 				userInfo.setUserRole(UserRole.valueOf(rs.getString("user_role")));
 				userInfo.setUserStat(UserStat.valueOf(rs.getString("user_stat")));
 				userInfo.setPicId(rs.getString("pic_id"));
+				
+				if (CynthiaUtil.isNull(userInfo.getPicId())) {
+					userInfo.setPicUrl(ConfigUtil.getCynthiaWebRoot() + "attachment/download.jsp?method=download&id=" + userInfo.getPicId());
+				}
 				
 				allUserMap.put(rs.getString("user_name"), userInfo);
 			}

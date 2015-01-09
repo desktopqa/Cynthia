@@ -44,12 +44,10 @@ public class ApplicationInitLoader extends HttpServlet{
 			timerExecutor = new TimerExecutor(); // 线上的话只能配置一台定时器！
 			timerExecutor.start();
 		}
-
 		for (int i = 0; i < 5; i++) {
 			// 每台机器开5个线程异步执行脚本
 			new Thread(new ScriptExecuteThread()).start();
 		}
-
 	}
 
 	@Override

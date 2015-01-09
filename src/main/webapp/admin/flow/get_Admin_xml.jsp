@@ -1,3 +1,7 @@
+<%@page import="com.sogou.qadev.service.cynthia.service.ProjectInvolveManager"%>
+<%@page import="com.sogou.qadev.service.cynthia.service.ConfigManager"%>
+<%@page import="java.util.Set"%>
+<%@page import="java.util.HashSet"%>
 <%@page import="com.sogou.qadev.service.cynthia.bean.UserInfo"%>
 <%@page import="com.sogou.qadev.service.cynthia.util.XMLUtil"%>
 <%@page import="java.util.Map"%>
@@ -56,33 +60,21 @@
 	
 	if(initFlow)
 	{
-		Map<String, Flow> flowMap = new LinkedHashMap<String, Flow>();
+		Flow[] flowArray = null;
+		flowArray = das.queryAllFlows(key.getUsername());
 		
-		Flow[] flowArray = das.queryAllFlows();
-		if(flowArray != null)
-		{
-			for(Flow flow : flowArray)
-			{
-				if (null == flow.getName()){
-					continue;
-				}
-				flowMap.put(flow.getName(), flow);
-			}
-		}
-		
-		if(flowMap.size() == 0)
+		if(flowArray.length == 0)
 			xmlb.append("<flows/>");
 		else
 		{
 			xmlb.append("<flows>");
 			
-			for(Flow flow : flowMap.values())
+			for(Flow flow : flowArray)
 			{
 				xmlb.append("<flow>");
-				
 				xmlb.append("<id>").append(flow.getId()).append("</id>");
 				xmlb.append("<name>").append(XMLUtil.toSafeXMLString(flow.getName())).append("</name>");
-				
+				xmlb.append("<isProFlow>").append(XMLUtil.toSafeXMLString(String.valueOf(flow.isProFlow()))).append("</isProFlow>");
 				xmlb.append("</flow>");
 			}
 			
@@ -116,11 +108,9 @@
 					for(Stat stat : statMap.values())
 					{
 						xmlb.append("<stat>");
-						
 						xmlb.append("<id>").append(stat.getId()).append("</id>");
 						xmlb.append("<name>").append(XMLUtil.toSafeXMLString(stat.getName())).append("</name>");
 						xmlb.append("<flowId>").append(flow.getId()).append("</flowId>");
-						
 						xmlb.append("</stat>");
 					}
 					

@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="Description" content="Cynthia项目缺陷管理系统，拥有表单流程化设计，可视化拖动布局等功能，提供项目管理，缺陷管理，，统计，查询等服务，是您项目上的好帮手！">
+	<meta name="Keywords" content="Cynthia,BUG管理,项目管理 ,缺陷管理,任务管理,BUG,缺陷,开源">
+	<link href="../lib/bootstrap2/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="../lib/g_bootstrap/css/google-bootstrap.css" rel="stylesheet" type="text/css">
+	<link href="../css/top.css" rel="stylesheet" type="text/css">
+	<link href='../lib/select2/select2.css' rel="stylesheet" style="text/css"/>
+	
+	<script type="text/javascript" src="../lib/jquery/jquery-1.9.3.min.js"></script>
+	<script type="text/javascript" src='../lib/bootstrap2/js/bootstrap.cynthia.min.js'></script>
+	<script type="text/javascript" src="../js/util.js"></script>
+	<script type="text/javascript" src="../js/script.js"></script>
+	<script type="text/javascript" src="../lib/My97DatePicker/WdatePicker.js"></script>
+	<title>脚本</title>
+</head>
+<body onload="initMountTemplateScript(<%=request.getParameter("templateId") %>)">
+	<div class="container-fluid">
+	<div id ="header-nav">
+	</div>
+	<div id="main" style="margin-top:50px;">
+		<div id="shortmenu">
+			<ul>
+				<li><a href="editscript.jsp">新建脚本</a></li>
+			</ul>
+		</div>
+		<div id="content">
+			<div id="box">
+			<form action="" >
+				<table  class="table table-striped table-bordered table-hover " cellpadding="0" cellspacing="0">
+    					<tr>
+     						<th style="width:200px;">表单名称</th>
+     						<td><input type="text" readonly="readonly" id="templateName" templateId='' style="width: 500px;" value=""></td>
+   		 				</tr>
+   		 				<tr>
+   		 					<td>
+   		 						挂载的脚本
+   		 					</td>
+   		 					<td>
+   		 						<table  class="table table-striped table-bordered table-hover table-condensed " id="mountedScripts">
+   		 							<tbody>
+   		 								<tr><th>编号</th><th>脚本名称</th><th>操作</th></tr>
+   		 							</tbody>
+   		 						</table>
+   		 					</td>
+   		 				</tr>
+   		 				<tr>
+   		 					<td>挂载脚本</td>
+   		 					<td><select style="width: 500px;" id="allowedScript" onchange="initAllowedScript()"></select> </td>
+   		 				</tr>
+   		 				<tr  id="confInfo" style="display: none;">
+   		 					<td colspan="2">
+   		 						<table>
+   		 							<tr>
+			   		 					<td width="200px">动作</td>
+			   		 					<td><select style="width: 500px;height: 150px;" id="action" multiple="multiple"></select> </td>
+			   		 				</tr>
+			   		 				<tr>
+			   		 					<td>状态</td>
+			   		 					<td><select style="width: 500px;height: 150px;" id="stat" multiple="multiple"></select> </td>
+			   		 				</tr>
+   		 						</table>
+   		 					</td>
+   		 				</tr>
+   		 				<tr>
+   		 					<td colspan="4" align="center" valign="middle">
+   		 					<input type="button" class="btn btn-danger" onclick="executeAddMountScript()" value="增加" class="defaultButton" />
+   		 					<input type="button" class="btn" onclick="javascript:history.go(-1);" value="取消" /></td>
+   		 				</tr>
+				</table>
+			</form>
+			</div>
+		</div>
+	</div>
+	<input type="hidden" id="scriptId" value="">
+	</div>
+</body>
+</html>

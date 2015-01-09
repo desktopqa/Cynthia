@@ -1,0 +1,48 @@
+<%@page import="com.sogou.qadev.service.cynthia.util.ConfigUtil"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="Description" content="Cynthia项目缺陷管理系统，拥有表单流程化设计，可视化拖动布局等功能，提供项目管理，缺陷管理，，统计，查询等服务，是您项目上的好帮手！">
+	<meta name="Keywords" content="Cynthia,BUG管理,项目管理 ,缺陷管理,任务管理,BUG,缺陷,开源">
+	<link href="../lib/bootstrap2/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="../lib/g_bootstrap/css/google-bootstrap.css" rel="stylesheet" type="text/css">
+	<link href="../css/top.css" rel="stylesheet" type="text/css">
+	<link href='../lib/select2/select2.css' rel="stylesheet" style="text/css"/>
+
+	<script type="text/javascript" src="../lib/jquery/jquery-1.9.3.min.js"></script>
+	<script type="text/javascript" src='../lib/bootstrap2/js/bootstrap.cynthia.min.js'></script>
+	<script type="text/javascript" src="../js/script.js"></script>
+	<script type="text/javascript" src="../js/util.js"></script>
+	<title>cynthia插件系统欢迎您</title>
+</head>
+<body onload="initTemplates()" >
+	<div class="container-fluid">
+	<div id ="header-nav">
+	</div>
+	<div id="main" style="margin-top:50px;">
+		<div id="shortmenu">
+			<ul>
+				<!-- <li><a href="#">全部</a></li>-->
+			</ul>
+		</div>
+		<div id="content">
+			<div id="box">
+				<table  class="table table-striped table-bordered table-hover" id="maintable" cellpadding="0" cellspacing="0">
+					<tbody>
+   						<tr>
+   						<th width="50px;">序号</th>
+   						<th width="200px;">名称</th>
+   						<th width="500px;">已挂载脚本</th>
+   						<th width="50px;">操作</th>
+  		 				</tr>
+  		 			</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	</div>
+</body>
+</html>

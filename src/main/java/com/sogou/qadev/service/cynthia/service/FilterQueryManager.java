@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +104,9 @@ public class FilterQueryManager {
 	 * @param filterXml
 	 * @return
 	 */
-	public static String[] getDisplayFields(String filterXml ,DataAccessSession das){
+	public static Map<String,String> getDisplayFieldAndWidth(String filterXml ,DataAccessSession das) {
+		Map<String, String> displayFieldMap = new LinkedHashMap<String, String>();
+		
 		Document filterDoc = null;
 		try {
 			filterDoc = XMLUtil.string2Document(filterXml,"UTF-8");
@@ -111,8 +114,8 @@ public class FilterQueryManager {
 			e.printStackTrace();
 		}
 		if(filterDoc == null)
-			return new String[0];
-		
+			return displayFieldMap;
+
 		Template template = null;
 		
 		try {
@@ -127,9 +130,7 @@ public class FilterQueryManager {
 			}
 			
 			List<Node> allShowFieldList = XMLUtil.getNodes(node, "display/field");
-			
-			Set<String> displayFieldsSet = new LinkedHashSet<String>();
-			
+
 			for (Node fieldNode : allShowFieldList)
 			{
 				String fieldIdStr = XMLUtil.getAttribute(fieldNode, "id");
@@ -143,22 +144,33 @@ public class FilterQueryManager {
 						field = template.getField(fieldId);
 					}
 					if(field != null)
-						displayFieldsSet.add(field.getName());
+						displayFieldMap.put(field.getName(), XMLUtil.getAttribute(fieldNode, "width"));
 				}else{
 					String fieldName = ConfigUtil.baseFieldNameMap.get(fieldIdStr);
 					if(fieldName != null)
-						displayFieldsSet.add(fieldName);
+						displayFieldMap.put(fieldName, XMLUtil.getAttribute(fieldNode, "width"));
 				}
 			}
-			
-			return displayFieldsSet.toArray(new String[0]);
-			
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new String[0];
 		}
-	}
 		
+		return displayFieldMap;
+	}
+	
+	
+	/**
+	 * @function：获取过滤器显示字段
+	 * @modifyTime：2013-10-12 上午10:29:06
+	 * @author：李明
+	 * @email: liming@sogou-inc.com
+	 * @param filterXml
+	 * @return
+	 */
+	public static String[] getDisplayFields(String filterXml ,DataAccessSession das){
+		return getDisplayFieldAndWidth(filterXml, das).keySet().toArray(new String[0]);
+	}
+
 	// 传入templateType节点或者template节点，生成SegmentTagBase
 	private static SegmentTagBase createSegmentTagBase(Element element, DataAccessSession das , Template template)
 	{
@@ -616,7 +628,11 @@ public class FilterQueryManager {
 			String fieldShowName = "";
 			String fieldShowValue = "";
 			
-			if( "title".equals( fieldName ) || "标题".equals( fieldName ) ){
+			if( "id".equals( fieldName ) || "编号".equals( fieldName ) ){
+				fieldShowName = "id";
+				fieldShowValue =  XMLUtil.toSafeXMLString(task.getId().getValue());
+			}
+			else if( "title".equals( fieldName ) || "标题".equals( fieldName ) ){
 				fieldShowName = "title";
 				fieldShowValue =  XMLUtil.toSafeXMLString(task.getTitle());
 			}
@@ -631,7 +647,7 @@ public class FilterQueryManager {
 				fieldShowName = "create_user";
 				fieldShowValue = task.getCreateUsername();
 				if(!userAliasMap.containsKey(fieldShowValue)){
-					userAliasMap.put(fieldShowValue, CynthiaUtil.getUserAlias(fieldShowValue, das));
+					userAliasMap.put(fieldShowValue, CynthiaUtil.getUserAlias(fieldShowValue));
 				}
 				if(userAliasMap.get(fieldShowValue) != null){
 					fieldShowValue = userAliasMap.get(fieldShowValue);
@@ -845,7 +861,7 @@ public class FilterQueryManager {
 						{
 							Date valueTmp = task.getDate(field.getId());
 							if(valueTmp != null)
-								fieldShowValue = valueTmp.toString();
+								fieldShowValue = Date.formatDate(valueTmp.toString(), field.getTimestampFormat());
 						}
 					}
 				
@@ -860,6 +876,7 @@ public class FilterQueryManager {
 					fieldValueMap.put(fieldShowName, CynthiaUtil.stringToJson(fieldShowValue));	
 				}
 			}else if (exportType.equals(ExportType.excel) || exportType.equals(ExportType.html)) {
+				fieldShowValue = fieldShowValue.replace("\n", "<br>");
 				fieldValueMap.put(fieldName, fieldShowValue);	
 			}else if (exportType.equals(ExportType.xml)) {
 				if (!"".equals(fieldShowName)) {

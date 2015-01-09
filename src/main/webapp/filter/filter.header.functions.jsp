@@ -581,7 +581,7 @@ Element createItemElementCompact(Document document, Element taskElement, boolean
 		String fieldValue = XMLUtil.getAttribute(node, "value");
 		if(!fieldValue.equals("") && (fieldId.equals("create_user") || fieldId.equals("assign_user"))){
 			if(!userAliasMap.containsKey(fieldValue)){
-				userAliasMap.put(fieldValue, CynthiaUtil.getUserAlias(fieldValue, das));
+				userAliasMap.put(fieldValue, CynthiaUtil.getUserAlias(fieldValue));
 			}
 			
 			if(userAliasMap.get(fieldValue) != null){

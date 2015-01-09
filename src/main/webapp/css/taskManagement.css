@@ -12,7 +12,7 @@
 
 form
 {
-	margin : 0px;
+	margin : 5px 0px;
 }
 
 .control-group .control-label
@@ -339,4 +339,11 @@ textarea, input[type="text"], input[type="password"], input[type="datetime"], in
 	overflow: hidden;
 	max-height: 20px;
 	white-space: nowrap;
+}
+
+.i-checkbox
+{
+	display: inline-block !important;
+	height:14px !important;
+	width:14px !important;
 }

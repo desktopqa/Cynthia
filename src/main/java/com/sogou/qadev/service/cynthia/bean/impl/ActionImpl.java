@@ -32,7 +32,6 @@ public class ActionImpl implements Action{
 	
 	//是否可以指派多人
 	private boolean assignToMore = false; 
-	
 	//指行该动作时是否发送邮件
 	private boolean sendMail = false;   
 	
@@ -48,6 +47,12 @@ public class ActionImpl implements Action{
 	public ActionImpl(UUID id, UUID flowId){
 		this.id	= id;
 		this.flowId	= flowId;
+	}
+	
+	public ActionImpl(UUID id, UUID flowId,String name){
+		this.id	= id;
+		this.flowId	= flowId;
+		this.name = name;
 	}
 
 	/**

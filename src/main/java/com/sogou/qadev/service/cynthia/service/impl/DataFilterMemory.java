@@ -458,84 +458,87 @@ public class DataFilterMemory extends AbstractDataFilter
 			querySpecial = true;
 		}
 		
-		Document doc = null;
-		try{
-			doc = XMLUtil.string2Document(xml, "UTF-8");
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		if(doc == null){
-			return "";
-		}
-		
-		Node queryNode = XMLUtil.getSingleNode(doc, "query");
-		if(queryNode == null){
-			return "";
-		}
-		
-		Node templateTypeNode = XMLUtil.getSingleNode(queryNode, "templateType");
-		List<Node> templateNodeList = XMLUtil.getNodes(queryNode, "template");
-		
-		List<Node> nodeList = new ArrayList<Node>();
-		
-		if(templateNodeList.size() == 0){ //只指定类型,不指定项目的过滤器
-			XMLUtil.setAttribute(templateTypeNode, "id", "");
-			XMLUtil.setAttribute(templateTypeNode, "type", "tt");
-			nodeList.add(templateTypeNode);
-		}
-		else{
-			for(Node templateNode : templateNodeList){
-				XMLUtil.setAttribute(templateNode, "type", "t");
-				nodeList.add(templateNode);
-			}
-		}
-		
-		Node node = nodeList.get(0);
-		//判断是否从日志表查询
-		boolean isCurrent = FilterUtil.getIsQueryLog(XMLUtil.getSingleNode(node, "where"));
-		
-		adjustWhereNode(doc,node );
-		
-		String idStr = XMLUtil.getAttribute(node, "id");
-		UUID id = DataAccessFactory.getInstance().createUUID(idStr);
-		String type = XMLUtil.getAttribute(node, "type");
-		String templateId = null;
-		if (type.equals("t")) {
-			templateId = idStr;
-		}
+		String type = null;
 		List<String> tablesList = new ArrayList<String>();  //查询表单
-		
-		Set<String> queryFieldSet = new LinkedHashSet<String>(); //查询字段
-		if (!querySpecial) {
-			queryFieldSet.add("id");
-			queryFieldSet.add("title");
-			queryFieldSet.add("statusId");
-			queryFieldSet.add("createUser");
-			queryFieldSet.add("assignUser");
-			queryFieldSet.add("createTime");
-			queryFieldSet.add("templateId");
-			queryFieldSet.addAll(getDisplayFieldSet(node , templateId)); 
-			if (templateNodeList.size() == 0) {  //首页
-				queryFieldSet.add("fieldCom_1");  //修改优先级
-				queryFieldSet.add("description");   //描述
-			}
-		}else {
-			queryFieldSet.addAll(querySpeFieldSet);
-		}
-		
-		if (isCurrent) {
-			queryFieldSet.remove("logcreateUser");
-		}
-		
-		String sqlWhereStr = getWhereConditionStr(XMLUtil.getSingleNode(node, "where") , isCurrent , templateId);  //组装where 条件
-		
-		Map<String,String> orderFieldMap = getOrderFieldMap(node , templateId);	   //排序
-		
+		String sqlWhereStr = "";
+		Map<String,String> orderFieldMap = new HashMap<String, String>();
 		String sql = "";
+		boolean isCurrent = true;
+		UUID id = null; 
+		Set<String> queryFieldSet = new LinkedHashSet<String>(); //查询字段
+		queryFieldSet.add("id");
+		queryFieldSet.add("title");
+		queryFieldSet.add("statusId");
+		queryFieldSet.add("createUser");
+		queryFieldSet.add("assignUser");
+		queryFieldSet.add("createTime");
+		queryFieldSet.add("templateId");
+		queryFieldSet.add("lastModifyTime");
 		
-		if (querySpecial) {
-			queryFieldSet = querySpeFieldSet;
+		try {
+			Document doc = null;
+			try{
+				doc = XMLUtil.string2Document(xml, "UTF-8");
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			
+			Node queryNode = XMLUtil.getSingleNode(doc, "query");
+			
+			Node templateTypeNode = XMLUtil.getSingleNode(queryNode, "templateType");
+			List<Node> templateNodeList = XMLUtil.getNodes(queryNode, "template");
+			
+			List<Node> nodeList = new ArrayList<Node>();
+			
+			if(templateNodeList.size() == 0){ //只指定类型,不指定项目的过滤器
+				XMLUtil.setAttribute(templateTypeNode, "id", "");
+				XMLUtil.setAttribute(templateTypeNode, "type", "tt");
+				nodeList.add(templateTypeNode);
+			}
+			else{
+				for(Node templateNode : templateNodeList){
+					XMLUtil.setAttribute(templateNode, "type", "t");
+					nodeList.add(templateNode);
+				}
+			}
+			
+			Node node = nodeList.get(0);
+			//判断是否从日志表查询
+			isCurrent = FilterUtil.getIsQueryLog(XMLUtil.getSingleNode(node, "where"));
+			
+			adjustWhereNode(doc,node );
+			
+			String idStr = XMLUtil.getAttribute(node, "id");
+			id = DataAccessFactory.getInstance().createUUID(idStr);
+			type = XMLUtil.getAttribute(node, "type");
+			String templateId = null;
+			if (type.equals("t")) {
+				templateId = idStr;
+			}
+			
+			if (!querySpecial) {
+				queryFieldSet.addAll(getDisplayFieldSet(node , templateId)); 
+				if (templateNodeList.size() == 0) {  //首页
+					queryFieldSet.add("fieldCom_1");  //修改优先级
+					queryFieldSet.add("description");   //描述
+				}
+			}else {
+				queryFieldSet.addAll(querySpeFieldSet);
+			}
+			
+			if (isCurrent) {
+				queryFieldSet.remove("logcreateUser");
+			}
+			
+			sqlWhereStr = getWhereConditionStr(XMLUtil.getSingleNode(node, "where") , isCurrent , templateId);  //组装where 条件
+			
+			orderFieldMap = getOrderFieldMap(node , templateId);	   //排序
+			
+			if (querySpecial) {
+				queryFieldSet = querySpeFieldSet;
+			}
+		} catch (Exception e) {
+			
 		}
 		
 		if (type != null && type.equals("t")) {

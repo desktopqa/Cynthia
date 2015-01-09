@@ -1,3 +1,4 @@
+<%@page import="com.sogou.qadev.service.cynthia.service.ProjectInvolveManager"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.ErrorManager.ErrorType"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.ErrorManager"%>
 <%@page import="com.sogou.qadev.service.cynthia.bean.Role"%>
@@ -28,9 +29,7 @@
 <%@ page import="org.apache.commons.httpclient.params.*"%>
 <%@page import="com.sogou.qadev.service.cynthia.bean.DataAccessAction"%>
 
-<%!
-	DataAccessFactory daf = DataAccessFactory.getInstance();
-%>
+<%!DataAccessFactory daf = DataAccessFactory.getInstance();%>
 
 <%
 	response.setHeader("Cache-Control","no-cache"); //Forces caches to obtain a new copy of the page from the origin server
@@ -85,11 +84,13 @@
 	xmlb.append("<root>");
 	
 	xmlb.append("<isError>false</isError>");
+	xmlb.append("<isProTemplate>").append(String.valueOf(template.isProTemplate())).append("</isProTemplate>");
 	
 	xmlb.append(templateXml.substring(templateXml.indexOf("<template>")));
 	
 	//get actionArray
 	Action[] actionArray = flow.queryUserNodeBeginActions(das.getUsername(), template.getId());
+	
 	if(actionArray == null || actionArray.length == 0){
 		xmlb.append("<actions/>");
 	}else{
@@ -101,6 +102,8 @@
 			xmlb.append("<name>").append(XMLUtil.toSafeXMLString(action.getName())).append("</name>");
 			xmlb.append("<endStatId>").append(action.getEndStatId()).append("</endStatId>");
 			xmlb.append("<assignToMore>").append(action.getAssignToMore()).append("</assignToMore>");
+			xmlb.append("<nextActionRoles>").append(flow.queryNextActionRoleIdsByActionId(action.getId())).append("</nextActionRoles>");
+			xmlb.append("<isEndAction>").append(flow.isEndAction(action.getId())).append("</isEndAction>");
 			
 			String[] userArray = null;
 			userArray = flow.queryNodeStatAssignUsers(template.getId(), action.getEndStatId());
@@ -111,27 +114,27 @@
 				xmlb.append("<users>");
 				
 				for(String user : userArray){
-					StringBuffer userRoles = new StringBuffer();
-					
-					Role[] userRoleArray = flow.queryUserNodeRoles(user, template.getId());
-					for(Role userRole : userRoleArray){
-						if(userRoles.length() > 0){
-							userRoles.append(",");
-						}
-						
-						userRoles.append(userRole.getName());
-					}
-					
-					String userAlias = CynthiaUtil.getUserAlias(user, das);
-					xmlb.append("<user" + (userAlias != null ? " alias=\"" + XMLUtil.toSafeXMLString(userAlias) + "\"" : "") + ">").append(XMLUtil.toSafeXMLString(user + "[" + userRoles + "]")).append("</user>");
+			StringBuffer userRoles = new StringBuffer();
+			
+			Role[] userRoleArray = flow.queryUserNodeRoles(user, template.getId());
+			for(Role userRole : userRoleArray){
+				if(userRoles.length() > 0){
+					userRoles.append(",");
+				}
+				
+				userRoles.append(userRole.getName());
+			}
+			
+			String userAlias = CynthiaUtil.getUserAlias(user);
+			xmlb.append("<user" + (userAlias != null ? " alias=\"" + XMLUtil.toSafeXMLString(userAlias) + "\"" : "") + ">").append(XMLUtil.toSafeXMLString(user + "[" + userRoles + "]")).append("</user>");
 				}
 				
 				xmlb.append("</users>");
 			}
 			
 			xmlb.append("</action>");
-			
-			}
+	
+	}
 		
 		xmlb.append("</actions>");
 	}
@@ -178,83 +181,83 @@
 		List<Node> columnNodes = XMLUtil.getNodes(rowNode, "column");
 		for(Node columnNode : columnNodes)
 		{
-			List<Node> fieldNodeList = XMLUtil.getNodes(columnNode, "field");
-			for(Node fieldNode : fieldNodeList){
-				Node typeNode = XMLUtil.getSingleNode(fieldNode, "type");
-				typeNode.setTextContent(typeNode.getTextContent().split("\\_")[1]);
-				Node fieldIdNode = XMLUtil.getSingleNode(fieldNode,"id");
-				Node dataTypeNode = XMLUtil.getSingleNode(fieldNode, "dataType");
-				if(dataTypeNode.getTextContent().length() > 0){
-					dataTypeNode.setTextContent(dataTypeNode.getTextContent().split("\\_")[1]);
-				}
-				
-				List<Node> optionNodeList = XMLUtil.getNodes(fieldNode, "options/option");
-				String fieldId = fieldIdNode.getTextContent();
-				
-				for(Node optionNode : optionNodeList){
-					Node forbiddenNode = XMLUtil.getSingleNode(optionNode, "forbidden");
-					forbiddenNode.setTextContent(forbiddenNode.getTextContent().split("\\_")[1]);
-				}
-				
-				///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				StringBuffer controlHiddenFields = new StringBuffer();
-				Node controlHiddenFieldsIdsNode = XMLUtil.getSingleNode(fieldNode, "controlHiddenFields");
-				List<Node> controlHiddenFieldsIdList =  XMLUtil.getNodes(controlHiddenFieldsIdsNode, "controlHiddenField");
-				for(Node controlHiddenField : controlHiddenFieldsIdList){
-				if(controlHiddenFields.length() > 0){
-				controlHiddenFields.append(",");
-				}
-				
-				controlHiddenFields.append(controlHiddenField.getTextContent());
-				}
-				XMLUtil.removeAll(controlHiddenFieldsIdsNode);
-				controlHiddenFieldsIdsNode.setTextContent(controlHiddenFields.toString());
-				
-				StringBuffer controlHiddenStates = new StringBuffer();
-				Node controlHiddenStatesIdsNode = XMLUtil.getSingleNode(fieldNode, "controlHiddenStates");
-				List<Node> controlHiddenStatesIdList =  XMLUtil.getNodes(controlHiddenStatesIdsNode, "controlHiddenState");
-				for(Node controlHiddenState : controlHiddenStatesIdList){
-				if(controlHiddenStates.length() > 0){
-				controlHiddenStates.append(",");
-				}
-				
-				controlHiddenStates.append(controlHiddenState.getTextContent());
-				}
-				XMLUtil.removeAll(controlHiddenStatesIdsNode);
-				controlHiddenStatesIdsNode.setTextContent(controlHiddenStates.toString());
-				///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	List<Node> fieldNodeList = XMLUtil.getNodes(columnNode, "field");
+	for(Node fieldNode : fieldNodeList){
+		Node typeNode = XMLUtil.getSingleNode(fieldNode, "type");
+		typeNode.setTextContent(typeNode.getTextContent().split("\\_")[1]);
+		Node fieldIdNode = XMLUtil.getSingleNode(fieldNode,"id");
+		Node dataTypeNode = XMLUtil.getSingleNode(fieldNode, "dataType");
+		if(dataTypeNode.getTextContent().length() > 0){
+	dataTypeNode.setTextContent(dataTypeNode.getTextContent().split("\\_")[1]);
+		}
+		
+		List<Node> optionNodeList = XMLUtil.getNodes(fieldNode, "options/option");
+		String fieldId = fieldIdNode.getTextContent();
+		
+		for(Node optionNode : optionNodeList){
+	Node forbiddenNode = XMLUtil.getSingleNode(optionNode, "forbidden");
+	forbiddenNode.setTextContent(forbiddenNode.getTextContent().split("\\_")[1]);
+		}
+	
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		StringBuffer controlHiddenFields = new StringBuffer();
+		Node controlHiddenFieldsIdsNode = XMLUtil.getSingleNode(fieldNode, "controlHiddenFields");
+		List<Node> controlHiddenFieldsIdList =  XMLUtil.getNodes(controlHiddenFieldsIdsNode, "controlHiddenField");
+		for(Node controlHiddenField : controlHiddenFieldsIdList){
+		if(controlHiddenFields.length() > 0){
+		controlHiddenFields.append(",");
+		}
+		
+		controlHiddenFields.append(controlHiddenField.getTextContent());
+		}
+		XMLUtil.removeAll(controlHiddenFieldsIdsNode);
+		controlHiddenFieldsIdsNode.setTextContent(controlHiddenFields.toString());
+		
+		StringBuffer controlHiddenStates = new StringBuffer();
+		Node controlHiddenStatesIdsNode = XMLUtil.getSingleNode(fieldNode, "controlHiddenStates");
+		List<Node> controlHiddenStatesIdList =  XMLUtil.getNodes(controlHiddenStatesIdsNode, "controlHiddenState");
+		for(Node controlHiddenState : controlHiddenStatesIdList){
+		if(controlHiddenStates.length() > 0){
+		controlHiddenStates.append(",");
+		}
+		
+		controlHiddenStates.append(controlHiddenState.getTextContent());
+		}
+		XMLUtil.removeAll(controlHiddenStatesIdsNode);
+		controlHiddenStatesIdsNode.setTextContent(controlHiddenStates.toString());
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-				
-				//controlActionIds
-				StringBuffer controlActionIds = new StringBuffer();
-				Node controlActionIdsNode = XMLUtil.getSingleNode(fieldNode, "controlActionIds");
-				List<Node> controlActionIdNodeList = XMLUtil.getNodes(controlActionIdsNode, "controlActionId");
-				for(Node controlActionIdNode : controlActionIdNodeList){
-					if(controlActionIds.length() > 0){
-						controlActionIds.append(",");
-				}
-			
-					controlActionIds.append(controlActionIdNode.getTextContent());
-				}
-				
-				XMLUtil.removeAll(controlActionIdsNode);
-				controlActionIdsNode.setTextContent(controlActionIds.toString());
-				
-				//controlRoleIds
-				StringBuffer controlRoleIds = new StringBuffer();
-				Node controlRoleIdsNode = XMLUtil.getSingleNode(fieldNode, "controlRoleIds");
-				List<Node> controlRoleIdNodeList = XMLUtil.getNodes(controlRoleIdsNode, "controlRoleId");
-				for(Node controlRoleIdNode : controlRoleIdNodeList){
-					if(controlRoleIds.length() > 0){
-						controlRoleIds.append(",");
-				}
-			
-					controlRoleIds.append(controlRoleIdNode.getTextContent());
-				}
-				
-				XMLUtil.removeAll(controlRoleIdsNode);
-				controlRoleIdsNode.setTextContent(controlRoleIds.toString());
-			}
+		
+		//controlActionIds
+		StringBuffer controlActionIds = new StringBuffer();
+		Node controlActionIdsNode = XMLUtil.getSingleNode(fieldNode, "controlActionIds");
+		List<Node> controlActionIdNodeList = XMLUtil.getNodes(controlActionIdsNode, "controlActionId");
+		for(Node controlActionIdNode : controlActionIdNodeList){
+	if(controlActionIds.length() > 0){
+		controlActionIds.append(",");
+		}
+	
+	controlActionIds.append(controlActionIdNode.getTextContent());
+		}
+		
+		XMLUtil.removeAll(controlActionIdsNode);
+		controlActionIdsNode.setTextContent(controlActionIds.toString());
+		
+		//controlRoleIds
+		StringBuffer controlRoleIds = new StringBuffer();
+		Node controlRoleIdsNode = XMLUtil.getSingleNode(fieldNode, "controlRoleIds");
+		List<Node> controlRoleIdNodeList = XMLUtil.getNodes(controlRoleIdsNode, "controlRoleId");
+		for(Node controlRoleIdNode : controlRoleIdNodeList){
+	if(controlRoleIds.length() > 0){
+		controlRoleIds.append(",");
+		}
+	
+	controlRoleIds.append(controlRoleIdNode.getTextContent());
+		}
+		
+		XMLUtil.removeAll(controlRoleIdsNode);
+		controlRoleIdsNode.setTextContent(controlRoleIds.toString());
+	}
 		}
 	}
 	

@@ -135,7 +135,7 @@ function login()
 
 function loginCheck(userName,password,targetUrl,remember)
 {
-	var params = "userName="+userName+"&password="+password+"&targetUrl="+targetUrl+"&remember="+remember;
+	var params = "userName=" + userName + "&password=" + password + "&targetUrl=" + encodeURIComponent(targetUrl) + "&remember=" + remember;
 	$.ajax({
 		url 	 : base_url + 'user/login.do',
 		type 	 : 'POST',

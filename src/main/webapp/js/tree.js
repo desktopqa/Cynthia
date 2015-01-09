@@ -345,8 +345,7 @@ $(function(){
             	var filterId = nodeId.replace("node_filter_","");
             	var params = {id:filterId,operation:'verify'};
 				$.post("tree/jsTree.jsp",params,function(data,status){
-					if(data.status)
-					{//可以修改
+					if(data.status){//可以修改
 						if(location.href.indexOf("editFilter.html")>=0)
 						{
 							initFilterPage(filterId,'nomenu');						
@@ -354,13 +353,8 @@ $(function(){
 						{
 							window.open("editFilter.html?filterId="+filterId);
 						}
-					}else
-					{
-						$("#forbidden").remove();
-		      			var tip="<div id='forbidden'>您无法修改该过滤器!</div>";
-               			$("body").append(tip);
-               			$("#forbidden").css({"top":(event.pageY+20)+"px","left":(event.pageX+10)+"px"}).show(500);
-               			$("#forbidden").hide(2000);
+					}else{
+						cynthia.util.showInfoWin('error','您无权编辑该过滤器!');
 					}
 					
 				},'json');

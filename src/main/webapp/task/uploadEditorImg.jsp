@@ -1,3 +1,5 @@
+<%@page import="com.sogou.qadev.service.cynthia.service.FileUpDownLoadHandler"%>
+<%@page import="com.sogou.qadev.service.cynthia.service.ConfigManager"%>
 <%@page import="com.sogou.qadev.service.cynthia.util.ConfigUtil"%>
 <%@page import="com.sogou.qadev.service.cynthia.factory.DataAccessFactory"%>
 <%@page import="com.sogou.qadev.service.cynthia.bean.Attachment"%>
@@ -27,14 +29,13 @@
 			e.printStackTrace();
 		}
 		
-// 		String uploadUrl = "http://f.venus.sogou-inc.com/download?fileId=";
-// 		uploadUrl += FileUpDownLoadHandler.postFile("editorimg.jpg", imgBytes);
-
 		Attachment attachment = DataAccessFactory.getInstance().getSysDas().createAttachment("editorImg.jpg", imgBytes);
-		String uploadUrl = ConfigUtil.getCynthiaWebRoot() + "attachment/download.jsp?method=download&id=" + attachment.getId().getValue();
-		return uploadUrl;
+		if(ConfigManager.getEnableFileSystem()){
+			return FileUpDownLoadHandler.downloadURL + attachment.getFileId();
+		}else{
+			return ConfigUtil.getCynthiaWebRoot() + "attachment/download.jsp?method=download&id=" + attachment.getId().getValue();
+		}
 	}
-
 %>
 
 <%

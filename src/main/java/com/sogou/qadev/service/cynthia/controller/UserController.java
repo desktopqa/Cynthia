@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import net.sf.json.JSONObject;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,9 +23,13 @@ import com.sogou.qadev.service.cynthia.bean.UserInfo;
 import com.sogou.qadev.service.cynthia.bean.UserInfo.UserRole;
 import com.sogou.qadev.service.cynthia.bean.UserInfo.UserStat;
 import com.sogou.qadev.service.cynthia.bean.impl.UserInfoImpl;
+import com.sogou.qadev.service.cynthia.service.ConfigManager;
 import com.sogou.qadev.service.cynthia.service.CookieManager;
 import com.sogou.qadev.service.cynthia.service.ImageManager;
+import com.sogou.qadev.service.cynthia.service.ProjectInvolveManager;
 import com.sogou.qadev.service.cynthia.util.ConfigUtil;
+import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
+import com.sogou.qadev.service.cynthia.util.LoginFilter;
 
 /**
  * @description:user processor
@@ -134,16 +140,22 @@ public class UserController extends BaseController{
 	@RequestMapping("/getUserInfo.do")
 	@ResponseBody
 	public String getUserInfo(HttpServletRequest request, HttpServletResponse response ,HttpSession session) throws Exception {
-		String userMail = request.getParameter("user");
-		if (userMail == null || userMail.length() == 0) {
-			return "false";
-		}
-		UserInfo userInfo = das.queryUserInfoByUserName(userMail);
-		if (userInfo == null) {
-			return "false";
+		String userId = request.getParameter("userId");
+		UserInfo userInfo = null;
+		if (!CynthiaUtil.isNull(userId) && ConfigManager.getProjectInvolved()) {
+			userInfo = ProjectInvolveManager.getInstance().getUserInfoById(userId);
 		}
 		
-		return JSONArray.toJSONString(userInfo);
+		if(userInfo == null){
+			String userMail = request.getParameter("userMail");
+			userInfo = das.queryUserInfoByUserName(userMail);
+		}
+		
+		if (userInfo == null) {
+			return "false";
+		}else {
+			return JSONArray.toJSONString(userInfo);
+		}
 	}
 	
 	/**
@@ -204,6 +216,7 @@ public class UserController extends BaseController{
 		return String.valueOf(das.updateUserInfo(userInfo));
 	}
 	
+	
 	/**
 	 * @description:user login
 	 * @date:2014-5-5 下午8:45:46
@@ -221,43 +234,106 @@ public class UserController extends BaseController{
 		String password = request.getParameter("password");
 		String remember = request.getParameter("remember");
 		String targetUrl = request.getParameter("targetUrl");
+		int loginMaxAge = 24 * 60 * 60;   //不自动登陆则为一天
+		targetUrl = targetUrl != null && !targetUrl.equals("") ? targetUrl : ConfigUtil.getCynthiaWebRoot();
+		if (remember != null && remember.equals("true")) {
+			//自动登陆，定义账户密码的生命周期，这里是两周;
+    		loginMaxAge = 14 * 24 * 60 * 60;   
+		}
 		session.setAttribute("loginErrorInfo","");
+		
 		if(validate(userName, password,session)){
-        	int loginMaxAge = 0;
-        	if (remember != null && remember.equals("true")) {
-				//自动登陆，定义账户密码的生命周期，这里是一个月;
-        		loginMaxAge = 30*24*60*60;   
-        		CookieManager.addCookie(response , "remember" , remember , loginMaxAge); 
-			}else {
-				loginMaxAge = 24*60*60;   //不自动登陆则为一天
-			}
-        	
         	UserInfo userInfo = das.queryUserInfoByUserName(userName);
-        	
-        	CookieManager.addCookie(response , "login_username" , userName , loginMaxAge); 
-		    CookieManager.addCookie(response , "login_password" , password , loginMaxAge);   
-		    CookieManager.addCookie(response , "login_nickname" , URLEncoder.encode(userInfo.getNickName(), "UTF-8") , loginMaxAge);   
-		    
+        	CookieManager.addCookie(response , "login_username" , userName , loginMaxAge,null); 
+		    CookieManager.addCookie(response , "login_password" , password , loginMaxAge,null);   
+		    CookieManager.addCookie(response , "login_nickname" , URLEncoder.encode(userInfo.getNickName(), "UTF-8") , loginMaxAge,null);   
 		    session.setAttribute("userName",userName);
-		    
 			if(userInfo != null)  //中文名
 				session.setAttribute("userAlis", userInfo.getNickName());
-			
 			//更新最后登陆时间
 			userInfo.setLastLoginTime(new Timestamp(System.currentTimeMillis()));
 			das.updateUserInfo(userInfo);
-			
-		    if (targetUrl != null && !targetUrl.equals("")) {
-		    	return targetUrl;   //跳转到目标页
-			}else {
-				return ConfigUtil.getCynthiaWebRoot() + "index.html";  //跳转到首页
-			}
+			return targetUrl;
         }else {
-        	 CookieManager.addCookie(response,"login_username","",0);  //清除Cookie
-        	 CookieManager.addCookie(response,"login_password","",0);    //清除Cookie
-        	 CookieManager.addCookie(response,"login_nickname","",0);    //清除Cookie
-		     return ConfigUtil.getCynthiaWebRoot() + "userInfo/login.jsp"; //跳转回登陆页
+        	 CookieManager.addCookie(response,"login_username","",0,null);  //清除Cookie
+        	 CookieManager.addCookie(response,"login_password","",0,null);    //清除Cookie
+        	 CookieManager.addCookie(response,"login_nickname","",0,null);    //清除Cookie
+        	 if (ConfigManager.getEnableSso()) {
+        		 return ConfigUtil.getLoginUrl() + "?targetUrl=" + ConfigUtil.getTargetUrl(request);
+        	 }else {
+        		 return ConfigUtil.getCynthiaWebRoot() + "userInfo/login.jsp"; //跳转回登陆页
+			 }
         }
+	}
+	
+	
+	/**
+	 * @description:user login
+	 * @date:2014-5-5 下午8:45:46
+	 * @version:v1.0
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/logout.do")
+	@ResponseBody
+	public String logout(HttpServletRequest request, HttpServletResponse response ,HttpSession session) throws Exception {
+		CookieManager.delCookie(response, "jpassport-sp");
+		CookieManager.delCookie(response, "login_username");
+		CookieManager.delCookie(response, "login_nickname");
+		CookieManager.delCookie(response, "login_password");
+		CookieManager.delCookie(response, "id");
+		session.removeAttribute("key");
+		session.removeAttribute("userName");
+		session.invalidate();
+		String targetUrl = request.getParameter("targetUrl"); //是否回跳
+		if (!CynthiaUtil.isNull(targetUrl)) {
+			String logoutUrl  = ConfigUtil.getLogOutUrl();
+			logoutUrl += (logoutUrl.indexOf("?") != -1 ? "&" : "?") + "targetUrl=" + URLEncoder.encode(targetUrl,"UTF-8");
+			response.sendRedirect(logoutUrl);
+		}
+		return "";
+	}
+	
+	/**
+	 * @description:user cleanSession
+	 * @date:2014-5-5 下午8:45:46
+	 * @version:v1.0
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/cleanSession.do")
+	@ResponseBody
+	public String cleanSession(HttpServletRequest request, HttpServletResponse response ,HttpSession session) throws Exception {
+		CookieManager.delCookie(response, "login_username");
+		CookieManager.delCookie(response, "login_nickname");
+		CookieManager.delCookie(response, "login_password");
+		session.removeAttribute("key");
+		session.removeAttribute("userName");
+		session.invalidate();
+		return "true";
+	}
+	
+	/**
+	 * @Title: setWebRootDir
+	 * @Description: 设置webRootDir Cookie
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 * @throws Exception
+	 * @return: String
+	 */
+	@RequestMapping("/setWebRootDir.do")
+	@ResponseBody
+	public String setWebRootDir(HttpServletRequest request, HttpServletResponse response ,HttpSession session) throws Exception {
+		CookieManager.addCookie(response, "webRootDir", ConfigUtil.getCynthiaWebRoot(),  60 * 60 * 24 * 14 ,ConfigManager.deployUrl);
+		return "true";
 	}
 	
 	/**
@@ -271,23 +347,27 @@ public class UserController extends BaseController{
 	 */
 	public boolean validate(String userName,String password,HttpSession session)
 	{
-		UserInfo userInfo = das.queryUserInfoByUserName(userName);
-		if (userInfo == null) {
-			session.setAttribute("loginErrorInfo","用户名不存在!");
-			return false;
+		if (ConfigManager.getEnableSso()) {
+			return ProjectInvolveManager.getInstance().getUserInfoByMail(userName) != null;
+		}else {
+			UserInfo userInfo = das.queryUserInfoByUserName(userName);
+			if (userInfo == null) {
+				session.setAttribute("loginErrorInfo","用户名不存在!");
+				return false;
+			}
+			if (userInfo.getUserPassword() != null && !userInfo.getUserPassword().equals(password)) {
+				session.setAttribute("loginErrorInfo","密码错误!");
+				return false;
+			}
+			if (userInfo.getUserStat().equals(UserStat.not_auth)) {
+				session.setAttribute("loginErrorInfo","帐号目前未通过管理员审核!");
+				return false;
+			}else if (userInfo.getUserStat().equals(UserStat.lock)) {
+				session.setAttribute("loginErrorInfo","帐号目前己被锁定,请与管理员联系!");
+				return false;
+			}
+			return true;
 		}
-		if (userInfo.getUserPassword() != null && !userInfo.getUserPassword().equals(password)) {
-			session.setAttribute("loginErrorInfo","密码错误!");
-			return false;
-		}
-		if (userInfo.getUserStat().equals(UserStat.not_auth)) {
-			session.setAttribute("loginErrorInfo","帐号目前未通过管理员审核!");
-			return false;
-		}else if (userInfo.getUserStat().equals(UserStat.lock)) {
-			session.setAttribute("loginErrorInfo","帐号目前己被锁定,请与管理员联系!");
-			return false;
-		}
-		return true;
 	}
 	
 	/**
@@ -352,5 +432,4 @@ public class UserController extends BaseController{
             y = 0;
        return String.valueOf(ImageManager.abscut(fileId, x, y, w, h));
     }
-    
 }

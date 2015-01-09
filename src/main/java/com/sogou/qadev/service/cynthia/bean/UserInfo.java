@@ -37,10 +37,13 @@ public interface UserInfo extends Serializable{
 		normal,lock,not_auth,quit
 	}
 	
-	
 	public String getPicId();
 	
 	public void setPicId(String picId);
+	
+	public String getPicUrl();
+	
+	public void setPicUrl(String picUrl);
 		
 	public void setId(int id);
 	

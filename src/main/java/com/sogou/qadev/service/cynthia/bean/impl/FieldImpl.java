@@ -1,15 +1,22 @@
 package com.sogou.qadev.service.cynthia.bean.impl;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import bsh.This;
+
 import com.sogou.qadev.service.cynthia.bean.Field;
 import com.sogou.qadev.service.cynthia.bean.Option;
+import com.sogou.qadev.service.cynthia.bean.Template;
 import com.sogou.qadev.service.cynthia.bean.UUID;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
+import com.sogou.qadev.service.cynthia.service.ConfigManager;
+import com.sogou.qadev.service.cynthia.service.DataAccessSession;
+import com.sogou.qadev.service.cynthia.service.ProjectInvolveManager;
 import com.sogou.qadev.service.cynthia.util.XMLUtil;
 
 /**
@@ -40,6 +47,8 @@ public final class FieldImpl implements Field
 	private Hidden hidden = null;
 	private Type type = null;
 	private DataType dataType = null;
+	private String timestampFormat = "yyyy-MM-dd HH:mm:ss";   //时间类型字段精度格式
+	private boolean dateCurTime = false;
 	private Set<Option> options = new LinkedHashSet<Option>();
 	private Set<UUID> controlOptionIds = new LinkedHashSet<UUID>();
 	private Set<String> controlRoleIds = new LinkedHashSet<String>();
@@ -76,6 +85,7 @@ public final class FieldImpl implements Field
 	{
 		FieldImpl fieldImpl = new FieldImpl(this.id, this.templateId, this.type, this.dataType);
 		fieldImpl.name = this.name;
+		fieldImpl.timestampFormat = this.timestampFormat;
 		fieldImpl.fieldTip = this.fieldTip;
 		fieldImpl.fieldSize = this.fieldSize;
 		fieldImpl.description = this.description;
@@ -83,6 +93,7 @@ public final class FieldImpl implements Field
 		fieldImpl.templateId = this.templateId;
 		fieldImpl.controlFieldId = this.controlFieldId;
 		fieldImpl.hidden = this.hidden;
+		fieldImpl.dateCurTime = this.dateCurTime;
 
 		for (Option option : this.options){
 			fieldImpl.options.add((Option) option.clone());
@@ -382,6 +393,26 @@ public final class FieldImpl implements Field
 	 */
 	public Set<Option> getOptions()
 	{
+		if (ConfigManager.getProjectInvolved()) {
+			Template template = DataAccessFactory.getInstance().getSysDas().queryTemplate(this.templateId);
+			if (template.isProTemplate()) {
+				Set<Option> allOptions = new HashSet<Option>();
+				if (this.getName().equals("对应产品")) {
+					Map<String, String> allProductsMap = ProjectInvolveManager.getInstance().getProductMap(template.getCreateUser());
+					for (String productId : allProductsMap.keySet()) {
+						allOptions.add(new OptionImpl(DataAccessFactory.getInstance().createUUID(productId), this.id, allProductsMap.get(productId)));
+					}
+					return allOptions;
+				}
+				else if(this.getName().equals("对应项目")){
+					Map<String, String> allProjectsMap = ProjectInvolveManager.getInstance().getProjectMap(template.getCreateUser(),"");
+					for (String projectId : allProjectsMap.keySet()) {
+						allOptions.add(new OptionImpl(DataAccessFactory.getInstance().createUUID(projectId), this.id, allProjectsMap.get(projectId)));
+					}
+					return allOptions;
+				}
+			}
+		}
 		return this.options;
 	}
 
@@ -514,12 +545,33 @@ public final class FieldImpl implements Field
 	 */
 	public Option getOption(UUID id)
 	{
+		Option foption = null;
+		
 		if (this.type.equals(Field.Type.t_selection))
 		{
-			for (Option option : this.options)
-			{
-				if (option.getId().equals(id))
-					return option;
+			if (ConfigManager.getEnableSso()) {
+				DataAccessSession das = DataAccessFactory.getInstance().getSysDas();
+				Template template = das.queryTemplate(this.templateId);
+				if (template.isProTemplate()) {
+					String name = null;
+					if (this.getName().equals("对应项目")) {
+						name = ProjectInvolveManager.getInstance().getProjectNameById(id.getValue());
+					}else if (this.getName().equals("对应产品")) {
+						name = ProjectInvolveManager.getInstance().getProductNameById(id.getValue());
+					}
+					if (name != null) {
+						foption = new OptionImpl(id, this.id,name);
+					}
+				}
+			}
+			
+			if (foption != null) {
+				return foption;
+			}else {
+				for (Option option : this.options){
+					if (option.getId().equals(id))
+						return option;
+				}
 			}
 		}
 
@@ -560,6 +612,8 @@ public final class FieldImpl implements Field
 		xmlb.append("<id>").append(this.getId()).append("</id>");
 		xmlb.append("<name>").append(XMLUtil.toSafeXMLString(this.getName())).append("</name>");
 		xmlb.append("<description>").append(XMLUtil.toSafeXMLString(this.getDescription())).append("</description>");
+		xmlb.append("<timeFormat>").append(XMLUtil.toSafeXMLString(this.getTimestampFormat())).append("</timeFormat>");
+		xmlb.append("<dateCurTime>").append(String.valueOf(this.dateCurTime)).append("</dateCurTime>");
 		xmlb.append("<fieldTip>").append(XMLUtil.toSafeXMLString(this.getFieldTip())).append("</fieldTip>");
 		xmlb.append("<fieldSize>").append(XMLUtil.toSafeXMLString(this.getFieldSize())).append("</fieldSize>");
 		xmlb.append("<type>").append(this.getType()).append("</type>");
@@ -569,7 +623,9 @@ public final class FieldImpl implements Field
 		xmlb.append("<defaultValue>").append(XMLUtil.toSafeXMLString(this.getDefaultValue())).append("</defaultValue>");
 
 
-		if (this.getOptions() == null || this.getOptions().size() == 0)
+		Set<Option> allOptions = this.getOptions();
+		
+		if (allOptions == null || allOptions.size() == 0)
 			xmlb.append("<options/>");
 		else
 		{
@@ -577,7 +633,7 @@ public final class FieldImpl implements Field
 
 			Map<Integer, Set<Option>> optionMap = new TreeMap<Integer, Set<Option>>();
 
-			for (Option option : this.getOptions())
+			for (Option option : allOptions)
 			{
 				if (!optionMap.containsKey(option.getIndexOrder()))
 					optionMap.put(option.getIndexOrder(), new LinkedHashSet<Option>());
@@ -689,5 +745,25 @@ public final class FieldImpl implements Field
 
 		xmlb.append("</field>");
 		return xmlb.toString();
+	}
+
+	@Override
+	public String getTimestampFormat() {
+		return this.timestampFormat;
+	}
+
+	@Override
+	public void setTimestampFormat(String timestampFormat) {
+		this.timestampFormat = timestampFormat;
+	}
+	
+	@Override
+	public void setDateCurTime(boolean dateCurTime){
+		this.dateCurTime = dateCurTime;
+	}
+	
+	@Override
+	public boolean getDateCurTime(){
+		return this.dateCurTime;
 	}
 }

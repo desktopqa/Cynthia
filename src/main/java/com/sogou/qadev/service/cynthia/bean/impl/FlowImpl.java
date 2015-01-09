@@ -13,6 +13,8 @@ import java.util.Set;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import bsh.This;
+
 import com.sogou.qadev.service.cynthia.bean.Action;
 import com.sogou.qadev.service.cynthia.bean.ActionRole;
 import com.sogou.qadev.service.cynthia.bean.Flow;
@@ -22,7 +24,10 @@ import com.sogou.qadev.service.cynthia.bean.Stat;
 import com.sogou.qadev.service.cynthia.bean.UUID;
 import com.sogou.qadev.service.cynthia.bean.UserInfo;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
+import com.sogou.qadev.service.cynthia.service.ConfigManager;
 import com.sogou.qadev.service.cynthia.service.DataAccessSession;
+import com.sogou.qadev.service.cynthia.service.ProjectInvolveManager;
+import com.sogou.qadev.service.cynthia.util.ArrayUtil;
 import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
 import com.sogou.qadev.service.cynthia.util.XMLUtil;
 
@@ -46,15 +51,17 @@ public class FlowImpl implements Flow{
 	 * flow id
 	 */
 	private UUID id = null;
+	private boolean isProFlow = false;  //是否项目管理相关流程
 	/**
 	 * flow name
 	 */
 	private String name = null;
+	
 	private Set<Right> rightSet = new HashSet<Right>();
+
 	private Map<UUID, Role> roleMap = new HashMap<UUID, Role>();
 
 	private Map<UUID, Stat> statMap = new HashMap<UUID, Stat>();
-
 	/**
 	 * 
 	 * <h1> Title:</h1>
@@ -71,6 +78,7 @@ public class FlowImpl implements Flow{
 
 		this.id = daf.createUUID(XMLUtil.getSingleNodeTextContent(flowNode, "id"));
 		this.name = XMLUtil.getSingleNodeTextContent(flowNode, "name");
+		this.isProFlow = Boolean.parseBoolean(XMLUtil.getSingleNodeTextContent(flowNode, "isProFlow"));
 		List<org.w3c.dom.Node> statNodeList = XMLUtil.getNodes(flowNode, "stats/stat");
 		for(org.w3c.dom.Node statNode : statNodeList){
 			UUID statId = daf.createUUID(XMLUtil.getSingleNodeTextContent(statNode, "id"));
@@ -165,7 +173,7 @@ public class FlowImpl implements Flow{
 	public void addActionRole(UUID actionId, UUID roleId){
 		this.actionRoleSet.add(new ActionRole(actionId, roleId));
 	}
-	
+
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:addRight</p>
@@ -190,7 +198,7 @@ public class FlowImpl implements Flow{
 		String nickname = CynthiaUtil.getUserAlias(username);
 		this.rightSet.add(new Right(username, templateId, roleId,nickname));
 	}
-
+	
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:addRole</p>
@@ -205,7 +213,7 @@ public class FlowImpl implements Flow{
 
 		return role;
 	}
-	
+
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:addStat</p>
@@ -244,7 +252,7 @@ public class FlowImpl implements Flow{
 
 		return false;
 	}
-
+	
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:authenticate</p>
@@ -269,6 +277,7 @@ public class FlowImpl implements Flow{
 
 		return false;
 	}
+
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:clone</p>
@@ -279,6 +288,8 @@ public class FlowImpl implements Flow{
 	public Flow clone(){
 		FlowImpl flowImpl = new FlowImpl(this.id);
 		flowImpl.name = this.name;
+		flowImpl.isProFlow = this.isProFlow;
+		flowImpl.createUser = this.createUser;
 
 		for(UUID statId : this.statMap.keySet()){
 			flowImpl.statMap.put(statId, this.statMap.get(statId).clone());
@@ -314,7 +325,6 @@ public class FlowImpl implements Flow{
 	public boolean equals(Object obj){
 		return this.id.equals(((FlowImpl)obj).id);
 	}
-
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:getAction</p>
@@ -344,7 +354,7 @@ public class FlowImpl implements Flow{
 	public Action getAction(UUID actionId){
 		return this.actionMap.get(actionId);
 	}
-	
+
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:getActionMap</p>
@@ -364,7 +374,7 @@ public class FlowImpl implements Flow{
 	public Set<ActionRole> getActionRoleSet() {
 		return this.actionRoleSet;
 	}
-
+	
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:getActions</p>
@@ -423,22 +433,6 @@ public class FlowImpl implements Flow{
 
 		return actionSet.toArray(new Action[actionSet.size()]);
 	}
-	
-	/**
-	 * (non-Javadoc)
-	 * <p> Title:getStartActions</p>
-	 * @return
-	 * @see com.sogou.qadev.service.cynthia.bean.Flow#getStartActions()
-	 */
-	public Set<Action> getStartActions(){
-		HashSet<Action> actionSet = new HashSet<Action>();
-		for(Action action : this.actionMap.values()){
-			if(action.getBeginStatId()==null)
-				actionSet.add(action);
-		}
-
-		return actionSet;
-	}
 
 	/**
 	 * (non-Javadoc)
@@ -470,7 +464,7 @@ public class FlowImpl implements Flow{
 	public UUID getId(){
 		return this.id;
 	}
-
+	
 	@Override
 	public String getName(){
 		return this.name;
@@ -524,7 +518,27 @@ public class FlowImpl implements Flow{
 	 * @see com.sogou.qadev.service.cynthia.bean.Flow#getRoles()
 	 */
 	public Role[] getRoles(){
-		return this.roleMap.values().toArray(new Role[this.roleMap.size()]);
+		if (ConfigManager.getProjectInvolved() && this.isProFlow) {
+			return ProjectInvolveManager.getInstance().getAllRole(this.createUser).toArray(new Role[0]);
+		}else {
+			return this.roleMap.values().toArray(new Role[this.roleMap.size()]);
+		}
+	}
+
+	/**
+	 * (non-Javadoc)
+	 * <p> Title:getStartActions</p>
+	 * @return
+	 * @see com.sogou.qadev.service.cynthia.bean.Flow#getStartActions()
+	 */
+	public Set<Action> getStartActions(){
+		HashSet<Action> actionSet = new HashSet<Action>();
+		for(Action action : this.actionMap.values()){
+			if(action.getBeginStatId()==null)
+				actionSet.add(action);
+		}
+
+		return actionSet;
 	}
 
 	/**
@@ -593,11 +607,15 @@ public class FlowImpl implements Flow{
 	 * @see com.sogou.qadev.service.cynthia.bean.Flow#hasRight(java.lang.String, com.sogou.qadev.service.cynthia.bean.UUID, com.sogou.qadev.service.cynthia.bean.UUID)
 	 */
 	public boolean hasRight(String username, UUID templateId, UUID roleId){
-		String nickname = CynthiaUtil.getUserAlias(username);
-		if (username.indexOf(",") != -1) {
-			username = username.split(",")[0];
+		if (this.isProFlow) {
+			return ProjectInvolveManager.getInstance().isUserInRole(username, roleId);
+		}else {
+			String nickname = CynthiaUtil.getUserAlias(username);
+			if (username.indexOf(",") != -1) {
+				username = username.split(",")[0];
+			}
+			return this.rightSet.contains(new Right(username, templateId, roleId,nickname));
 		}
-		return this.rightSet.contains(new Right(username, templateId, roleId,nickname));
 	}
 
 	/**
@@ -617,7 +635,7 @@ public class FlowImpl implements Flow{
 
 		return false;
 	}
-	
+
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:isDeleteActionAllow</p>
@@ -677,31 +695,11 @@ public class FlowImpl implements Flow{
 				roleIdSet.add(role.getId());
 		}
 
-//		//同一类角色可以编辑
-//		if(assignUser != null)
-//		{
-//			Role[] assignUserRoleArray = queryUserNodeRoles(assignUser, templateId);
-//			if(assignUserRoleArray != null)
-//			{
-//				for(Role assignUserRole : assignUserRoleArray)
-//				{
-//					if(roleIdSet.contains(assignUserRole.getId()))
-//						return true;
-//				}
-//			}
-//		}
-		
-//		Role[] actionUserRoleArray = queryUserNodeRoles(actionUser, templateId);
-//		if(actionUserRoleArray != null)
-//		{
-//			for(Role actionUserRole : actionUserRoleArray)
-//			{
-//				if(roleIdSet.contains(actionUserRole.getId()))
-//					return true;
-//			}
-//		}
-
 		return false;
+	}
+	
+	public boolean isProFlow() {
+		return isProFlow;
 	}
 
 	/**
@@ -765,7 +763,7 @@ public class FlowImpl implements Flow{
 
 		return false;
 	}
-	
+
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:isRoleDeleteAction</p>
@@ -783,7 +781,7 @@ public class FlowImpl implements Flow{
 
 		return false;
 	}
-
+	
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:isRoleEditAction</p>
@@ -798,7 +796,6 @@ public class FlowImpl implements Flow{
 				return true;
 			}
 		}
-
 		return false;
 	}
 
@@ -829,20 +826,83 @@ public class FlowImpl implements Flow{
 	 * @see com.sogou.qadev.service.cynthia.bean.Flow#queryActionRoles(com.sogou.qadev.service.cynthia.bean.UUID)
 	 */
 	public Role[] queryActionRoles(UUID actionId){
-		Set<Role> roleSet = new HashSet<Role>();
+		if (this.isProFlow) {
+			return ProjectInvolveManager.getInstance().queryActionRoles(this.createUser, this, actionId);
+		}else {
+			Set<Role> roleSet = new HashSet<Role>();
 
-		for(ActionRole actionRole : this.actionRoleSet){
-			if(actionRole.actionId.equals(actionId)){
-				Role role = this.roleMap.get(actionRole.roleId);
-				if(role != null){
-					roleSet.add(role);
+			for(ActionRole actionRole : this.actionRoleSet){
+				if(actionRole.actionId.equals(actionId)){
+					Role role = this.roleMap.get(actionRole.roleId);
+					if(role != null){
+						roleSet.add(role);
+					}
+				}
+			}
+
+			return roleSet.toArray(new Role[roleSet.size()]);
+		}
+	}
+
+	@Override
+	public Set<Action> queryActionsByStartStatId(UUID statId){
+		Set<Action> allActions = new HashSet<Action>();
+		for (Action action : this.getActions()) {
+			if (action.getBeginStatId() != null && action.getBeginStatId().equals(statId)) {
+				allActions.add(action);
+			}
+		}
+		return allActions;
+	}
+	
+	@Override
+	public String queryNextActionRoleIdsByActionId(UUID actionId){
+		Action action = getAction(actionId);
+		if (action == null) {
+			return "";
+		}
+		
+		Set<String> allRoleSet = new HashSet<String>();
+		
+		Set<Action> allActions = queryActionsByStartStatId(action.getEndStatId());
+		for (Action action2 : allActions) {
+			for(ActionRole actionRole : this.actionRoleSet){
+				if(actionRole.actionId.equals(action2.getId())){
+					allRoleSet.add(actionRole.getRoleId().getValue());
 				}
 			}
 		}
-
-		return roleSet.toArray(new Role[roleSet.size()]);
+		return ArrayUtil.strArray2String(allRoleSet.toArray(new String[0]));
 	}
-
+	
+	
+	@Override
+	public String queryNextActionRoleIdsByStatId(UUID statId){
+		Set<String> allRoleSet = new HashSet<String>();
+		Set<Action> allActions = queryActionsByStartStatId(statId);
+		for (Action action : allActions) {
+			for(ActionRole actionRole : this.actionRoleSet){
+				if(actionRole.actionId.equals(action.getId())){
+					allRoleSet.add(actionRole.getRoleId().getValue());
+				}
+			}
+		}
+		return ArrayUtil.strArray2String(allRoleSet.toArray(new String[0]));
+	}
+	
+	@Override
+	public String queryActionRoleIds(UUID actionId){
+		StringBuffer roleIds = new StringBuffer();
+		
+		for(ActionRole actionRole : this.actionRoleSet){
+			if(actionRole.actionId.equals(actionId)){
+				roleIds.append(roleIds.length() > 0 ? "," : "").append(actionRole.getRoleId().getValue());
+			}
+		}
+		return roleIds.toString();
+	}
+	
+	
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:queryAllQuitUserInfo</p>
@@ -939,6 +999,16 @@ public class FlowImpl implements Flow{
 		return actionSet.toArray(new Action[actionSet.size()]);
 	}
 
+	
+	public boolean isEndAction(UUID actionId){
+		for (Action action : this.getEndActions()) {
+			if (action != null && action.getId().equals(actionId)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:queryEditActionRoles</p>
@@ -948,22 +1018,26 @@ public class FlowImpl implements Flow{
 	 */
 	public Role[] queryEditActionRoles()
 	{
-		if(this.actionRoleSet == null)
-			return new Role[0];
+		if (this.isProFlow) {
+			return ProjectInvolveManager.getInstance().getAllRole(this.createUser).toArray(new Role[0]);
+		}else {
+			if(this.actionRoleSet == null)
+				return new Role[0];
 
-		Set<Role> roleSet = new LinkedHashSet<Role>();
+			Set<Role> roleSet = new LinkedHashSet<Role>();
 
-		for(ActionRole actionRole : this.actionRoleSet)
-		{
-			if(!actionRole.actionId.equals(Action.editUUID))
-				continue;
+			for(ActionRole actionRole : this.actionRoleSet)
+			{
+				if(!actionRole.actionId.equals(Action.editUUID))
+					continue;
 
-			Role role = this.roleMap.get(actionRole.roleId);
-			if(role != null)
-				roleSet.add(role);
+				Role role = this.roleMap.get(actionRole.roleId);
+				if(role != null)
+					roleSet.add(role);
+			}
+
+			return roleSet.toArray(new Role[0]);
 		}
-
-		return roleSet.toArray(new Role[0]);
 	}
 
 	/**
@@ -1075,6 +1149,26 @@ public class FlowImpl implements Flow{
 
 	/**
 	 * (non-Javadoc)
+	 * <p> Title:queryNodeUserRight</p>
+	 * @param templateId
+	 * @return
+	 * @see com.sogou.qadev.service.cynthia.bean.Flow#queryNodeUserRight(com.sogou.qadev.service.cynthia.bean.UUID)
+	 */
+	public Right[] queryNodeUserRight(UUID templateId){
+		HashSet<Right> userSet = new HashSet<Right>();
+		for (Right right : this.rightSet)
+		{
+			if(right.templateId.equals(templateId))
+				userSet.add(right);
+		}
+		
+		Right[] userRights = userSet.toArray(new Right[userSet.size()]);
+		Arrays.sort(userRights);
+		return userRights;
+	}
+
+	/**
+	 * (non-Javadoc)
 	 * <p> Title:queryNodeUsers</p>
 	 * <p> Description:TODO</p>
 	 * @param templateId
@@ -1095,26 +1189,6 @@ public class FlowImpl implements Flow{
 		return userArray;
 	}
 
-	/**
-	 * (non-Javadoc)
-	 * <p> Title:queryNodeUserRight</p>
-	 * @param templateId
-	 * @return
-	 * @see com.sogou.qadev.service.cynthia.bean.Flow#queryNodeUserRight(com.sogou.qadev.service.cynthia.bean.UUID)
-	 */
-	public Right[] queryNodeUserRight(UUID templateId){
-		HashSet<Right> userSet = new HashSet<Right>();
-		for (Right right : this.rightSet)
-		{
-			if(right.templateId.equals(templateId))
-				userSet.add(right);
-		}
-		
-		Right[] userRights = userSet.toArray(new Right[userSet.size()]);
-		Arrays.sort(userRights);
-		return userRights;
-	}
-	
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:queryReadActionRoles</p>
@@ -1141,7 +1215,7 @@ public class FlowImpl implements Flow{
 
 		return roleSet.toArray(new Role[0]);
 	}
-
+	
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:queryRightsByRole</p>
@@ -1155,6 +1229,18 @@ public class FlowImpl implements Flow{
 		Set<Right> allRightSet = new HashSet<Right>();
 		for (Right right : this.rightSet) {
 			if (right.roleId.equals(roleId)) {
+				allRightSet.add(right);
+			}
+		}
+		return allRightSet;
+	}
+
+	@Override
+	public Set<Right> queryRightsByRole(UUID roleId, UUID templateId) {
+		
+		Set<Right> allRightSet = new HashSet<Right>();
+		for (Right right : this.rightSet) {
+			if (right.roleId.equals(roleId) && right.templateId.equals(templateId)) {
 				allRightSet.add(right);
 			}
 		}
@@ -1217,6 +1303,11 @@ public class FlowImpl implements Flow{
 		if(username == null || templateId == null)
 			return new Action[0];
 
+		//TODO 根据角色来处理
+		if (isProFlow) {
+			return this.getStartActions().toArray(new Action[0]);
+		}
+		
 		Role[] roleArray = this.queryUserNodeRoles(username, templateId);
 		if(roleArray == null)
 			return new Action[0];
@@ -1257,22 +1348,26 @@ public class FlowImpl implements Flow{
 	 */
 	public Role[] queryUserNodeRoles(String user, UUID templateId)
 	{
-		if (user.indexOf(",") != -1) {
-			user = user.split(",")[0];
-		}
-		Set<Role> roleSet = new LinkedHashSet<Role>();
-
-		for(Right right: this.rightSet)
-		{
-			if(right.username.equals(user) && right.templateId.equals(templateId))
-			{
-				Role role = this.roleMap.get(right.roleId);
-				if(role != null)
-					roleSet.add(role);
+		if (this.isProFlow && ConfigManager.getProjectInvolved()) {
+			return ProjectInvolveManager.getInstance().getAllRole(user).toArray(new Role[0]);
+		}else {
+			if (user.indexOf(",") != -1) {
+				user = user.split(",")[0];
 			}
-		}
+			Set<Role> roleSet = new LinkedHashSet<Role>();
 
-		return roleSet.toArray(new Role[0]);
+			for(Right right: this.rightSet)
+			{
+				if(right.username.equals(user) && right.templateId.equals(templateId))
+				{
+					Role role = this.roleMap.get(right.roleId);
+					if(role != null)
+						roleSet.add(role);
+				}
+			}
+
+			return roleSet.toArray(new Role[0]);
+		}
 	}
 
 	/**
@@ -1408,6 +1503,10 @@ public class FlowImpl implements Flow{
 		this.name = name;
 	}
 
+	public void setProFlow(boolean isProFlow) {
+		this.isProFlow = isProFlow;
+	}
+	
 	@Override
 	public void setRightSet(Set<Right> rightSet) {
 		this.rightSet = rightSet;
@@ -1434,7 +1533,7 @@ public class FlowImpl implements Flow{
 	public Document toXMLDocument() throws Exception{
 		return XMLUtil.string2Document(toXMLString(), "UTF-8");
 	}
-	
+
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:toXMLString</p>
@@ -1449,6 +1548,7 @@ public class FlowImpl implements Flow{
 		xmlb.append("<flow>");
 		xmlb.append("<id>").append(this.id).append("</id>");
 		xmlb.append("<name>").append(XMLUtil.toSafeXMLString(this.name)).append("</name>");
+		xmlb.append("<isProFlow>").append(XMLUtil.toSafeXMLString(String.valueOf(this.isProFlow))).append("</isProFlow>");
 
 		if(this.statMap.size() == 0){
 			xmlb.append("<stats/>");
@@ -1544,17 +1644,6 @@ public class FlowImpl implements Flow{
 		xmlb.append("</flow>");
 
 		return xmlb.toString();
-	}
-
-	@Override
-	public Set<Right> queryRightsByRole(UUID roleId, UUID templateId) {
-		Set<Right> allRightSet = new HashSet<Right>();
-		for (Right right : this.rightSet) {
-			if (right.roleId.equals(roleId) && right.templateId.equals(templateId)) {
-				allRightSet.add(right);
-			}
-		}
-		return allRightSet;
 	}
 
 }

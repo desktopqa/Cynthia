@@ -270,8 +270,7 @@ public class FilterDataAssembleUtil {
 					&& (fieldId.equals("create_user") || fieldId
 							.equals("assign_user"))) {
 				if (!userAliasMap.containsKey(fieldValue)) {
-					userAliasMap.put(fieldValue,
-							CynthiaUtil.getUserAlias(fieldValue, das));
+					userAliasMap.put(fieldValue,CynthiaUtil.getUserAlias(fieldValue));
 				}
 				if (userAliasMap.get(fieldValue) != null) {
 					fieldValue = userAliasMap.get(fieldValue);

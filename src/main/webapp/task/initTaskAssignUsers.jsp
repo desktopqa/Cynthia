@@ -131,7 +131,7 @@ static DataAccessFactory daf = DataAccessFactory.getInstance();
 					firstUserRoles.append(firstUserRole.getName());
 				}
 				
-				String userAlias = CynthiaUtil.getUserAlias(firstUser, das);
+				String userAlias = CynthiaUtil.getUserAlias(firstUser);
 				xmlb.append("<user" + (userAlias != null ? " alias=\"" + XMLUtil.toSafeXMLString(userAlias) + "\"" : "") + " first=\"true\">").append(firstUser + "[" + firstUserRoles + "]").append("</user>");
 			}
 		}
@@ -148,7 +148,7 @@ static DataAccessFactory daf = DataAccessFactory.getInstance();
 					userRoles.append(userRole.getName());
 				}
 				
-				String userAlias = CynthiaUtil.getUserAlias(user, das);
+				String userAlias = CynthiaUtil.getUserAlias(user);
 				xmlb.append("<user" + (userAlias != null ? " alias=\"" + XMLUtil.toSafeXMLString(userAlias) + "\"" : "") + ">").append(user + "[" + userRoles + "]").append("</user>");
 			}
 		}

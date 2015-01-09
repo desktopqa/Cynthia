@@ -63,12 +63,12 @@ public class ExportDataManager {
 		header.append("<head>");
 		header.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=GBK\"/>");
 		header.append("<style type=\"text/css\">");
-		header.append("table{font-size: 100%;margin-top: 0em; margin-left: 5px; margin-bottom: 0em;width: 600px;table-layout:fixed;}");
-		header.append("th{text-align: left;	white-space:nowrap;	background: #CCCCCC; margin: .25em;vertical-align: center;}");
-		header.append("tr{vertical-align: center; white-space:nowrap; background: #eeeeff;}");
-		header.append("td{margin: .25em;vertical-align: center; white-space:nowrap; border-bottom: 1px solid #CCCCCC; word-wrap: break-word;word-break:break-all;max-width: 120px;display : block;}");
+		header.append("table{border-collapse: collapse; border: 1px solid #CCCCCC; font-size: 100%;margin-top: 0em; margin-left: 5px; margin-bottom: 0em;width: 800px;table-layout:fixed;}");
+		header.append("th{border-right: 1px solid #CCCCCC;text-align: center;	white-space:nowrap;	background: #4EA9E4; margin: .25em;vertical-align: center;}");
+		header.append("tr{vertical-align: center;  background: #eeeeff;}");
+		header.append("td{border-right: 1px solid #CCCCCC; margin: .25em;vertical-align: center;  border-bottom: 1px solid #CCCCCC; word-wrap: break-word;word-break:break-all;max-width: 120px;display : block;}");
 		header.append("body{margin: 0;padding: 0;background: #f6f6f6;}");
-		header.append("body,div,p,span{color: #333;font-size: 12px;line-height: 150%;font-family: Verdana, Arial, Helvetica, sans-serif;}");
+		header.append("body,div,p,span{margin-top:0px; margin-bottom:0px; color: #333;font-size: 12px;line-height: 150%;font-family: Verdana, Arial, Helvetica, sans-serif;}");
 		header.append("</style>");
 		header.append("</head>");
 		header.append("<body>");
@@ -87,45 +87,32 @@ public class ExportDataManager {
 		footer.append("</html>");
 		return footer.toString();
 	}
-	
-	/**
-	 * @description:get table header
-	 * @date:2014-5-6 下午12:07:16
-	 * @version:v1.0
-	 * @param displayNames
-	 * @return
-	 */
-	private static String getTableHeader(String[] displayNames){
+
+	private static String getTableHeader(Map<String, String> displayNamesMap){
 		StringBuffer tableHeaderBuffer = new StringBuffer();
 		tableHeaderBuffer.append("<tr>");
-		tableHeaderBuffer.append("<th>").append("序号").append("</th>");
-		tableHeaderBuffer.append("<th>").append("编号").append("</th>");
-		for (int i = 0; i < displayNames.length; i++) {
-			tableHeaderBuffer.append("<th>").append(XMLUtil.toSafeXMLString(displayNames[i])).append("</th>");
+		tableHeaderBuffer.append("<th style=\"width:60px;\">").append("序号").append("</th>");
+		for (String fieldName : displayNamesMap.keySet()) {
+			if(fieldName.equals("标题") || fieldName.equals("描述")){
+				tableHeaderBuffer.append("<th style='width:" + (displayNamesMap.get(fieldName) != null && !displayNamesMap.get(fieldName).equals("") ? displayNamesMap.get(fieldName) : "500px" ) + ";'>").append(XMLUtil.toSafeXMLString(fieldName)).append("</th>");
+			}else{
+				tableHeaderBuffer.append("<th style='width:" + (displayNamesMap.get(fieldName) != null && !displayNamesMap.get(fieldName).equals("") ? displayNamesMap.get(fieldName) : "140px" ) + ";'>").append(XMLUtil.toSafeXMLString(fieldName)).append("</th>");
+			}
 		}
 		tableHeaderBuffer.append("</tr>");
 		return tableHeaderBuffer.toString();
 	}
-	
-	/**
-	 * @description:get mail content of data
-	 * @date:2014-5-6 下午12:07:29
-	 * @version:v1.0
-	 * @param allDatas
-	 * @param displayNames
-	 * @param indentFieldName
-	 * @param das
-	 * @param isSysFilter
-	 * @return
-	 */
-	private static String getMailHtmlData(Data[] allDatas , String[] displayNames , String indentFieldName, DataAccessSession das , boolean isSysFilter){
+
+	private static String getMailHtmlData(Data[] allDatas , Map<String, String> displayNameMap , String indentFieldName, DataAccessSession das , boolean isSysFilter){
+		
+		String[] displayNames = displayNameMap.keySet().toArray(new String[0]);
 		if (allDatas == null || allDatas.length == 0) {
 			return "<p style=\"color:red\">过滤器没有筛选出任何数据</p>";
 		}
 		
 		StringBuffer dataBuffer = new StringBuffer();
-		String tableHeader = getTableHeader(displayNames);
-		
+		String tableHeader = getTableHeader(displayNameMap);
+
 		Map<UUID, Template> templateMap = new HashMap<UUID, Template>();
  		Map<UUID, Flow> flowMap = new HashMap<UUID, Flow>();
  		Map<String, String> userAliasMap = new HashMap<String, String>();
@@ -187,7 +174,6 @@ public class ExportDataManager {
 			
 			dataBuffer.append("<tr>");
 			dataBuffer.append("<td>").append(String.valueOf(i+1)).append("</td>");
-			dataBuffer.append("<td>").append(task.getId().getValue()).append("</td>");
 			
 			for (int j = 0; j < displayNames.length; j++) {
 				if (displayNames[j] != null && displayNames[j].equals("标题")) {
@@ -224,13 +210,13 @@ public class ExportDataManager {
 		}
 		
 		StringBuffer htmlBuffer = new StringBuffer();
-		htmlBuffer.append("<a href=\"" + ConfigUtil.getCynthiaWebRoot() + "index.html?filterId=" + filter.getId().getValue() + "\">过滤器：" + filter.getName() +"</a><br/>");
-		htmlBuffer.append("<a href=\"" + ConfigUtil.getCynthiaWebRoot() + "filter/exportFilter.jsp?filterId=" + filter.getId().getValue() + "\">下载地址</a>");
 		htmlBuffer.append(getMailHtmlHeader().toString());
-		String[] displayNames = FilterQueryManager.getDisplayFields(filter.getXml(), das);
+		Map<String, String> displayNameMap = FilterQueryManager.getDisplayFieldAndWidth(filter.getXml(), das);
 		Data[] allDatas = das.getDataFilter().queryDatas(filter.getXml(), 1, 100, null, null,null);  //取前100条
 		String indentFieldName = FilterQueryManager.getFilterIndentFieldName(filter.getXml(), das);
-		htmlBuffer.append(getMailHtmlData(allDatas, displayNames ,indentFieldName,  das ,isSysFilter));
+		htmlBuffer.append(getMailHtmlData(allDatas, displayNameMap ,indentFieldName,  das ,isSysFilter));
+		htmlBuffer.append("<br><a href=\"" + ConfigUtil.getCynthiaWebRoot() + "index.html?filterId=" + filter.getId().getValue() + "\">过滤器：" + filter.getName() +"</a><br/>");
+//		htmlBuffer.append("<a href=\"" + ConfigUtil.getCynthiaWebRoot() + "filter/exportFilter.jsp?filterId=" + filter.getId().getValue() + "\">Excel下载地址</a>");
 		htmlBuffer.append(getMailHtmlFooter().toString());
 		String html = htmlBuffer.toString();
 		html = html.replace("</td>", "</td>\n").replace("</tr>", "</tr>\n"); //邮件发送系统bug

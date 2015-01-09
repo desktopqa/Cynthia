@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.sogou.qadev.service.cynthia.bean.Flow;
 import com.sogou.qadev.service.cynthia.bean.Key;
 import com.sogou.qadev.service.cynthia.bean.Right;
@@ -23,6 +24,7 @@ import com.sogou.qadev.service.cynthia.bean.Template;
 import com.sogou.qadev.service.cynthia.bean.UserInfo;
 import com.sogou.qadev.service.cynthia.bean.impl.UserInfoImpl;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
+import com.sogou.qadev.service.cynthia.service.ProjectInvolveManager;
 
 /**
  * 后台权限操作管理类
@@ -383,6 +385,12 @@ public class BackRightController extends BaseController{
 	@ResponseBody
 	@RequestMapping("/getSystem.do")
 	public String getSystem(@RequestParam("userMail") String userMail ,HttpServletRequest request, HttpSession httpSession) throws Exception {
-		return JSONArray.toJSONString(das.getSystemOption(userMail));
+		JSONObject jsonObject = JSONArray.parseObject(das.getSystemOption(userMail));
+		Map<String, Object> sysMap = new HashMap<String, Object>();
+		for (String key : jsonObject.keySet()) {
+			sysMap.put(key, jsonObject.get(key));
+		}
+		sysMap.put("projectInvolved", String.valueOf(ProjectInvolveManager.getInstance().isProjectInvolved()));
+		return JSONArray.toJSONString(sysMap);
 	}
 }

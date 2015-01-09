@@ -3,6 +3,8 @@ var center_y = 321;
 var actions = null;
 var stats = null;
 var roles = null;
+var isProFlow = false;
+
 //添加状态
 function executeAddStat()
 {
@@ -129,7 +131,7 @@ function addAction(fromStatId,toStatId,actionName){
 		param += "&beginStatId=" + getSafeParam(fromStatId);
 	
 	$.each($("input[name='actionRole']"), function(index,node){
-		if($(node).attr('checked') == 'checked')
+		if($(node).prop('checked') == true)
 			param += "&roleRight=" + $(node).val() + "|true";
 		else
 			param += "&roleRight=" + $(node).val() + "|false";
@@ -225,7 +227,7 @@ function executeModifyAction()
 	param += "&flowId=" + getSafeParam($("#flowId").val());
 
 	$.each($("input[name='actionRole']"), function(index,node){
-		if($(node).attr('checked') == 'checked')
+		if($(node).prop('checked') == true)
 			param += "&roleRight=" + $(node).val() + "|true";
 		else
 			param += "&roleRight=" + $(node).val() + "|false";
@@ -279,8 +281,8 @@ function initActionRole(actionId)
 					$("#actionRoleDiv").append("<label class=\"checkbox\" style=\"margin-right:15px;\">" +
 							"<input type=\"checkbox\" name=\"actionRole\" value="+roles[i].id+">"+roles[i].name+"</label>");
 			}
-			
-			$("#actionRoleDiv").append("<div class='addMoreRole' data-toggle='modal' data-target='#addRoleDiv'><a href='javascript:;' class='addComp' onclick=''><i class='icon-plus'></i><span>添加角色</span></a></div>");
+			if(!isProFlow)
+				$("#actionRoleDiv").append("<div class='addMoreRole' data-toggle='modal' data-target='#addRoleDiv'><a href='javascript:;' class='addComp' onclick=''><i class='icon-plus'></i><span>添加角色</span></a></div>");
 			
 			for(var i in data.actionRole){
 				$("input[name='actionRole'][value='"+data.actionRole[i].fieldId+"']").attr("checked", 'true');
@@ -291,32 +293,6 @@ function initActionRole(actionId)
 	});
 }
 
-/**
- * 查询流程所有动作
- */
-function initAllFlowUsers(){
-	$.ajax({
-		url: base_url + 'flow/getFlowUsers.do',
-		type :'POST',
-		dataType:'json',
-		async : false,
-		data: {'flowId':$("#flowId").val()},
-		success: function(data){
-			var html = '';
-			for(var i in roles){
-				if(roles[i].id == '82')
-					continue;
-				html += '<option value=role_' + roles[i].id + '>' + roles[i].name + '</option>';
-			}
-			for(var username in data){
-				html += '<option value=' + username + '>' + data[username] + '</option>';
-			}
-			$("#send_mail_user").empty().html(html);
-		},
-		error:function(msg){
-		}
-	});
-}
 
 function addRole(){
 	var roleName = trim($("#role_name").val());
@@ -472,6 +448,14 @@ function saveFlowSvg(svgCode){
 function initFlowActionStat(){
 	var flowXml = getFlowXml();
 	stats = new Array();
+	isProFlow = $(flowXml).find('flow').find('isProFlow').text();
+	
+	if(isProFlow){
+		$('.pro_involved_false').hide();  //项目相关则隐藏新建角色
+	}else{
+		$('.pro_involved_false').show();
+	}
+	
 	$(flowXml).find("flow").find("stats").children("stat").each(function(idx,node){
 		var statId = $(node).find("id").text();
 		var statName = $(node).find("name").text();
@@ -536,7 +520,6 @@ function showEditStatDiv(statId,statName){
 
 function showEditActionDiv(actionId,actionName){
 	initActionRole(actionId);
-	initAllFlowUsers();
 	$(".action_high_right").hide();
 	$(".send_mail_div").hide();
 	$("input[type=radio][name=assignToMore][value='false']").attr("checked","checked");
@@ -666,7 +649,7 @@ function addWordAction(){
 			param += "&beginStatId=" + getSafeParam(fromStatId);
 		
 		$.each($("input[name='wordActionRole']"), function(index,node){
-			if($(node).attr('checked') == 'checked')
+			if($(node).prop('checked') == true)
 				param += "&roleRight=" + $(node).val() + "|true";
 			else
 				param += "&roleRight=" + $(node).val() + "|false";
@@ -718,8 +701,8 @@ function initWordActionRole(actionId)
 				else
 					$("#wordActionRoleDiv").append("<label class=\"checkbox\" style=\"margin-right:15px;\"><input type=\"checkbox\" name=\"wordActionRole\" value="+data.allRole[i].fieldId+">"+data.allRole[i].fieldName+"</label>");
 			}
-			
-			$("#wordActionRoleDiv").append("<div class='addMoreRole' data-toggle='modal' data-target='#addRoleDiv'><a href='javascript:;' class='addComp' onclick=''><i class='icon-plus'></i><span>添加角色</span></a></div>");
+			if(!isProFlow)
+				$("#wordActionRoleDiv").append("<div class='addMoreRole' data-toggle='modal' data-target='#addRoleDiv'><a href='javascript:;' class='addComp' onclick=''><i class='icon-plus'></i><span>添加角色</span></a></div>");
 			
 		},
 		error:function(msg){

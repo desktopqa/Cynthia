@@ -26,6 +26,8 @@
 <script type="text/javascript" src="js/tree.js"></script>
 <script type="text/javascript" src='js/util.js'></script>
 <script type="text/javascript" src='js/editFilter.js'></script>
+<script type="text/javascript" src='js/previewFilter.js'></script>
+<script type="text/javascript" src='js/index_grid.js'></script>
 
 </head>
 <body>
@@ -78,8 +80,8 @@
 						      <select id="fields" style="width: 228px;" onchange="addCondition()">
 								  <option value="">---请选择---</option>
 							  </select>
-							  <span style="color: red;cursor: auto;">(多次选择可以添加多个条件)</span>
 						    </div>
+						    <span style="color:#999;cursor: auto; margin-left:5px;">( 多次选择可以添加多个条件 )</span>
 						  </div>
 					</form>
 					
@@ -140,7 +142,8 @@
     <div class="modal-body" id='order_td'>
     </div>
     <div class="modal-footer">
-        <button class="btn btn-primary" onclick="showOrderArea(false)">确定</button>
+    	<button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+        <button class="btn btn-primary" onclick="showOrderArea(false);">确定</button>
     </div>
 </div>
 
@@ -181,6 +184,7 @@
 		</table>
     </div>
     <div class="modal-footer">
+    	<button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
         <button class="btn btn-primary" onclick="showDefaultUser(false)">确定</button>
     </div>
 </div>
@@ -245,6 +249,7 @@
 		</table>
     </div>
     <div class="modal-footer">
+    	<button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
         <button class="btn btn-primary" onclick="showFilterTimer(false)">确定</button>
     </div>
 </div>
@@ -264,9 +269,44 @@
 		</tr>
 	</table>
 </div>
+
+
+<!-- 过滤器预览 -->
+<div id="previewFilterDiv" class="large-modal modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h5 id='preview-header'>过滤器结果预览</h5>
+    </div>
+    <div class="modal-body">
+		<div class="row-fluid main-content">
+			<div class="main-grid-outer" id='main-grid-outer' style="left:0px !important; width:100% !important;">
+				<table class="table table-striped table-hover table-bordered table-condensed">
+					<thead id="main-grid-header">
+					</thead>
+					<tbody id='main-grid-content'>
+					</tbody>
+				</table>
+			</div>
+		</div>
+    </div>
+    <div class="modal-footer">
+	    <div class="pull-left">
+			<form class="form-inline" style="margin:0px;">
+				<input type="text" id="current-page" class="input-mini input-super-mini" value=1 />
+				<label>/</label>
+				<label id="totalPage"></label>页 共
+				<label id="totalCount"></label>条
+				<button class="btn btn-mini" type="button" id="prev-page"><i class=" icon-chevron-left"></i></button>
+				<button class="btn btn-mini" type="button" id='next-page'><i class=" icon-chevron-right"></i></button>
+			</form>
+		</div>
+    	<button class="btn btn-danger" data-dismiss="modal" aria-hidden="true">关闭</button>
+    </div>
+</div>
+
+
 	
 <!-- 隐藏div  -->
-<input id="input_filter_xml" name="searchConfig" type="hidden"/>
 <input type="hidden" id="filterId" name="filterId" value=""/>
 <input type="hidden" id="timerId" name="timerId" value=""/>
 <input type="hidden" id="nodeId" name="nodeId" value=""/>

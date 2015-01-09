@@ -1,3 +1,5 @@
+<%@page import="com.sogou.qadev.service.cynthia.service.ConfigManager"%>
+<%@page import="com.sogou.qadev.service.cynthia.service.ProjectInvolveManager"%>
 <%@page import="com.sogou.qadev.service.cynthia.util.XMLUtil"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.DataManager"%>
 <%@page import="com.sogou.qadev.service.cynthia.bean.Role"%>
@@ -161,29 +163,36 @@
 		}else if("assign_user".equals(fieldId))
 		{
 			
-			Set<Right> allFlowRights = flow.getRightSet();
-			Set<String> assignUserSet = new HashSet<String>();
+			List<UserInfo> allAssignUserList = new ArrayList<UserInfo>();
 			
-			for(Right right : allFlowRights){
-				assignUserSet.add(right.getUsername());
+			if (template.isProTemplate()) {
+				allAssignUserList = ProjectInvolveManager.getInstance().getCompanyUsersByMail(das.getUsername());
+			}else{
+				Set<String> assignUserSet = new HashSet<String>();
+				
+				for(Right right : flow.getRightSet()){
+					assignUserSet.add(right.getUsername());
+				}
+				
+				//表单中的所有指派人员
+				assignUserSet.addAll(Arrays.asList(das.queryTemplateAssignUsers(template.getId())));
+				allAssignUserList = das.queryAllUserInfo(assignUserSet.toArray(new String[0]));
+				
+				//普通表单增加角色查询，项目表单不加
+				Role[] rolesArray = flow.getRoles();
+				for(Role role : rolesArray)
+				{
+					CommonOption option = new CommonOption("role_" + role.getId().getValue(), "[" + role.getName() + "]");
+					optionSet.add(option);
+				}
 			}
 			
-			//表单中的所有指派人员
-			assignUserSet.addAll(Arrays.asList(das.queryTemplateAssignUsers(template.getId())));
-			
-			List<UserInfo> allAssignUserList = das.queryAllUserInfo(assignUserSet.toArray(new String[0]));
 			for(UserInfo userInfo : allAssignUserList)
 			{
 				CommonOption option = new CommonOption(userInfo.getUserName(), userInfo.getNickName());
 				optionSet.add(option);
 			}
-
-			Role[] rolesArray = flow.getRoles();
-			for(Role role : rolesArray)
-			{
-				CommonOption option = new CommonOption("role_" + role.getId().getValue(), "[" + role.getName() + "]");
-				optionSet.add(option);
-			}
+			
 		}else if("create_user".equals(fieldId))
 		{
 			
@@ -203,12 +212,15 @@
 				optionSet.add(option);
 			}
 			
-			Role[] rolesArray = flow.getRoles();
-			for(Role role : rolesArray)
-			{
-				CommonOption option = new CommonOption("role_" + role.getId().getValue(), "[" + role.getName() + "]");
-				optionSet.add(option);
+			if(!ConfigManager.getProjectInvolved()){
+				Role[] rolesArray = flow.getRoles();
+				for(Role role : rolesArray)
+				{
+					CommonOption option = new CommonOption("role_" + role.getId().getValue(), "[" + role.getName() + "]");
+					optionSet.add(option);
+				}
 			}
+			
 		}else if("log_create_user".equals(fieldId))
 		{
 			Set<Right> allFlowRights = flow.getRightSet();
@@ -225,12 +237,15 @@
 				optionSet.add(option);
 			}
 			
-			Role[] rolesArray = flow.getRoles();
-			for(Role role : rolesArray)
-			{
-				CommonOption option = new CommonOption("role_" + role.getId().getValue(), "[" + role.getName() + "]");
-				optionSet.add(option);
+			if(!ConfigManager.getProjectInvolved()){
+				Role[] rolesArray = flow.getRoles();
+				for(Role role : rolesArray)
+				{
+					CommonOption option = new CommonOption("role_" + role.getId().getValue(), "[" + role.getName() + "]");
+					optionSet.add(option);
+				}
 			}
+			
 		}else
 		{
 			Set<Field> fieldSet = template.getFields();
@@ -240,9 +255,11 @@
 				{
 					if(field.getType().equals(Field.Type.t_selection))
 					{
-						if(field.getOptions() != null && field.getOptions().size() > 0)
+						Set<Option> allOptions = field.getOptions();
+						
+						if(allOptions != null && allOptions.size() > 0)
 						{
-							for(Option option : field.getOptions())
+							for(Option option : allOptions)
 							{
 								CommonOption commonOption = new CommonOption();
 								commonOption.setId(option.getId().toString());

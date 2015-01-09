@@ -169,6 +169,7 @@ public class FlowCache implements Cache<Flow> {
 		}
 		EhcacheHandler.getInstance().set(EhcacheHandler.FOREVER_CACHE,key, value);
 		Vector<Flow> allFlows = getAll();
+		
 		Iterator<Flow> it = allFlows.iterator();
 		while (it.hasNext()) {
 			if (it.next().getId().getValue().equals(((Flow)value).getId().getValue())) {

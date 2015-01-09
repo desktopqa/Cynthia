@@ -26,7 +26,17 @@
 <div class="container-fluid">
 	<div class="row-fluid">
 		<div class="span12 template_toolbar">
-			<button class="btn btn-danger btn-create" type="button" onclick="displayCreateDiv()">新建表单</button>
+			
+			<button class="btn btn-danger btn-create project_involved_false" type="button" onclick="displayCreateDiv(false)">新建表单</button>
+			
+			<div class="btn-group project_involved_true">
+                <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown">新建表单<span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                  <li><a href="#" onclick="displayCreateDiv(false)">普通表单</a></li>
+                  <li><a href="#" onclick="displayCreateDiv(true)">项目表单</a></li>
+                </ul>
+             </div>
+		
 			<input type="text" class="input-medium search-query" id="search_stat_word" placeholder="search" style="margin-left:10px;width:120px;">
 	  		<input type="button" class="btn btn-info" id="search_stat_btn" value="go">
 	  		<a href='../guide/guide.html?guideId=template' style='color:#FFF' target='blank'>
@@ -146,6 +156,7 @@
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h5 id="myModalLabel">创建表单</h5>
   </div>
+  <input type='hidden' id="projectInvolve"/>
   <div class="modal-body">
   	<form class="form-horizontal">
   		<div class="control-group">
@@ -158,7 +169,7 @@
   		<div class="control-group">
 		    <label class="control-label" for="select_templateTypeId">表单类型：</label>
 		    <div class="controls">
-		   	    <select  id="select_templateTypeId" onchange="onSelectTemplateType()">
+		   	    <select  id="select_templateTypeId" onchange="onSelectTemplateType()" style="width:230px;">
 				</select>
 		    </div>
 		</div>
@@ -166,7 +177,7 @@
 	  <div class="control-group">
 	    <label class="control-label" for="select_copyTemplateId">复制自：</label>
 	    <div class="controls">
-	   	    <select id="select_copyTemplateId" onChange="showCopyUser();">
+	   	    <select id="select_copyTemplateId" onChange="showCopyUser();" style="width:230px;">
 			</select>
 	    </div>
 	  </div>
@@ -174,7 +185,7 @@
 	  <div class="control-group" id="copy_flow_div">
 	    <label class="control-label" for="select_flowId">流程：</label>
 	    <div class="controls">
-	   	    <select  id="select_flowId">
+	   	    <select  id="select_flowId" style="width:230px;">
 			</select>
 	    </div>
 	  </div>
@@ -182,7 +193,7 @@
 	  <div class="control-group" id="user_right_div" style="display:none;">
 	    <label class="control-label" style="color:red" for="select_copyTemplateId">复制人员信息：</label>
 	    <div class="controls">
-	   	    <select id="select_copyUserRight">
+	   	    <select id="select_copyUserRight" style="width:230px;">
 	   	    	<option value="true">是</option>
 	   	    	<option value="false">否</option>
 			</select>

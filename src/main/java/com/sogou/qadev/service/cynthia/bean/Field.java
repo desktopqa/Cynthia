@@ -19,6 +19,14 @@ public interface Field extends Serializable{
 	 * @return
 	 */
 	public UUID getId();
+	
+	/**
+	 * @Title: getTimestampFormat
+	 * @Description: get time format
+	 * @return
+	 * @return: String
+	 */
+	public String getTimestampFormat();
 
 	/**
 	 * @description:get field name
@@ -238,6 +246,30 @@ public interface Field extends Serializable{
 	 */
 	public void setName(String name);
 
+	/**
+	 * @Title: setTimestampFormat
+	 * @Description: set time format
+	 * @param timestampFormat
+	 * @return: void
+	 */
+	public void setTimestampFormat(String timestampFormat);
+	
+	/**
+	 * @Title: setDateCurTime
+	 * @Description: set default cur time
+	 * @param dateCurTime
+	 * @return: void
+	 */
+	public void setDateCurTime(boolean dateCurTime);
+	
+	/**
+	 * @Title: getDateCurTime
+	 * @Description: get if date curtime 
+	 * @return
+	 * @return: boolean
+	 */
+	public boolean getDateCurTime();
+	
 	/**
 	 * @description:set field description
 	 * @date:2014-5-6 下午3:25:18

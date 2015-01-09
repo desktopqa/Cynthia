@@ -30,8 +30,7 @@ function initTemplateList()
 		url : 'template/get_InitInfo_xml.jsp',
 		type : 'POST',
 		success : onInitTemplateListAjax,
-		error : function(){
-			alert("Server Error!");
+		error : function(data){
 		}
 	});
 }
@@ -148,8 +147,7 @@ function editRoleUsers(roleId){
 		type : 'POST',
 		success : onCompleteInitRoleUsers,
 		data:{'templateId':templates[index].id,'roleId':roleId,'flowId':flowId},
-		error : function(){
-			alert("Server Error!");
+		error : function(data){
 		}
 	});
 }
@@ -337,13 +335,7 @@ function initSystem()
 		dataType:'json',
 		async:false,
 		success:function(data){
-			data = eval('(' + data + ')');
-			for(var key in data){
-				if(key == 'openRight'){
-					optionRightControl = (data[key] == 'true' ? true : false);
-					break;
-				}
-			}
+			optionRightControl = (data.openRight == 'true' ? true : false);
 		}
 	});
 }
@@ -356,7 +348,6 @@ function initAllUsers()
 		data:{'initUser':true},
 		success : onInitUserListAjax,
 		error : function(data){
-			alert("Server Error!");
 		}
 	});
 }

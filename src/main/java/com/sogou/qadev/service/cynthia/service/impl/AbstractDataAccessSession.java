@@ -3,9 +3,12 @@ package com.sogou.qadev.service.cynthia.service.impl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -40,15 +43,18 @@ import com.sogou.qadev.service.cynthia.bean.UserInfo;
 import com.sogou.qadev.service.cynthia.bean.impl.DataImpl;
 import com.sogou.qadev.service.cynthia.bean.impl.FlowImpl;
 import com.sogou.qadev.service.cynthia.bean.impl.TemplateImpl;
+import com.sogou.qadev.service.cynthia.bean.impl.UserInfoImpl;
 import com.sogou.qadev.service.cynthia.dao.DataAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.dao.FlowAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.dao.TemplateAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.dao.TemplateLogAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.dao.UserInfoAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
+import com.sogou.qadev.service.cynthia.service.ConfigManager;
 import com.sogou.qadev.service.cynthia.service.DataAccessSession;
 import com.sogou.qadev.service.cynthia.service.DataFilter;
 import com.sogou.qadev.service.cynthia.service.MailManager;
+import com.sogou.qadev.service.cynthia.service.ProjectInvolveManager;
 import com.sogou.qadev.service.cynthia.service.ScriptAccessSession;
 import com.sogou.qadev.service.cynthia.service.ScriptExecuteManager;
 import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
@@ -171,11 +177,19 @@ abstract public class AbstractDataAccessSession implements DataAccessSession
 
 		if(action.equals(DataAccessAction.read))
 		{
-			String[] logUserArray = new String[data.getChangeLogs().length];
-			for(int i = 0; i < data.getChangeLogs().length; i++)
-				logUserArray[i] = data.getChangeLogs()[i].getCreateUser();
-			
-			return flow.isReadActionAllow(getUsername(), template.getId(), data.getAssignUsername(), logUserArray);
+			if (data.getCreateUsername() != null && data.getCreateUsername().equals(getUsername())) {
+				//自己创建的数据有可读权限
+				return true;
+			}else if (ConfigManager.getProjectInvolved()){
+				//同公司创建数据有读取权限
+				return ProjectInvolveManager.getInstance().getCompanyUserMails(data.getCreateUsername()).contains(getUsername());
+			}else {
+				String[] logUserArray = new String[data.getChangeLogs().length];
+				for(int i = 0; i < data.getChangeLogs().length; i++)
+					logUserArray[i] = data.getChangeLogs()[i].getCreateUser();
+				
+				return flow.isReadActionAllow(getUsername(), template.getId(), data.getAssignUsername(), logUserArray);
+			}
 		}
 
 		return true;
@@ -584,6 +598,7 @@ abstract public class AbstractDataAccessSession implements DataAccessSession
 		//send action mail 
 		MailManager.sendActionMail(data);
 		// executeScript
+		
 		{
 			Pair<String, Boolean> pair = executeScript(data, ExecuteTime.afterSuccess, template ,flow);
 			if (pair == null || !pair.getSecond() )
@@ -805,6 +820,35 @@ abstract public class AbstractDataAccessSession implements DataAccessSession
 		return allFlows.toArray(new Flow[allFlows.size()]);
 	}
 
+	public Flow[] queryAllFlows(String userMail)
+	{
+		if (CynthiaUtil.isNull(userMail)) {
+			return queryAllFlows();
+		}else {
+			List<Flow> allFlows = FlowCache.getInstance().getAll();
+			List<Flow> returnFlows = new ArrayList<Flow>();
+			
+			if (ConfigManager.getProjectInvolved()) {
+				Set<String> companyUsers = ProjectInvolveManager.getInstance().getCompanyUserMails(userMail);
+				for (Flow flow : allFlows) {
+					if (!companyUsers.contains(flow.getCreateUser())) {
+						continue;
+					}else {
+						returnFlows.add(flow);
+					}
+				}
+			}else {
+				for (Flow flow : allFlows) {
+					if (flow.isProFlow()) {
+						continue;
+					}else {
+						returnFlows.add(flow);
+					}
+				}
+			}
+			return returnFlows.toArray(new Flow[returnFlows.size()]);
+		}
+	}
 
 	public Template[] queryAllTemplates()
 	{
@@ -909,7 +953,21 @@ abstract public class AbstractDataAccessSession implements DataAccessSession
 	}
 	
 	public List<UserInfo> queryAllUserInfo(String[] userArray){
-		return new UserInfoAccessSessionMySQL().queryAllUserInfo(userArray);
+		if (ConfigManager.getProjectInvolved()) {
+			List<UserInfo> allUserInfos = new ArrayList<UserInfo>();
+			if (userArray != null && userArray.length > 0) {
+				for (String user : userArray) {
+					UserInfo userInfo = new UserInfoImpl();
+					userInfo.setUserName(user);
+					userInfo.setNickName(CynthiaUtil.getUserAlias(user));
+					allUserInfos.add(userInfo);
+				}
+			}
+			return allUserInfos;
+			
+		}else {
+			return new UserInfoAccessSessionMySQL().queryAllUserInfo(userArray);
+		}
 	}
 	
 	public String getDbFieldName(UUID fieldId, UUID templateId){

@@ -14,8 +14,6 @@ import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
 import com.sogou.qadev.service.cynthia.service.DataAccessSession;
 import com.sogou.qadev.service.cynthia.service.DbPoolConnection;
 import com.sogou.qadev.service.cynthia.util.ArrayUtil;
-import com.sogou.qadev.service.cynthia.util.ConfigUtil;
-import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
 import com.sogou.qadev.service.cynthia.util.FilterUtil;
 
 /**

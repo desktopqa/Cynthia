@@ -12,7 +12,7 @@
 	
     $("body").append("<div id=\"line\" style=\"width:1px;height:900px; z-index:999999; border-left:1px solid #00000000; position:absolute;display:none\" ></div> ");
 	 
-	$("th").live("mousemove",function(event){
+	$("body").on("mousemove","th",function(event){
 		if (lineMove == true) {
 			var pos = currTh.offset();
 			var top = pos.top;
@@ -40,11 +40,11 @@
 				th.css({ 'cursor': 'pointer' });
 			}
 		}
-    }).live("mouseout",function(event){
+    }).on("mouseout","th",function(event){
 		$.each($("#main-grid-header").find("thead th"),function(index,node){
 			$(node).css({'border-right':''});
 		});	
-    }).live("mousedown",function(event){
+    }).on("mousedown","th",function(event){
         var th = $(this);
         if (th.prevAll().length <= 1 || th.nextAll().length < 1) {
              return;
@@ -64,7 +64,12 @@
     });
 	
      $("body").bind("mouseup", function(event) {
-
+    	if(typeof saveFilterWidth == 'function' && currTh){
+     		var filterId = $('#filterId').val();
+     		var fieldId = currTh.attr('value');
+     		var width = currTh.css('width');
+     		saveFilterWidth(filterId,fieldId,width);
+     	}
         if (lineMove == true) {
              $("#line").hide();
 		     lineMove = false;		 
@@ -76,5 +81,4 @@
 			 onWindowResize();
         }
      });
-     
  });

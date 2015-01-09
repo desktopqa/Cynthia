@@ -1,3 +1,5 @@
+<%@page import="com.sogou.qadev.service.cynthia.service.DataManager"%>
+<%@page import="com.sogou.qadev.service.cynthia.service.ConfigManager"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.ErrorManager.ErrorType"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.ErrorManager"%>
 <%@ page contentType="text/xml; charset=UTF-8" %>
@@ -51,48 +53,52 @@
 	
 	Set<Template> templateSet = new LinkedHashSet<Template>();
 	
-	List<Template> templateArray = das.queryTemplates(templateTypeId);
-	for(Template template : templateArray)
-	{
-		Flow flow = das.queryFlow(template.getFlowId());
-		if(flow == null)
-			continue;
-		
-		if(flow.isRoleEditAction(Role.everyoneUUID) || flow.isRoleReadAction(Role.everyoneUUID))
+	if(ConfigManager.getProjectInvolved()){
+		//项目管理
+		templateSet.addAll(Arrays.asList(DataManager.getInstance().queryUserTemplates(templateTypeId, key.getUsername())));
+	}else{
+		List<Template> templateArray = das.queryTemplates(templateTypeId);
+		for(Template template : templateArray)
 		{
-			templateSet.add(template);
-			continue;
-		}
-		
-		boolean isAdd = false;
-		Action[] actionArray = flow.getActions();
-		if(actionArray != null)
-		{
-			for(Action action : actionArray)
+			Flow flow = das.queryFlow(template.getFlowId());
+			if(flow == null)
+				continue;
+			
+			if(flow.isRoleEditAction(Role.everyoneUUID) || flow.isRoleReadAction(Role.everyoneUUID))
 			{
-				if(flow.isActionEveryoneRole(action.getId()))
+				templateSet.add(template);
+				continue;
+			}
+			
+			boolean isAdd = false;
+			Action[] actionArray = flow.getActions();
+			if(actionArray != null)
+			{
+				for(Action action : actionArray)
 				{
-					isAdd = true;
-					break;
+					if(flow.isActionEveryoneRole(action.getId()))
+					{
+						isAdd = true;
+						break;
+					}
 				}
 			}
+			
+			if(isAdd)
+			{
+				templateSet.add(template);
+				continue;
+			}
+			
+			Role[] roleArray = flow.queryUserNodeRoles(key.getUsername(), template.getId());
+			if(roleArray != null && roleArray.length > 0)
+				templateSet.add(template);
 		}
-		
-		if(isAdd)
-		{
-			templateSet.add(template);
-			continue;
-		}
-		
-		Role[] roleArray = flow.queryUserNodeRoles(key.getUsername(), template.getId());
-		if(roleArray != null && roleArray.length > 0)
-			templateSet.add(template);
 	}
 	
-	if(templateSet.size() == 0)
+	if(templateSet.size() == 0){
 		xmlb.append("<templates/>");
-	else
-	{
+	}else{
 		xmlb.append("<templates>");
 		
 		for(Template template : templateSet)

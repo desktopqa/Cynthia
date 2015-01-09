@@ -33,7 +33,7 @@ function initTemplate()
 	}
 	
 	$.ajax({
-		url: base_url + 'template/getUserReadableTemplate.do',
+		url: base_url + 'template/getAllTemplates.do',
 		type:'POST',
 		dataType:'json',
 		data:param,
@@ -50,7 +50,7 @@ function onInitTemplate(data)
 	$("#templates").empty();
 	$("#templates").append("<option value=>--请选择--</option>");
 	for(var key in data){
-		$("#templates").append("<option value=" + data[key].first + ">" + data[key].second+ "</option>");
+		$("#templates").append("<option value=" + key + ">" + data[key] + "</option>");
 	}
 	$("#templates").val('');
 	$("#stat_options").empty();
@@ -536,6 +536,7 @@ function saveStat()
 	rootDoc.appendChild(rootNode);
 	
 	var finalXml = getDocXML(rootDoc);
+	finalXml = cynthia.xml.getXMLStr(finalXml);
 	
 	params = {
 			statId:statId,
@@ -592,6 +593,8 @@ function initAllStats()
 function setStatistic(data)
 {
 	$("#all_statistic_div").empty();
+	var curUser = readCookie('login_username');
+	
 	for(var i in data){
 		var id = data[i].id.value;
 		allStats[id] = new Object();
@@ -601,15 +604,16 @@ function setStatistic(data)
 		var gridHtml = "";
 		
 		gridHtml += "<label class=\"checkbox\" >" +
-				"<input type=\"checkbox\" name=\"statistic\" value=\"" +allStats[id].id +"\"><a href=\"showMoreStatistic.html?statisticId="+id+"\" target=\"_blank\">"+allStats[id].name+"</a>";
-		if(data[i].isPublic != true)
-			gridHtml += "<font><i class=\"icon-stat icon-clear\" title=\"删除\" onclick=\"deleteStat( "+ id + ");\"></i>" +
-			"<i class=\"icon-stat icon-edit\" title= \"编辑\" onclick=\"editStat( "+ id + ");\"></i></font>";
-		
+					"<input type=\"checkbox\" name=\"statistic\" value=\"" +allStats[id].id +"\">";
+		if(data[i].isPublic != true && data[i].createUser === curUser){
+			gridHtml += "<i class=\"icon-stat icon-clear\" title=\"删除\" onclick=\"deleteStat( "+ id + ");\"></i>" +
+						"<i class=\"icon-stat icon-edit\" title= \"编辑\" onclick=\"editStat( "+ id + ");\"></i>";
+		}
+		gridHtml += "<a href=\"showMoreStatistic.html?statisticId="+id+"\" target=\"_blank\">" + data[i].name + "</a>";
 		gridHtml += "</label>";
 		
 		$("#all_statistic_div").append(gridHtml);
-		}
+	}
 }
 function deleteStat(statId)
 {
@@ -758,14 +762,7 @@ function editStat(statId)
 	$("#statdiv").modal('show');
 }
 
-function changeAllCheck(node)
-{
-	if($(node).attr("checked")){
-		$("#all_statistic_div input[type=checkbox][name=statistic]").attr("checked","checked");
-	}else{
-		$("#all_statistic_div input[type=checkbox][name=statistic]").removeAttr("checked");
-	}
-}
+
 function showAllChart()
 {
 	$("#all_report_div").empty();
@@ -777,7 +774,6 @@ function showAllChart()
 		var statisticId = $(node).attr("value");
 		var divId = "stat_" + statisticId;
 		$("#all_report_div").append("<div class='statistic_div' id=\""+divId +"\"></div>");
-		
 		
 		$.ajax({
 			url:base_url + 'statistic/getStatisticInfo.do',
@@ -842,6 +838,14 @@ function searchStat()
 
 function bindEvents()
 {
+	$('#check-all').change(function(e){
+		if($(this).prop('checked')){
+			$("#all_statistic_div input[type=checkbox][name=statistic]").prop("checked",true);
+		}else{
+			$("#all_statistic_div input[type=checkbox][name=statistic]").prop("checked",false);
+		}
+	});
+	
 	$("#search_stat_word").keydown(function(e){
 		if(e.keyCode === 13)
 			searchStat();

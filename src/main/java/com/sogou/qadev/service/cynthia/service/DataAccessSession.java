@@ -480,6 +480,14 @@ public interface DataAccessSession
 	public Flow[] queryAllFlows();  
 
 	/**
+	 * @Title: queryAllFlows
+	 * @Description: query user all flows
+	 * @param userMail
+	 * @return
+	 * @return: Flow[]
+	 */
+	public Flow[] queryAllFlows(String userMail);  
+	/**
 	 * @description:query all templates
 	 * @date:2014-5-6 上午10:34:27
 	 * @version:v1.0
@@ -1716,7 +1724,7 @@ public interface DataAccessSession
 	 * @param userName
 	 * @return
 	 */
-	public List<UserInfo> queryAllUsersByStatAndName(String userStat,String userName);
+	public List<UserInfo> queryAllUsersByStatAndName(String curUser,String userStat,String queryUserName);
 	
 	/**
 	 * @description:update attachment

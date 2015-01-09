@@ -247,7 +247,7 @@ public class MailManager {
 		sender.setEncode( "GBK" );
 		sender.setFromUser(data.getString("logCreateUser"));
 
-		Set<String> allSendUsers = template.getTemplateMailOption().getActionUser(action.getId());
+		Set<String> allSendUsers = template.getTemplateMailOption().getActionUser(action.getId(),data);
 		if (data.getAssignUsername() != null) {
 			allSendUsers.addAll(Arrays.asList(data.getAssignUsername().split(",")));
 		}

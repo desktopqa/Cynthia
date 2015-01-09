@@ -1,3 +1,5 @@
+<%@page import="com.sogou.qadev.service.cynthia.util.FilterUtil"%>
+<%@page import="com.sogou.qadev.service.cynthia.service.ConfigManager"%>
 <%@page import="com.sogou.qadev.service.cynthia.util.CynthiaUtil"%>
 <%@ page contentType="text/xml; charset=UTF-8" %>
 
@@ -38,20 +40,17 @@
 
 	DataAccessSession das = DataAccessFactory.getInstance().createDataAccessSession(key.getUsername(), keyId);
 	
-	UUID filterId = null;
-	String filterIdStr = request.getParameter("filterId");
-	
-	if(filterIdStr == null)
+	UUID filterId = DataAccessFactory.getInstance().createUUID(request.getParameter("filterId"));;
+	if(filterId == null)
 	{
 		response.sendRedirect(ConfigUtil.getCynthiaWebRoot());
 		return;
 	}
-	if(filterIdStr != null)
-		filterId = DataAccessFactory.getInstance().createUUID(filterIdStr);
+	
 	//edit
 	Filter filter = das.queryFilter(filterId);
 	if(filter == null || filter.getXml()==null || "".equals(filter.getXml()))
-	{//表示还未初始化
+	{	//表示还未初始化
 		StringBuffer xml = new StringBuffer();
 		xml.append("<?xml version='1.0' encoding='UTF-8' ?><query>");
 		xml.append("<init>true</init>");
@@ -116,9 +115,22 @@
 	Set<String> focusUsers = new TreeSet<String>();
 	focusUsers.addAll(focusUserList);
 
-	UUID templateId = DataAccessFactory.getInstance().createUUID(XMLUtil.getAttribute(templateNode, "id"));
-	UUID templateTypeId = DataAccessFactory.getInstance().createUUID(XMLUtil.getAttribute(templateTypeNode,"id"));	
-
+	UUID templateId = null;
+	UUID templateTypeId = null;
+	
+	try
+	{
+		templateId = DataAccessFactory.getInstance().createUUID(XMLUtil.getAttribute(templateNode, "id"));
+		templateTypeId = DataAccessFactory.getInstance().createUUID(XMLUtil.getAttribute(templateTypeNode,"id"));	
+	}catch(Exception e){
+		e.printStackTrace();
+		return;
+	}
+	
+	if(templateId == null || templateTypeId == null){
+		return;
+	}
+	
 	Node whereNode = XMLUtil.getSingleNode(templateNode, "where");
 	Node displayNode = XMLUtil.getSingleNode(templateNode, "display");
 	Node orderNode = XMLUtil.getSingleNode(templateNode, "order");
@@ -143,49 +155,9 @@
 	
 	//初始化templates
 	Node templatesNode = document.createElement("templates");
-	List<Template> allTemplate = das.queryTemplates(templateTypeId);
-	Template[] templates = allTemplate.toArray(new Template[allTemplate.size()]);
-	
 	Set<Template> templateSet = new LinkedHashSet<Template>();
-	for(Template template : templates)
-	{
-		if(!template.getTemplateTypeId().equals(templateTypeId))
-			continue;
-		
-		Flow flow = das.queryFlow(template.getFlowId());
-		if(flow == null)
-			continue;
-		
-		if(flow.isRoleEditAction(Role.everyoneUUID) || flow.isRoleReadAction(Role.everyoneUUID))
-		{
-			templateSet.add(template);
-			continue;
-		}
-		
-		boolean isAdd = false;
-		Action[] actionArray = flow.getActions();
-		if(actionArray != null)
-		{
-			for(Action action : actionArray)
-			{
-				if(flow.isActionEveryoneRole(action.getId()))
-				{
-					isAdd = true;
-					break;
-				}
-			}
-		}
-		
-		if(isAdd)
-		{
-			templateSet.add(template);
-			continue;
-		}
-		
-		Role[] roleArray = flow.queryUserNodeRoles(key.getUsername(), template.getId());
-		if(roleArray != null && roleArray.length > 0)
-			templateSet.add(template);
-	}
+	
+	templateSet.addAll(Arrays.asList(DataManager.getInstance().queryUserTemplates(templateTypeId, key.getUsername())));
 	
 	if(templateSet==null||templateSet.size()==0)
 	{
@@ -245,7 +217,12 @@
 	templateNode.appendChild(conditionsNode);
 	
 	Node orderContentNode = document.createElement("order");
-	String orderContent = queryOrderContentHTML(das,templateId, orderFieldMap, orderIndent);
+	String orderContent = "";
+	try{
+		orderContent = queryOrderContentHTML(das,templateId, orderFieldMap, orderIndent);
+	}catch(Exception e){
+	}
+	
 	orderContentNode.setTextContent(orderContent);
 	templateNode.appendChild(orderContentNode);
 	
@@ -267,7 +244,7 @@
 		Node userNameNode = document.createElement("username");
 		Node userAliasNode = document.createElement("useralias");
 		userNameNode.setTextContent(user);
-		String userAlias = CynthiaUtil.getUserAlias(user, das);
+		String userAlias = CynthiaUtil.getUserAlias(user);
 		userNameNode.setTextContent(user);
 		userAliasNode.setTextContent(userAlias);
 		userNode.appendChild(userNameNode);
@@ -281,7 +258,7 @@
 		Node userNameNode = document.createElement("username");
 		Node userAliasNode = document.createElement("useralias");
 		userNameNode.setTextContent(user);
-		String userAlias = CynthiaUtil.getUserAlias(user, das);
+		String userAlias = CynthiaUtil.getUserAlias(user);
 		userNameNode.setTextContent(user);
 		userAliasNode.setTextContent(userAlias);
 		userNode.appendChild(userNameNode);

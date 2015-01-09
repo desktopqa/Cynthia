@@ -43,11 +43,7 @@ public class QuitBugMoveController extends BaseController{
 	@RequestMapping("/getUserTemplate.do")
 	public String getUserTemplate(HttpSession httpSession) throws Exception {
 		Key key   = ((Key)httpSession.getAttribute("key"));
-		Long keyId = (Long)httpSession.getAttribute("kid");
-		das = DataAccessFactory.getInstance().createDataAccessSession(key.getUsername(), keyId);
-		
-		Template[] allTemplates = DataManager.getInstance().queryUserTemplates(das);
-		
+		Template[] allTemplates = DataManager.getInstance().queryUserTemplates(key.getUsername());
 		return JSONArray.toJSONString(allTemplates);
 	}
 

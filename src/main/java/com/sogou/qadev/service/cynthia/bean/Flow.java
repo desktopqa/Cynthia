@@ -7,6 +7,23 @@ import java.util.Set;
 
 public interface Flow extends BaseType{
 
+	/**
+	 * @Title: setProFlow
+	 * @Description: set is project involve
+	 * @param isProFlow
+	 * @return: void
+	 */
+	public void setProFlow(boolean isProFlow);
+	
+	/**
+	 * 
+	 * @Title: isProFlow
+	 * @Description: get is project involve
+	 * @return
+	 * @return: boolean
+	 */
+	public boolean isProFlow();
+	
 	public String getName();
 	
 	public void setName(String name);
@@ -361,12 +378,58 @@ public interface Flow extends BaseType{
 	public Role[] queryActionRoles(UUID actionId);
 
 	/**
+	 * @Title: queryActionsByStartStatId
+	 * @Description: queryActionsByStartStatId
+	 * @param statId
+	 * @return
+	 * @return: Set<Action>
+	 */
+	public Set<Action> queryActionsByStartStatId(UUID statId);
+	
+	/**
+	 * @Title: queryActionRoleIds
+	 * @Description: query all role ids by action
+	 * @param actionId
+	 * @return
+	 * @return: String
+	 */
+	public String queryActionRoleIds(UUID actionId);
+	
+	/**
+	 * @Title: queryNextActionRoleIds
+	 * @Description: query all next actin role ids by action
+	 * @param actionId
+	 * @return
+	 * @return: String
+	 */
+	public String queryNextActionRoleIdsByActionId(UUID actionId);
+	
+	/**
+	 * @Title: queryNextActionRoleIdsByStatId
+	 * @Description: query all next actin role ids by stat
+	 * @param statId
+	 * @return
+	 * @return: String
+	 */
+	public String queryNextActionRoleIdsByStatId(UUID statId);
+	
+	/**
 	 * @description:query all actions of stat(after this stat)
 	 * @date:2014-5-6 下午12:41:41
 	 * @version:v1.0
 	 * @param statId
 	 * @return
 	 */
+
+	/**
+	 * @Title: queryActionRoleIds
+	 * @Description: query all role ids by action and user
+	 * @param userName
+	 * @param actionId
+	 * @return
+	 * @return: String
+	 */
+	
 	public Action[] queryStatActions(UUID statId);
 
 	/**
@@ -477,6 +540,15 @@ public interface Flow extends BaseType{
 	 * @return
 	 */
 	public Action[] queryBeginActions();
+	
+	/**
+	 * @Title: isEndAction
+	 * @Description: judge if is end action
+	 * @param actionId
+	 * @return
+	 * @return: boolean
+	 */
+	public boolean isEndAction(UUID actionId);
 
 	/**
 	 * @description:check if action is everyone has

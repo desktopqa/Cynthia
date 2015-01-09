@@ -1,28 +1,23 @@
 function initFilterPageFirst(filterId,filterName)
 {
-	if(filterId!=null)
-	{
+	if(filterId){
 		$("#filterId").val(filterId);
-		$("#timerId").val("");
 	}
 	
+	$("#timerId").val("");
 	$("#filter_manage_welcome").hide();
 	$("#main_content").show();
 	$("#input_filter_name").val(filterName);
 	$("#templateTypeSelect").val("0");
-	$("#templates").empty();
-	$("#fields").empty();
+	$("#templates,#fields").empty();
 	$("#fields").append("<option value=''>---请选择---</option>");
 	$("#conditions_table>tbody").empty();
 	$("#template_user_restTemplateUserSelect").empty();
 	$("#template_user_selectedTemplateUserSelect").empty();
-	$("#timerName").val("");
+	$("#timerName,#nameList,#ccList,#bccList").val("");
 	$("#mailTitle").val("[Cynthia][" + filterName + "]");
-	$("#nameList").val("");
-	$("#ccList").val("");
-	$("#bccList").val("");
 	//初始化月份
-	$("#timer_div").css("display","none");	
+	$("#timer_div").hide();	
 	$("#timer_no").attr("checked",true);
 	
 	setTimeValue("month", 1, 12,new Array());
@@ -31,9 +26,7 @@ function initFilterPageFirst(filterId,filterName)
 	setTimeValue("hour", 0, 23,new Array());
 	setTimeValue("minute", 0, 59,new Array());
 	
-	$("#main_content").find("input").removeAttr('disabled');
-	$("#main_content").find("select").removeAttr('disabled');
-	$("#main_content").find("textarea").removeAttr('disabled');
+	$("#main_content").find("input,select,textarea").removeAttr('disabled');
 	$("#topSubmitDiv").show();
 	enableSelectSearch();
 }
@@ -45,10 +38,17 @@ function initFilterPage(filterId,type)
 		$("#filter_manage_welcome").find("span").text("数据加载中......");
 		$("#main_content").hide();
 		$("#filter_manage_welcome").show();
-		//$("#filter_manage_welcome").hide();
 		var params = {filterId:filterId};
 		$("#filterId").val(filterId);
-		$.post("filterManage/initFilterPage.jsp",params,onCompleteInitFilterPage,"xml");	
+		$.ajax({
+			url:'filterManage/initFilterPage.jsp',
+			data:params,
+			dataType:'xml',
+			success:onCompleteInitFilterPage,
+			error:function(data){
+				cynthia.util.showInfoWin('error','过滤器错误!');
+			}
+		});
 	}else
 	{
 		$("#main_content").hide();
@@ -91,7 +91,7 @@ function onCompleteInitFilterPage(data,textStatus)
 		var localTemplateName = $(node).find("name").text();
 		if(localTemplateId == templateId)
 			selected = "selected";
-		$("#templates").append("<option value='"+localTemplateId+"' "+selected+">"+localTemplateName+"</option>");
+		$("#templates").append("<option value='" + localTemplateId + "' " + selected + ">" + localTemplateName + "</option>");
 		selected = "";
 	});
 	
@@ -134,53 +134,29 @@ function onCompleteInitFilterPage(data,textStatus)
 	$("#order_td").append($(queryNode).find("order").text());
 	
 	//查找当前记录或者修改日志
-	$("#input_is_current").attr("checked",false);
 	$("#input_is_history").attr("checked",false);
 	$(queryNode).find("timerange").each(function(index,node){
 		var nodeText = $(node).text();
-		if(nodeText == "current")
-		{
+		if(nodeText == "current"){
 			$("#input_is_current").attr("checked",true);
 		}
-		if(nodeText == "history")
-		{
+		if(nodeText == "history"){
 			$("#input_is_history").attr("checked",true);
 		}
 	});
 	
 	//字段间关系
-	$("#input_or").attr("checked",false);
-	$("#input_and").attr("checked",false);
 	eval("isAnd = "+$(queryNode).find("isAnd").text());
-	
-	if(isAnd)
-	{
-		$("#input_and").attr("checked",true);
-		$("#input_or").attr("checked",false);
-	}else
-	{
-		$("#input_and").attr("checked",false);
-		$("#input_or").attr("checked",true);
-	}
+	$("#input_and , #input_or").attr("checked", isAnd ? true : false);
 	
 	//定时器管理
-	$("#timer_div").css("display","none");	
+	$("#timer_div").hide();	
 	$("#timer_no").attr("checked",true);
-	$("#timerId").val("");
-	$("#timerName").val("");
-	$("#mailTitle").val("");
-	$("#nameList").val("");
-	$("#ccMailList").val("");
-	$("#bccMailList").val("");
-	$("#month").empty();
-	$("#date").empty();
-	$("#day").empty();
-	$("#hour").empty();
-	$("#minute").empty();
+	$("#timerId,#timerName,#mailTitle,#nameList,#ccMailList,#bccMailList").val("");
+	$("#month,#date,#day,#hour,#minute").empty();
 	
 	eval("isTimer = "+$(queryNode).find("istimer").text());
-	if(isTimer)
-	{
+	if(isTimer){
 		$("#timer_yes").attr("checked",true);
 		$("#timer_no").attr("checked",false);
 		//设置定时器参数
@@ -206,8 +182,7 @@ function onCompleteInitFilterPage(data,textStatus)
 		setTimeValue("minute", 0, 59,minuteStr.split(","));
 		
 		$("#timer_div").css("display","block");	
-	}else
-	{	
+	}else{	
 		setTimeValue("month", 1, 12,new Array());
 		setTimeValue("date", 1, 31,new Array());
 		setTimeValue("day", 1, 7,new Array());
@@ -220,22 +195,12 @@ function onCompleteInitFilterPage(data,textStatus)
 		$("#timerId").val("");
 	}
 	
-	if(readonly)
-	{
-		$("#main_content").find("input").attr('disabled','disabled');
-		$("#main_content").find("select").attr('disabled','disabled');
-		$("#main_content").find("textarea").attr('disabled','disabled');
-		$("#topSubmitDiv button").attr('disabled','disabled');
-		$("#submitButtons button:eq(0)").attr('disabled','disabled');
+	if(readonly){
+		$("#filter_content").find("input,select,textarea,button").attr('disabled','disabled');
 		$("#main_content").find("span").removeAttr('onclick');
 		$("#main_content").find("td").removeAttr('onclick');
-	}else
-	{
-		$("#main_content").find("input").removeAttr('disabled');
-		$("#main_content").find("select").removeAttr('disabled');
-		$("#main_content").find("textarea").removeAttr('disabled');
-		$("#topSubmitDiv button").removeAttr('disabled');
-		$("#submitButtons button:eq(0)").removeAttr('disabled');
+	}else{
+		$("#filter_content").find("input,select,textarea,button").removeAttr('disabled');
 	}
 	
 	$("#filter_manage_welcome").find("span").text("欢迎使用过滤器管理界面。");
@@ -372,24 +337,7 @@ function onCompleteAddCondition(data,textStatus)
 	enableSelectSearch();
 }
 
-function executeSubmit(type)
-{
-	if($("#templateTypeSelect").val()=="")
-	{
-		alert("请选择表单类型！");
-		return;
-	}
-				
-	if(trim($("#input_filter_name").val()) == "")
-	{
-		alert("请输入筛选器名称！");
-		return;
-	}
-	if(trim($("#templates").val())=="")
-	{
-		alert("请选择表单");
-		return;
-	}
+function getFilterParams(){
 	var rootDoc = getXMLDoc();
 	var queryNode = rootDoc.createElement("query");
 				
@@ -471,6 +419,13 @@ function executeSubmit(type)
 	
 	//display node
 	var displayNode = rootDoc.createElement("display");
+	
+	var idNode = rootDoc.createElement("field");
+	idNode.setAttribute("id","id");
+	idNode.setAttribute("name","编号");
+	idNode.setAttribute("type","id");
+	displayNode.appendChild(idNode);
+	
 	var titleNode = rootDoc.createElement("field");
 	titleNode.setAttribute("id","title");
 	titleNode.setAttribute("name","标题");
@@ -541,11 +496,6 @@ function executeSubmit(type)
 		finalChildInnerXml = replaceAll(finalChildInnerXml, "&amp;", "&");
 					
 		finalXml = finalXml.replace(finalChildXml, finalChildInnerXml);
-	}
-				
-	if(finalXml.length > 3000){
-		alert('您的筛选条件过多！');
-		return;
 	}
 	
 	var betweenField;
@@ -644,22 +594,45 @@ function executeSubmit(type)
 			isTimer : false
 			};
 	}
-		
-	if(type==1)
-	{
+	return params;
+}
+
+function executeSubmit(type)
+{
+	if($("#templateTypeSelect").val()==""){
+		alert("请选择表单类型！");
+		return;
+	}
+				
+	if(trim($("#input_filter_name").val()) == ""){
+		alert("请输入过滤器名称！");
+		return;
+	}
+	if(trim($("#templates").val())==""){
+		alert("请选择表单");
+		return;
+	}
+	
+	var params = getFilterParams();
+	
+	if(type==1){
 		$.post("filterManage/createSearch_save.jsp",params,onCompleteAddFilter,"xml");
+		
 		//从首页跳转过来则要刷新首页数据
-		if(window.opener&&window.opener.grid){
+		if(window.opener && window.opener.grid){
 			window.opener.grid.refreshGrid();
 			window.opener.initFilterMenu();
 		}
-	}else if(type == 2)
-	{
-		$("#finalXml").val(finalXml);
-		$("#previewForm").submit();
+	}else if(type == 2){
+		$('#preview-header').text('过滤器预览--' + params.filterName);
+		$('#previewFilterDiv').modal('show');
+		queryFilterData(params.searchConfig);
 	}
-	
-	//$("#input_filter_xml").val(finalXml);
+}
+
+function saveFilterConditions(){
+	var params = getFilterParams();
+	$.post("filterManage/createSearch_save.jsp",params);
 }
 
 function getUnFocusUsers(){
@@ -752,12 +725,11 @@ function showAdvance()
 
 function showOrderArea(show)
 {
-	if(show)
-	{
+	if(show){
 		$("#orderFieldDiv").modal('show');
-	}else
-	{
-		$("#orderFieldDiv").modal('hide');
+	}else{
+		saveFilterConditions();
+		$("#orderFieldDiv").modal("hide");
 	}
 }
 
@@ -766,6 +738,7 @@ function showDefaultUser(show)
 	if(show){
 		$("#defaultUserDiv").modal('show');
 	}else{
+		saveFilterConditions();
 		$("#defaultUserDiv").modal("hide");
 	}
 }
@@ -795,6 +768,7 @@ function showFilterTimer(show)
 		$("#filterTimerDiv").modal('show');
 	}else
 	{
+		saveFilterConditions();
 		$("#filterTimerDiv").modal("hide");
 	}
 }
@@ -833,7 +807,7 @@ function bindHoverEvent(){
 
 function onWindowResize()
 {
-	$("#left_tree").height($(window).height() - 40);
+	$("#left_tree").height($(window).height() - 50);
 }
 
 $(function(){

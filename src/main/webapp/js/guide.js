@@ -12,7 +12,7 @@
 	
 	function initAllGuide(){
 		$.ajax({
-			url:'../guide/getAllGuide.do',
+			url: base_url + 'guide/getAllGuide.do',
 			async:false,
 			dataType:'json',
 			success:function(data){
@@ -33,7 +33,6 @@
 	
 	function bindClick(){
 		$('#all_guide').on('click','a',guideAClick);
-		
 		//保存说明
 		$('#save_editor').click(function(){
 			var guideId = $('#guide_id').val();
@@ -43,7 +42,7 @@
 				var guidHtml = getSafeParam(guideEditor.html());
 				
 				$.ajax({
-					url:'../guide/saveGuideHtml.do',
+					url:base_url + 'guide/saveGuideHtml.do',
 					type:'post',
 					data:{guideId:guideId,guideHtml:guidHtml},
 					success:function(data){
@@ -66,7 +65,7 @@
 		
 		if(guideId){
 			$.ajax({
-				url:'../guide/getGuideHtml.do',
+				url:base_url + 'guide/getGuideHtml.do',
 				async:false,
 				dataType:'text',
 				data:{guideId:guideId},
@@ -97,6 +96,4 @@
 			$("#all_guide a[id=" + guideId + "]").click();
 		}
 	});
-	
-	
 })(jQuery);

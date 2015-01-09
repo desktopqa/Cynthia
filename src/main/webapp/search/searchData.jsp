@@ -95,12 +95,12 @@ if(allRequestPair.get("statisticId") != null && allRequestPair.get("statisticVal
 	//其它条件查询
 	List<QueryCondition> queryConditionList = QueryUtil.getQueryCondition(allRequestPair,templateId);
 	sql = QueryUtil.getQuerySql(templateId, queryConditionList);
+	System.out.println(sql);
 }
 
 int totalCount = DbPoolConnection.getInstance().getSearchResultCount(sql);
 
 sql = DataFilterMemory.getQuerySql(sql, pagenum,count,sort,dir,templateId == null ? null : templateId.getValue());
-
 dataList = new DataAccessSessionMySQL().queryDatas(sql, false, templateId);
 
 Set<String> displayFieldsName = new HashSet(Arrays.asList(new String[]{"标题","描述","创建时间","指派人","状态","修改时间","创建人"}));
@@ -116,5 +116,14 @@ result.append(FilterQueryManager.assembleFilterDataJson(displayFieldsName.toArra
 result.append("]");
 result.append("}");
 
-response.getWriter().write(result.toString());
+String callback = request.getParameter("callback");
+if (callback != null && !callback.equals("")) {
+	String jsonp = callback + "(" + result.toString() + ")";
+	response.setContentType("application/javascript;charset=UTF-8");
+	response.getWriter().print(jsonp);
+	response.getWriter().flush();
+	response.getWriter().close();
+}else {
+	response.getWriter().write(result.toString());
+}
 %>

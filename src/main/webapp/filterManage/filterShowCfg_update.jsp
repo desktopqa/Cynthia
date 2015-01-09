@@ -1,3 +1,4 @@
+<%@page import="com.sogou.qadev.service.cynthia.service.FilterQueryManager"%>
 <%@ page language="java" contentType="text/xml; charset=UTF-8"%>
 
 <%@page import="com.sogou.qadev.service.cynthia.bean.Key"%>
@@ -74,29 +75,37 @@
 		displayNode.removeChild(node);
 	}
 	
+	Map<String,String> fieldWidthMap = FilterQueryManager.getDisplayFieldAndWidth(filter.getXml(), das);
+
 	Field showField = null;
 	for(String fieldId : showFieldArray){
-		if(fieldId != null && fieldId.equals("id"))//编号默认都显示
-			continue;
 		
 		//添加配置字段
 		if(fieldId.startsWith("FIEL-"))
 			fieldId = fieldId.substring(fieldId.indexOf("FIEL-") + 5);
+		
 		showField = template.getField(DataAccessFactory.getInstance().createUUID(fieldId)); 
 		Node fieldNode = filterXmlDoc.createElement("field");
 		if(showField==null){
-			if(ConfigUtil.baseFieldNameMap.get(fieldId) != null){
+			String name = ConfigUtil.baseFieldNameMap.get(fieldId);
+			if( name != null){
 				XMLUtil.setAttribute(fieldNode,"id",fieldId);
 				XMLUtil.setAttribute(fieldNode,"name",ConfigUtil.baseFieldNameMap.get(fieldId));
 				XMLUtil.setAttribute(fieldNode,"type",fieldId);
+				if(fieldWidthMap.get(name) != null){
+					XMLUtil.setAttribute(fieldNode,"width",fieldWidthMap.get(name));
+				}
 			}
 		}else{
 			XMLUtil.setAttribute(fieldNode,"id",showField.getId().getValue());
 			XMLUtil.setAttribute(fieldNode,"name",showField.getName());
 			XMLUtil.setAttribute(fieldNode,"type",showField.getType().toString());
 			XMLUtil.setAttribute(fieldNode,"datatype",showField.getDataType() == null ? "" : showField.getDataType().toString());
+			if(fieldWidthMap.get(showField.getName()) != null ){
+				XMLUtil.setAttribute(fieldNode,"width",fieldWidthMap.get(showField.getName()));
+			}
 		}
-	
+
 		displayNode.appendChild(fieldNode);
 	}
 	

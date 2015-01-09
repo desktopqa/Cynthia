@@ -42,7 +42,6 @@ import com.sogou.qadev.service.cynthia.vo.DataVO;
 @Controller
 @RequestMapping("/bugMove")
 public class BugVersionMoveController extends BaseController{
-
 	@ResponseBody
 	@RequestMapping("/bugVersionMove.do")
 	public String bugVersionMove(HttpSession httpSession, HttpServletRequest request) throws Exception {
@@ -62,7 +61,7 @@ public class BugVersionMoveController extends BaseController{
 			Set<UUID> statusIdSet = new HashSet<UUID>();
 			for(String statusIdStr : statsIdArr){
 				if(statusIdStr!=null&&!"".equals(statusIdStr))
-					statusIdSet.add(DataAccessFactory.getInstance().createUUID(statusIdStr));
+				statusIdSet.add(DataAccessFactory.getInstance().createUUID(statusIdStr));
 			}
 			Data oldTask = das.queryData(DataAccessFactory.getInstance().createUUID(oldTaskId) ,DataAccessFactory.getInstance().createUUID(templateId));
 			String oldTaskTitle = oldTask.getTitle();
@@ -196,10 +195,7 @@ public class BugVersionMoveController extends BaseController{
 	@RequestMapping("/getTemplatesByTemplateType.do")
 	public String getTemplatesByTemplateType(@RequestParam("templateType") String templateType, HttpSession httpSession) throws Exception {
 		Key key   = ((Key)httpSession.getAttribute("key"));
-		Long keyId = (Long)httpSession.getAttribute("kid");
-		das = DataAccessFactory.getInstance().createDataAccessSession(key.getUsername(), keyId);
-		
-		Template[] templates = DataManager.getInstance().queryUserTemplates(DataAccessFactory.getInstance().createUUID(templateType), das);
+		Template[] templates = DataManager.getInstance().queryUserTemplates(DataAccessFactory.getInstance().createUUID(templateType), key.getUsername());
 		return JSONArray.toJSONString(templates);
 	}
 

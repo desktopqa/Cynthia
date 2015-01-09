@@ -96,6 +96,10 @@
 		assignUser = null;
 	}
 	
+	if(assignUser != null && assignUser.equals("null")){
+		assignUser = "";
+	}
+	
 	if(data.getAssignUsername() == null && assignUser != null
 	|| data.getAssignUsername() != null && assignUser == null
 		|| data.getAssignUsername() != null && assignUser != null && !data.getAssignUsername().equals(assignUser)){
@@ -139,228 +143,224 @@
 	//获取fieldValues
 	Enumeration enumeration = request.getParameterNames();
 	while(enumeration.hasMoreElements()){
-		String param = (String)enumeration.nextElement();
-		if(param.startsWith("field")){	
-	UUID fieldId = DataAccessFactory.getInstance().createUUID(param.substring(5));
-	
-	Field field = template.getField(fieldId);
-	if(field == null){
-		continue;
-	}
-	
-	String fieldValue = request.getParameter(param);
-	
-	if(fieldValue != null && fieldValue.length() == 0){
-		fieldValue = null;
-	}
-		
-	
-	
-	if(field.getType().equals(Type.t_selection)){
-		if(field.getDataType().equals(DataType.dt_single)){
-	UUID oldOptionId = data.getSingleSelection(field.getId());
-	
-	UUID newOptionId = null;
-	if(fieldValue != null){
-		newOptionId = DataAccessFactory.getInstance().createUUID(fieldValue);
-	}
-	
-	if(oldOptionId == null && newOptionId != null
-			|| oldOptionId != null && newOptionId == null
-				|| oldOptionId != null && newOptionId != null && !oldOptionId.equals(newOptionId)){
-		extValueMap.put(field.getId(), new Pair<Object, Object>(oldOptionId, newOptionId));
-	}
-	data.setSingleSelection(field.getId(), newOptionId);
-		}
-		else if(field.getDataType().equals(DataType.dt_multiple)){
-	UUID[] oldOptionIdArray = data.getMultiSelection(field.getId());
-	
-	UUID[] newOptionIdArray = null;
-	if(fieldValue != null){
-		String[] newOptionIdStrArray = fieldValue.split("\\,");
-		newOptionIdArray = new UUID[newOptionIdStrArray.length];
-		for(int i = 0; i < newOptionIdStrArray.length; i++){
-			newOptionIdArray[i] = DataAccessFactory.getInstance().createUUID(newOptionIdStrArray[i]);
-		}
-	}
-	
-	if(oldOptionIdArray == null && newOptionIdArray != null
-			|| oldOptionIdArray != null && newOptionIdArray == null
-			|| oldOptionIdArray != null && newOptionIdArray != null && !new HashSet<UUID>(Arrays.asList(oldOptionIdArray)).equals(new HashSet<UUID>(Arrays.asList(newOptionIdArray)))){
-		extValueMap.put(field.getId(), new Pair<Object, Object>(oldOptionIdArray, newOptionIdArray));
-	}
-	
-	data.setMultiSelection(field.getId(), newOptionIdArray);
-		}
-	}
-	else if(field.getType().equals(Type.t_reference)){
-		if(field.getDataType().equals(DataType.dt_single)){
-	UUID oldReferenceId = data.getSingleReference(field.getId());
-	
-	UUID newReferenceId = null;
-	if(fieldValue != null){
-		newReferenceId = DataAccessFactory.getInstance().createUUID(fieldValue);
-	}
-	
-	if(oldReferenceId == null && newReferenceId != null
-			|| oldReferenceId != null && newReferenceId == null
-				|| oldReferenceId != null && newReferenceId != null && !oldReferenceId.equals(newReferenceId)){
-		extValueMap.put(field.getId(), new Pair<Object, Object>(oldReferenceId, newReferenceId));
-	}
-	
-	data.setSingleReference(field.getId(), newReferenceId);
-	
-		}
-		else if(field.getDataType().equals(DataType.dt_multiple)){
-	UUID[] oldReferIdArray = data.getMultiReference(field.getId());
-	
-	UUID[] newReferIdArray = null;
-	if(fieldValue != null){
-		String[] newReferIdStrArray = fieldValue.split("\\,");
-		newReferIdArray = new UUID[newReferIdStrArray.length];
-		for(int i = 0; i < newReferIdStrArray.length; i++){
-			newReferIdArray[i] = DataAccessFactory.getInstance().createUUID(newReferIdStrArray[i]);
-		}
-	}
-	
-	if(oldReferIdArray == null && newReferIdArray != null
-			|| oldReferIdArray != null && newReferIdArray == null
-			|| oldReferIdArray != null && newReferIdArray != null && !new HashSet<UUID>(Arrays.asList(oldReferIdArray)).equals(new HashSet<UUID>(Arrays.asList(newReferIdArray)))){
-		extValueMap.put(field.getId(), new Pair<Object, Object>(oldReferIdArray, newReferIdArray));
-	}
-	
-	data.setMultiReference(field.getId(), newReferIdArray);
-		}
-	}
-	else if(field.getType().equals(Type.t_attachment))
-	{
-		UUID[] oldAttachIdArray = data.getAttachments(field.getId());
-		
-		UUID[] newAttachIdArray = null;
-		if(fieldValue != null){
-	String[] newAttachIdStrArray = fieldValue.split("\\,");
-	newAttachIdArray = new UUID[newAttachIdStrArray.length];
-	for(int i = 0; i < newAttachIdStrArray.length; i++){
-		newAttachIdArray[i] = DataAccessFactory.getInstance().createUUID(newAttachIdStrArray[i]);
-	}
-		}
-		
-		if(oldAttachIdArray == null && newAttachIdArray != null
-		|| oldAttachIdArray != null && newAttachIdArray == null
-		|| oldAttachIdArray != null && newAttachIdArray != null && !new HashSet<UUID>(Arrays.asList(oldAttachIdArray)).equals(new HashSet<UUID>(Arrays.asList(newAttachIdArray)))){
-	extValueMap.put(field.getId(), new Pair<Object, Object>(oldAttachIdArray, newAttachIdArray));
-		}
-		
-		data.setMultiReference(field.getId(), newAttachIdArray);
-	}
-	else if(field.getType().equals(Type.t_input)){
-		if(field.getDataType().equals(DataType.dt_integer)){
-	Integer oldInteger = data.getInteger(field.getId());
-	
-	Integer newInteger = null;
-	if(fieldValue != null)	{
-		try{
-			newInteger = Integer.valueOf(fieldValue);
-		}
-		catch(Exception e){}
-	}
-	
-	if(oldInteger == null && newInteger != null
-			|| oldInteger != null && newInteger == null
-			||oldInteger != null && newInteger != null && !oldInteger.equals(newInteger)){
-		extValueMap.put(field.getId(), new Pair<Object, Object>(oldInteger, newInteger));
-	}
-	
-	data.setInteger(field.getId(), newInteger);
-		}
-		else if(field.getDataType().equals(DataType.dt_long)){
-	Long oldLong = data.getLong(field.getId());
-	
-	Long newLong = null;
-	if(fieldValue != null){
-		try{
-			newLong = Long.valueOf(fieldValue);
-		}
-		catch(Exception e){}
-	}
-	
-	if(oldLong == null && newLong != null
-			|| oldLong != null && newLong == null
-			||oldLong != null && newLong != null && !oldLong.equals(newLong)){
-		extValueMap.put(field.getId(), new Pair<Object, Object>(oldLong, newLong));
-	}
-	
-	data.setLong(field.getId(), newLong);
-		}
-		else if(field.getDataType().equals(DataType.dt_float)){
-	Float oldFloat = data.getFloat(field.getId());
-	
-	Float newFloat = null;
-	if(fieldValue != null){
-		try{
-			newFloat = Float.valueOf(fieldValue);
-		}
-		catch(Exception e){}
-	}
-	
-	if(oldFloat == null && newFloat != null
-			|| oldFloat != null && newFloat == null
-			||oldFloat != null && newFloat != null && !oldFloat.equals(newFloat)){
-		extValueMap.put(field.getId(), new Pair<Object, Object>(oldFloat, newFloat));
-	}
-	
-	data.setFloat(field.getId(), newFloat);
-		}
-		else if(field.getDataType().equals(DataType.dt_double)){
-	Double oldDouble = data.getDouble(field.getId());
-	
-	Double newDouble = null;
-	if(fieldValue != null){
-		try{
-			newDouble = Double.valueOf(fieldValue);
-		}
-		catch(Exception e){}
-	}
-	
-	if(oldDouble == null && newDouble != null
-			|| oldDouble != null && newDouble == null
-			||oldDouble != null && newDouble != null && !oldDouble.equals(newDouble)){
-		extValueMap.put(field.getId(), new Pair<Object, Object>(oldDouble, newDouble));
-	}
-	
-	data.setDouble(field.getId(), newDouble);
-		}
-		else if(field.getDataType().equals(DataType.dt_string) || field.getDataType().equals(DataType.dt_text) || field.getDataType().equals(DataType.dt_editor)){
-	String oldString = data.getString(field.getId());
-	
-	if(oldString == null && fieldValue != null
-			|| oldString != null && fieldValue == null
-			||oldString != null && fieldValue != null && !oldString.equals(fieldValue)){
-		extValueMap.put(field.getId(), new Pair<Object, Object>(oldString, fieldValue));
-	}
-	
-	data.setString(field.getId(), fieldValue);
-		}
-		else if(field.getDataType().equals(DataType.dt_timestamp)){
-	Date oldDate = data.getDate(field.getId());
-	
-	Date newDate = null;
-	if(fieldValue != null){
-		try{
-			newDate = Date.valueOf(fieldValue);
-		}
-		catch(Exception e){}
-	}
-	
-	if(oldDate == null && newDate != null
-			|| oldDate != null && newDate == null
-			||oldDate != null && newDate != null && !oldDate.equals(newDate)){
-		extValueMap.put(field.getId(), new Pair<Object, Object>(oldDate, newDate));
-	}
-	data.setDate(field.getId(), newDate);
-		}
-	}
-		}
+			String param = (String)enumeration.nextElement();
+					if(param.startsWith("field")){	
+				UUID fieldId = DataAccessFactory.getInstance().createUUID(param.substring(5));
+				
+				Field field = template.getField(fieldId);
+				if(field == null){
+					continue;
+				}
+				
+				String fieldValue = request.getParameter(param);
+				
+				if(fieldValue != null && fieldValue.length() == 0){
+					fieldValue = null;
+				}
+				
+				if(field.getType().equals(Type.t_selection)){
+					if(field.getDataType().equals(DataType.dt_single)){
+						UUID oldOptionId = data.getSingleSelection(field.getId());
+						
+						UUID newOptionId = null;
+						if(fieldValue != null){
+							newOptionId = DataAccessFactory.getInstance().createUUID(fieldValue);
+						}
+						
+						if(oldOptionId == null && newOptionId != null
+								|| oldOptionId != null && newOptionId == null
+									|| oldOptionId != null && newOptionId != null && !oldOptionId.equals(newOptionId)){
+							extValueMap.put(field.getId(), new Pair<Object, Object>(oldOptionId, newOptionId));
+						}
+						data.setSingleSelection(field.getId(), newOptionId);
+					}else if(field.getDataType().equals(DataType.dt_multiple)){
+						UUID[] oldOptionIdArray = data.getMultiSelection(field.getId());
+						
+						UUID[] newOptionIdArray = null;
+						if(fieldValue != null){
+							String[] newOptionIdStrArray = fieldValue.split("\\,");
+							newOptionIdArray = new UUID[newOptionIdStrArray.length];
+							for(int i = 0; i < newOptionIdStrArray.length; i++){
+								newOptionIdArray[i] = DataAccessFactory.getInstance().createUUID(newOptionIdStrArray[i]);
+							}
+						}
+						
+						if(oldOptionIdArray == null && newOptionIdArray != null
+								|| oldOptionIdArray != null && newOptionIdArray == null
+								|| oldOptionIdArray != null && newOptionIdArray != null && !new HashSet<UUID>(Arrays.asList(oldOptionIdArray)).equals(new HashSet<UUID>(Arrays.asList(newOptionIdArray)))){
+							extValueMap.put(field.getId(), new Pair<Object, Object>(oldOptionIdArray, newOptionIdArray));
+						}
+						
+						data.setMultiSelection(field.getId(), newOptionIdArray);
+					}
+				}
+				else if(field.getType().equals(Type.t_reference)){
+					if(field.getDataType().equals(DataType.dt_single)){
+						UUID oldReferenceId = data.getSingleReference(field.getId());
+						
+						UUID newReferenceId = null;
+						if(fieldValue != null){
+							newReferenceId = DataAccessFactory.getInstance().createUUID(fieldValue);
+						}
+						
+						if(oldReferenceId == null && newReferenceId != null
+								|| oldReferenceId != null && newReferenceId == null
+									|| oldReferenceId != null && newReferenceId != null && !oldReferenceId.equals(newReferenceId)){
+							extValueMap.put(field.getId(), new Pair<Object, Object>(oldReferenceId, newReferenceId));
+						}
+						
+						data.setSingleReference(field.getId(), newReferenceId);
+				
+					}
+					else if(field.getDataType().equals(DataType.dt_multiple)){
+						UUID[] oldReferIdArray = data.getMultiReference(field.getId());
+						
+						UUID[] newReferIdArray = null;
+						if(fieldValue != null){
+							String[] newReferIdStrArray = fieldValue.split("\\,");
+							newReferIdArray = new UUID[newReferIdStrArray.length];
+							for(int i = 0; i < newReferIdStrArray.length; i++){
+								newReferIdArray[i] = DataAccessFactory.getInstance().createUUID(newReferIdStrArray[i]);
+							}
+						}
+						
+						if(oldReferIdArray == null && newReferIdArray != null
+								|| oldReferIdArray != null && newReferIdArray == null
+								|| oldReferIdArray != null && newReferIdArray != null && !new HashSet<UUID>(Arrays.asList(oldReferIdArray)).equals(new HashSet<UUID>(Arrays.asList(newReferIdArray)))){
+							extValueMap.put(field.getId(), new Pair<Object, Object>(oldReferIdArray, newReferIdArray));
+						}
+						
+						data.setMultiReference(field.getId(), newReferIdArray);
+					}
+				}
+				else if(field.getType().equals(Type.t_attachment)){
+					UUID[] oldAttachIdArray = data.getAttachments(field.getId());
+					
+					UUID[] newAttachIdArray = null;
+					if(fieldValue != null){
+						String[] newAttachIdStrArray = fieldValue.split("\\,");
+						newAttachIdArray = new UUID[newAttachIdStrArray.length];
+						for(int i = 0; i < newAttachIdStrArray.length; i++){
+							newAttachIdArray[i] = DataAccessFactory.getInstance().createUUID(newAttachIdStrArray[i]);
+						}
+					}
+					
+					if(oldAttachIdArray == null && newAttachIdArray != null
+					|| oldAttachIdArray != null && newAttachIdArray == null
+					|| oldAttachIdArray != null && newAttachIdArray != null && !new HashSet<UUID>(Arrays.asList(oldAttachIdArray)).equals(new HashSet<UUID>(Arrays.asList(newAttachIdArray)))){
+				extValueMap.put(field.getId(), new Pair<Object, Object>(oldAttachIdArray, newAttachIdArray));
+					}
+					
+					data.setMultiReference(field.getId(), newAttachIdArray);
+				}else if(field.getType().equals(Type.t_input)){
+					if(field.getDataType().equals(DataType.dt_integer)){
+						Integer oldInteger = data.getInteger(field.getId());
+						
+						Integer newInteger = null;
+						if(fieldValue != null)	{
+							try{
+								newInteger = Integer.valueOf(fieldValue);
+							}
+							catch(Exception e){}
+						}
+						
+						if(oldInteger == null && newInteger != null
+								|| oldInteger != null && newInteger == null
+								||oldInteger != null && newInteger != null && !oldInteger.equals(newInteger)){
+							extValueMap.put(field.getId(), new Pair<Object, Object>(oldInteger, newInteger));
+						}
+						
+						data.setInteger(field.getId(), newInteger);
+					}
+					else if(field.getDataType().equals(DataType.dt_long)){
+						Long oldLong = data.getLong(field.getId());
+						
+						Long newLong = null;
+						if(fieldValue != null){
+							try{
+								newLong = Long.valueOf(fieldValue);
+							}
+							catch(Exception e){}
+						}
+						
+						if(oldLong == null && newLong != null
+								|| oldLong != null && newLong == null
+								||oldLong != null && newLong != null && !oldLong.equals(newLong)){
+							extValueMap.put(field.getId(), new Pair<Object, Object>(oldLong, newLong));
+						}
+						
+						data.setLong(field.getId(), newLong);
+					}
+					else if(field.getDataType().equals(DataType.dt_float)){
+						Float oldFloat = data.getFloat(field.getId());
+						
+						Float newFloat = null;
+						if(fieldValue != null){
+							try{
+								newFloat = Float.valueOf(fieldValue);
+							}
+							catch(Exception e){}
+						}
+						
+						if(oldFloat == null && newFloat != null
+								|| oldFloat != null && newFloat == null
+								||oldFloat != null && newFloat != null && !oldFloat.equals(newFloat)){
+							extValueMap.put(field.getId(), new Pair<Object, Object>(oldFloat, newFloat));
+						}
+						
+						data.setFloat(field.getId(), newFloat);
+					}
+					else if(field.getDataType().equals(DataType.dt_double)){
+						Double oldDouble = data.getDouble(field.getId());
+						
+						Double newDouble = null;
+						if(fieldValue != null){
+							try{
+								newDouble = Double.valueOf(fieldValue);
+							}
+							catch(Exception e){}
+						}
+						
+						if(oldDouble == null && newDouble != null
+								|| oldDouble != null && newDouble == null
+								||oldDouble != null && newDouble != null && !oldDouble.equals(newDouble)){
+							extValueMap.put(field.getId(), new Pair<Object, Object>(oldDouble, newDouble));
+						}
+						
+						data.setDouble(field.getId(), newDouble);
+					}
+					else if(field.getDataType().equals(DataType.dt_string) || field.getDataType().equals(DataType.dt_text) || field.getDataType().equals(DataType.dt_editor)){
+						String oldString = data.getString(field.getId());
+						
+						if(oldString == null && fieldValue != null
+								|| oldString != null && fieldValue == null
+								||oldString != null && fieldValue != null && !oldString.equals(fieldValue)){
+							extValueMap.put(field.getId(), new Pair<Object, Object>(oldString, fieldValue));
+						}
+				
+						data.setString(field.getId(), fieldValue);
+					}
+					else if(field.getDataType().equals(DataType.dt_timestamp)){
+						Date oldDate = data.getDate(field.getId());
+						Date newDate = null;
+						if(fieldValue != null){
+							try{
+								newDate = Date.valueOf(fieldValue,field.getTimestampFormat());
+							}
+							catch(Exception e){
+								e.printStackTrace();
+							}
+						}
+						System.out.println(newDate);
+						if(oldDate == null && newDate != null
+								|| oldDate != null && newDate == null
+								||oldDate != null && newDate != null && !oldDate.equals(newDate)){
+							extValueMap.put(field.getId(), new Pair<Object, Object>(oldDate, newDate));
+						}
+						data.setDate(field.getId(), newDate);
+					}
+				}
+			}
 	}
 	
 	data.setObject("logBaseValueMap", baseValueMap);

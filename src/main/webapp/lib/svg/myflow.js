@@ -902,9 +902,18 @@
 		$(rap).css("cursor","default");
 		$.extend(true,a.config,r);
 		
-		a.config.editable = r.edit;   //设置能否编辑
-		
+//		a.config.editable = r.edit || cynthia.url.getQuery('editable') != 'false';   //设置能否编辑
+		a.config.editable = cynthia.url.getQuery('editable') != 'false';   //设置能否编辑
+
 		$(rap).data("mod","point"); //设置当前功能键为选择
+		
+		var showStatus = cynthia.url.getQuery('statusId');
+		if(showStatus){
+			var statusNode = getNodeById(showStatus);
+			if(statusNode){
+				statusNode.attr({fill:'rgb(194, 138, 138)',stoke:'#EF8',"stroke-width":6,"stroke-opacity": 0.8});
+			}
+		}
 		
 		$("#myflow_tools .node").hover(
 			function(){$(this).addClass("mover");},
@@ -1197,9 +1206,9 @@
 			}
 		});
 		
-		
 		//保存
 		$("#myflow_save").click(function(){
+			if(!a.config.editable){return false;}
 			if(saveSvgCode())
             	showInfoWin("success","保存成功!");
             else
@@ -1208,11 +1217,13 @@
 			
 		//编辑
 		$("#myflow_edit").click(function(){
+			if(!a.config.editable){return false;}
 			editElement();
 		});
 		
 		//删除
 		$("#myflow_delete").click(function(){
+			if(!a.config.editable){return false;}
 			deleteElement();
 		});
 		
@@ -1230,6 +1241,7 @@
 
 		//动作 编辑
 	    $("#edit").click(function (e) {
+	    	if(!a.config.editable){return false;}
 	    	var actionId = "48";
 	    	var actionName = "编辑";
 	    	editNormalAction(actionId,actionName);
@@ -1237,6 +1249,7 @@
 	    
 	    //动作 查看
 		$("#look").click(function (e) {
+			if(!a.config.editable){return false;}
 			var actionId = "47";
 			var actionName = "查看";
 	    	editNormalAction(actionId,actionName);
@@ -1244,6 +1257,7 @@
 
 		//动作 删除
 	    $("#del").click(function (e) {
+	    	if(!a.config.editable){return false;}
 	    	var actionId = "51";
 	    	var actionName = "删除";
 	    	editNormalAction(actionId,actionName);
@@ -1356,6 +1370,21 @@
 		svgCode += ",viewBox_height:" + rap._viewBox[3];
 		svgCode += "}";
 		return saveFlowSvg(svgCode); //保存至数据库
+	}
+	
+	function getNodeById(id){
+		for(var i in global_node){
+			if(global_node[i] && global_node[i].getId().indexOf(id) != -1){
+				return global_node[i];  
+			}
+		}
+		
+		for(var i in global_path){
+			if(global_path[i] && global_path[i].getId().indexOf(id) != -1){
+				return global_path[i];  
+			}
+		}
+		return null;
 	}
 	
 	function getNodeByRapealId(id){

@@ -582,7 +582,7 @@ public class DataAccessSessionMySQL {
 							}
 							else if(validField.getDataType().equals(DataType.dt_timestamp))
 							{
-								Date date = Date.valueOf(colValueMap.get(colName));
+								Date date = Date.valueOf(colValueMap.get(colName),validField.getTimestampFormat());
 								objectMapUUID.put(fieldId, date);
 								objectMapName.put(validField.getName(), date);
 							}
@@ -1091,6 +1091,11 @@ public class DataAccessSessionMySQL {
 		Statement stat = null;
 		ResultSet rs = null;
 		List<Data> allDatas = new ArrayList<Data>();
+		
+		if (CynthiaUtil.isNull(sql)) {
+			return allDatas;
+		}
+		
 		try
 		{
 			conn = DbPoolConnection.getInstance().getReadConnection();

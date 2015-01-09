@@ -1,3 +1,6 @@
+<%@page import="com.sogou.qadev.service.cynthia.service.ProjectInvolveManager"%>
+<%@page import="com.sogou.qadev.service.cynthia.service.DataManager"%>
+<%@page import="com.sogou.qadev.service.cynthia.service.ConfigManager"%>
 <%@page import="java.util.LinkedHashMap"%>
 <%@page import="com.sogou.qadev.service.cynthia.bean.UserInfo"%>
 <%@page import="java.util.Map"%>
@@ -40,15 +43,16 @@
 	xmlb.append("<isError>false</isError>");
 	
 	UserInfo userInfo = das.queryUserInfoByUserName(key.getUsername());
-	if(userInfo != null)
-	{
+	if(userInfo != null){
 		xmlb.append("<userRole>"+userInfo.getUserRole()+"</userRole>");
 	}
 	
 	//set templates
 	Map<String, Template> templateMap = new LinkedHashMap<String, Template>();
 	
-	Template[] templateArray = das.queryAllTemplates();
+	Template[] templateArray = null;
+	templateArray = DataManager.getInstance().queryUserTemplates(key.getUsername());
+	
 	if(templateArray != null)
 	{
 		for(Template template : templateArray)
@@ -69,11 +73,11 @@
 		for(Template template : templateMap.values())
 		{
 			xmlb.append("<template>");
-			
 			xmlb.append("<id>").append(template.getId()).append("</id>");
 			xmlb.append("<name>").append(XMLUtil.toSafeXMLString(template.getName())).append("</name>");
 			xmlb.append("<templateTypeId>").append(template.getTemplateTypeId()).append("</templateTypeId>");
 			xmlb.append("<flowId>").append(template.getFlowId()).append("</flowId>");
+			xmlb.append("<isProTemplate>").append(String.valueOf(template.isProTemplate())).append("</isProTemplate>");
 			xmlb.append("<isFocused>").append("true").append("</isFocused>");
 			xmlb.append("<isNew>").append("true").append("</isNew>");
 			
@@ -96,10 +100,8 @@
 		for(TemplateType templateType : templateTypeArray)
 		{
 			xmlb.append("<templateType>");
-			
 			xmlb.append("<id>").append(templateType.getId()).append("</id>");
 			xmlb.append("<name>").append(XMLUtil.toSafeXMLString(templateType.getName())).append("</name>");
-			
 			xmlb.append("</templateType>");
 		}
 		
@@ -108,29 +110,17 @@
 	
 	templateTypeArray = null;
 	
-	//set flows
-	Map<String,String> flowMap = new FlowAccessSessionMySQL().queryIdName();
+	xmlb.append("<flows>");
 	
-	if(flowMap.size() == 0)
-		xmlb.append("<flows/>");
-	else
+	for(Flow flow : das.queryAllFlows(key.getUsername()))
 	{
-		xmlb.append("<flows>");
-		
-		for(String flowId : flowMap.keySet())
-		{
-			xmlb.append("<flow>");
-			
-			xmlb.append("<id>").append(flowId).append("</id>");
-			xmlb.append("<name>").append(XMLUtil.toSafeXMLString(flowMap.get(flowId))).append("</name>");
-			
-			xmlb.append("</flow>");
-		}
-		
-		xmlb.append("</flows>");
+		xmlb.append("<flow>");
+		xmlb.append("<id>").append(flow.getId().getValue()).append("</id>");
+		xmlb.append("<name>").append(XMLUtil.toSafeXMLString(flow.getName())).append("</name>");
+		xmlb.append("<isProFlow>").append(String.valueOf(flow.isProFlow())).append("</isProFlow>");
+		xmlb.append("</flow>");
 	}
-	
+	xmlb.append("</flows>");
 	xmlb.append("</root>");
-		
 	out.println(xmlb.toString());
 %>

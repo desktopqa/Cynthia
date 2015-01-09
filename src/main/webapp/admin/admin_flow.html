@@ -24,7 +24,17 @@
 
 	<div class="row-fluid">
 		<div class="span12 template_toolbar">
-			<button class="btn btn-danger btn-create" type="button" onclick="displayCreateDiv()">新建流程</button>
+			<button class="btn btn-danger btn-create project_involved_false" type="button" onclick="displayCreateDiv()">新建流程</button>
+			
+			<div class="btn-group project_involved_true">
+                <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown">新建流程<span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                  <li><a href="#" onclick="displayCreateDiv(false)">普通流程</a></li>
+                  <li><a href="#" onclick="displayCreateDiv(true)">项目流程</a></li>
+                </ul>
+             </div>
+             
+			
 			<input type="text" class="input-medium search-query" id="search_stat_word" placeholder="search" style="margin-left:10px;width:120px;">
 	  		<input type="button" class="btn btn-info" id="search_stat_btn" value="go">
 	  		<a href='../guide/guide.html?guideId=flow_edit' style='color:#FFF' target='blank'>
@@ -81,6 +91,7 @@
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h5>新建流程</h5>
   </div>
+  <input type='hidden' id="projectInvolve"/>
   <div class="modal-body">
   	<form class="form-horizontal">
   		<div class="control-group">

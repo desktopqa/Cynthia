@@ -3,12 +3,14 @@ package com.sogou.qadev.service.cynthia.bean;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.sogou.qadev.service.cynthia.bean.impl.FieldImpl;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
 import com.sogou.qadev.service.cynthia.service.DataAccessSession;
+import com.sogou.qadev.service.cynthia.service.ProjectInvolveManager;
 
 /**
  * @ClassName: TemplateMailOption
@@ -29,7 +31,7 @@ public class TemplateMailOption implements Serializable {
 	/**
 	 * 邮件主题
 	 */
-	private String mailSubject; 
+	private String mailSubject = ""; 
 	
 	private boolean sendMail = false;
 	
@@ -83,12 +85,19 @@ public class TemplateMailOption implements Serializable {
 	 * @return
 	 * @return: Set<String>
 	 */
-	public Set<String> getActionUser(UUID actionId)
+	public Set<String> getActionUser(UUID actionId,Data data)
 	{
 		DataAccessSession das = DataAccessFactory.getInstance().getSysDas();
 		Set<String> allUserSet = new HashSet<String>();
 		Template template = das.queryTemplate(this.templateId);
+		if (template == null) {
+			return allUserSet;
+		}
+		
 		Flow flow = das.queryFlow(template.getFlowId());
+		if (flow == null) {
+			return allUserSet;
+		}
 		
 		String users = this.actionUsers.get(actionId.getValue());
 		//如果没有配置单独动作，尝试采用全局动作
@@ -102,10 +111,26 @@ public class TemplateMailOption implements Serializable {
 					if (user.startsWith("role_")) {
 						//角色
 						UUID roleId = DataAccessFactory.getInstance().createUUID(user.replace("role_", ""));
-						Set<Right> allRoleRights = flow.queryRightsByRole(roleId, this.templateId);
-						for (Right right : allRoleRights) {
-							allUserSet.add(right.getUsername());
+						
+						if (template.isProTemplate()) {
+							//根据data 中项目Id查询用户
+							Field field = template.getField("对应项目");
+							if (field != null) {
+								UUID productId = data.getSingleSelection(field.getId());
+								if (productId != null) {
+									List<UserInfo> allUsers = ProjectInvolveManager.getInstance().getUserInfoByProjectAndRole(template.getCreateUser(), productId.getValue(), roleId.getValue());
+									for (UserInfo userInfo : allUsers) {
+										allUserSet.add(userInfo.getUserName());
+									}
+								}
+							}
+						}else {
+							Set<Right> allRoleRights = flow.queryRightsByRole(roleId, this.templateId);
+							for (Right right : allRoleRights) {
+								allUserSet.add(right.getUsername());
+							}
 						}
+						
 					}else {
 						allUserSet.add(user);
 					}

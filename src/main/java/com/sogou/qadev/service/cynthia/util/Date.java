@@ -3,59 +3,113 @@ package com.sogou.qadev.service.cynthia.util;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class Date implements Comparable<Date>, Serializable {
+	/**
+	 * @fieldName: serialVersionUID
+	 * @fieldType: long
+	 * @Description: TODO
+	 */
+	private static final long serialVersionUID = 1L;
 	String dateStr = null;
 
 	private Date(String dateStr) {
 		this.dateStr = dateStr;
 	}
 
-	public static Date valueOf(String dateStr) {
+	public static Date valueOf(String dateStr, String formatStr){
 		if (dateStr == null)
 			throw new IllegalArgumentException();
-
-		if (dateStr.indexOf("年") > 0)
-			return new Date(dateStr);
-
+		
+		if (dateStr.equals("")) {
+			return null;
+		}
+		
 		String timestampStr = null;
 		try {
 			timestampStr = Timestamp.valueOf(dateStr).toString();
 		} catch (Exception e) {
 		}
 
+		dateStr = checkValue(dateStr);
+		
 		if (timestampStr == null) {
 			try {
-				DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				DateFormat df = new SimpleDateFormat(formatStr);
 				java.util.Date date1 = df.parse(dateStr);
 				timestampStr = date1.toLocaleString();
 			} catch (Exception e) {
-				System.err
-						.println("java.text.ParseException: Unparseable date: "
-								+ dateStr);
+				System.err.println("error in date.java valueOf -- java.text.ParseException: Unparseable date: "+ dateStr);
 			}
 		}
-
-		String timeStr = timestampStr.split("\\ ")[0].split("\\-")[0] + "年";
-		timeStr += timestampStr.split("\\ ")[0].split("\\-")[1] + "月";
-		timeStr += timestampStr.split("\\ ")[0].split("\\-")[2] + "日";
-		timeStr += timestampStr.split("\\ ")[1].split("\\:")[0] + "时";
-		timeStr += timestampStr.split("\\ ")[1].split("\\:")[1] + "分";
-
-		if (timestampStr.split("\\ ")[1].split("\\:").length > 2) {
-			String[] secondArr = timestampStr.split("\\ ")[1].split("\\:")[2]
-					.split("\\.");
-			if (secondArr != null && secondArr.length > 0) {
-				timeStr += timestampStr.split("\\ ")[1].split("\\:")[2]
-						.split("\\.")[0] + "秒";
+		
+		return new Date(timestampStr);
+	}
+	
+	public static String checkValue(String timeStr){
+		try {
+			StringBuffer timeBuffer = new StringBuffer();
+			String[] allDate = timeStr.split(" ");
+			String[] dateArr = allDate[0].split("-");
+			timeBuffer.append(dateArr[0]);
+			timeBuffer.append("-");
+			if (dateArr.length == 1) {
+				timeBuffer.append("00-00 00:00:00");
+			}else{
+				timeBuffer.append(dateArr[1].length() == 1 ? "0" : "").append(dateArr[1]);
+				timeBuffer.append("-");
+				if (dateArr.length == 2) {
+					timeBuffer.append("00 00:00:00");
+				}else {
+					timeBuffer.append(dateArr[2].length() == 1 ? "0" : "").append(dateArr[2]);
+					
+					
+					if (allDate.length == 1) {
+						timeBuffer.append(" 00:00:00");
+					}else {
+						String[] timeArr = allDate[1].split(":");
+						timeBuffer.append(" ");
+						timeBuffer.append(timeArr[0].length() == 1 ? "0" : "").append(timeArr[0]);
+						if (timeArr.length == 1) {
+							timeBuffer.append(":00:00");
+						}else {
+							timeBuffer.append(":");
+							timeBuffer.append(timeArr[1].length() == 1 ? "0" : "").append(timeArr[1]);
+							if (timeArr.length == 2) {
+								timeBuffer.append(":00");
+							}else {
+								timeBuffer.append(":");
+								timeBuffer.append(timeArr[2].length() == 1 ? "0" : "").append(timeArr[2]);
+							}
+						}
+					}
+				}
 			}
+			
+			return timeBuffer.toString();
+		} catch (Exception e) {
+			System.err.println("Date checkValue parse error! timeStr:" + timeStr);
+			return timeStr;
 		}
-
-		return new Date(timeStr);
-
+	}
+	
+	public static Date valueOf(String dateStr) {
+		return valueOf(dateStr, "yyyy-MM-dd HH:mm:ss");
 	}
 
+	public static String formatDate(String dateStr, String formatStr){
+		java.text.DateFormat format2 = new java.text.SimpleDateFormat(formatStr);  
+		try {
+			java.util.Date date1 = (java.util.Date) format2.parseObject(dateStr);
+			dateStr = format2.format(date1);  
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return dateStr;
+	}
+	
 	public static long getTime(String timeStr) {
 		if (timeStr.indexOf("年") > 0) {
 			return Date.valueOf(timeStr).toTimestamp().getTime();
@@ -82,100 +136,66 @@ public class Date implements Comparable<Date>, Serializable {
 	}
 
 	public Timestamp toTimestamp() {
-		// 兼容技术支持组的错误数据 2013年12月2日15:27:40
-		if (dateStr.contains("年") && dateStr.contains("月") && dateStr.contains("日")) {
-			if (!dateStr.contains("时") && !dateStr.contains("分")
-					&& !dateStr.endsWith("日")) {
-				String timeStr = dateStr.split("\\年")[0] + "-";
+		if (dateStr.contains("年")) {
+			String timeStr = dateStr.split("\\年")[0];
+			if (dateStr.endsWith("年"))
+				timeStr += "-01-01 00:00:00";
+			else {
 				String month = dateStr.split("\\年")[1].split("\\月")[0];
 				if (month.length() == 1) {
-					timeStr += "0";
+					month = "0" + month;
 				}
-				timeStr += month;
-				timeStr += "-";
-
-				String day = dateStr.split("\\月")[1].split("\\日")[0];
-				if (day.length() == 1) {
-					timeStr += "0";
-				}
-				timeStr += day;
-				timeStr += " ";
-				String[] alltime = dateStr.split("\\日")[1].split("：");
-				if (alltime == null || alltime.length == 0
-						|| alltime.length == 1) {
-					alltime = dateStr.split("\\日")[1].split(":");
-				}
-				if (alltime == null || alltime.length == 0) {
-					return null;
-				} else if (alltime.length == 1) {
-					timeStr += alltime[0] + ":00:00";
-				} else if (alltime.length == 2) {
-					timeStr += alltime[0] + ":" + alltime[1] + ":00";
-				} else {
-					timeStr += alltime[0] + ":" + alltime[1] + ":" + alltime[2];
-				}
-				return Timestamp.valueOf(timeStr);
-			}
-		}
-
-		String timeStr = dateStr.split("\\年")[0];
-		if (dateStr.endsWith("年"))
-			timeStr += "-01-01 00:00:00";
-		else {
-			String month = dateStr.split("\\年")[1].split("\\月")[0];
-			if (month.length() == 1) {
-				month = "0" + month;
-			}
-			timeStr += "-" + month;
-			if (dateStr.endsWith("月"))
-				timeStr += "-01 00:00:00";
-			else {
-				String day = dateStr.split("\\年")[1].split("\\月")[1]
-						.split("\\日")[0];
-				if (day.length() == 1) {
-					day = "0" + day;
-				}
-				timeStr += "-" + day;
-
-				if (dateStr.endsWith("日"))
-					timeStr += " 00:00:00";
+				timeStr += "-" + month;
+				if (dateStr.endsWith("月"))
+					timeStr += "-01 00:00:00";
 				else {
-					String time = dateStr.split("\\年")[1].split("\\月")[1]
-							.split("\\日")[1].split("\\时")[0];
-					if (time != null && time.length() == 1) {
-						time = "0" + time;
+					String day = dateStr.split("\\年")[1].split("\\月")[1].split("\\日")[0];
+					if (day.length() == 1) {
+						day = "0" + day;
 					}
-					timeStr += " " + time;
+					timeStr += "-" + day;
 
-					if (dateStr.endsWith("时"))
-						timeStr += ":00:00";
-					else{
-						String[] minuteArray = dateStr.split("\\年")[1].split("\\月")[1]
-								.split("\\日")[1].split("\\时")[1].split("分");
-						String minute = minuteArray[0];
-						if (minute != null && time.length() == 1) {
-							minute = "0" + minute;
+					if (dateStr.endsWith("日"))
+						timeStr += " 00:00:00";
+					else {
+						String time = dateStr.split("\\年")[1].split("\\月")[1].split("\\日")[1].split("\\时")[0];
+						if (time != null && time.length() == 1) {
+							time = "0" + time;
 						}
-						timeStr += ":" + minute;
+						timeStr += " " + time;
 
-						if (minuteArray.length == 1) {
-							timeStr += ":00";
-						}else {
-							String second = minuteArray[1];
-							if (second.endsWith("秒")) {
-								second = second.substring(0,second.length() -1);
+						if (dateStr.endsWith("时"))
+							timeStr += ":00:00";
+						else{
+							String[] minuteArray = dateStr.split("\\年")[1].split("\\月")[1].split("\\日")[1].split("\\时")[1].split("分");
+							String minute = minuteArray[0];
+							if (minute != null && time.length() == 1) {
+								minute = "0" + minute;
+							}
+							timeStr += ":" + minute;
+
+							if (minuteArray.length == 1) {
+								timeStr += ":00";
+							}else {
+								String second = minuteArray[1];
+								if (second.endsWith("秒")) {
+									second = second.substring(0,second.length() -1);
+								}
+								
+								if (second != null && second.length() == 1) {
+									second = "0" + second;
+								}
+								timeStr += ":" + second;
 							}
 							
-							if (second != null && second.length() == 1) {
-								second = "0" + second;
-							}
-							timeStr += ":" + second;
 						}
-						
 					}
 				}
 			}
+			return Timestamp.valueOf(timeStr);
+		}else {
+			dateStr = checkValue(dateStr);
+			return Timestamp.valueOf(dateStr);
 		}
-		return Timestamp.valueOf(timeStr);
 	}
 }

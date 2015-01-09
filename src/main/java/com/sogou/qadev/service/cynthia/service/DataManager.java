@@ -3,6 +3,7 @@ package com.sogou.qadev.service.cynthia.service;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -28,6 +29,8 @@ import com.sogou.qadev.service.cynthia.bean.Option;
 import com.sogou.qadev.service.cynthia.bean.Stat;
 import com.sogou.qadev.service.cynthia.bean.Template;
 import com.sogou.qadev.service.cynthia.bean.UUID;
+import com.sogou.qadev.service.cynthia.bean.UserInfo;
+import com.sogou.qadev.service.cynthia.bean.impl.ActionImpl;
 import com.sogou.qadev.service.cynthia.dao.DataAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
 import com.sogou.qadev.service.cynthia.service.ErrorManager.ErrorType;
@@ -37,6 +40,8 @@ public class DataManager
 {
 	private static DataManager instance = null;
 
+	private static DataAccessSession das = DataAccessFactory.getInstance().getSysDas();
+	
 	public static DataManager getInstance()
 	{
 		if (instance == null)
@@ -97,11 +102,12 @@ public class DataManager
 
 			if(field.getType().equals(Field.Type.t_selection))
 			{
-				if(field.getOptions() != null && field.getOptions().size() > 0)
+				Set<Option> allOptions = field.getOptions();
+				if(allOptions != null && allOptions.size() > 0)
 				{
 					fieldOptionMap.put(commonField.getId(), new TreeSet<CommonOption>());
 
-					for(Option option : field.getOptions())
+					for(Option option : allOptions)
 					{
 						CommonOption commonOption = new CommonOption();
 						commonOption.setId(option.getId().toString());
@@ -374,8 +380,9 @@ public class DataManager
 				continue;
 			boolean isEditAllow = flow.isEditActionAllow(das.getUsername(), template.getId(), data.getAssignUsername(), data.getActionUser());
 			Set<Action> actionSet = new LinkedHashSet<Action>();
-
-			if(isEditAllow){//具有编辑权限的人可以批量关闭BUG add by lyl
+			
+			//具有编辑权限的人可以批量关闭BUG
+			if(isEditAllow){
 				Action[] endActions = flow.getEndActions();
 				for(int i=0;endActions!=null && i<endActions.length;i++){
 					actionSet.add(endActions[i]);
@@ -388,10 +395,6 @@ public class DataManager
 					actionName = "激活--" + actionName;
 
 				actionUserMap.put(actionName, new LinkedHashSet<String>());
-
-				String[] userArray = flow.queryNodeStatAssignUsers(template.getId(), action.getEndStatId());
-				if(userArray != null)
-					actionUserMap.get(actionName).addAll(Arrays.asList(userArray));
 			}
 		}
 
@@ -407,16 +410,6 @@ public class DataManager
 			{
 				strb.append("<action>");
 				strb.append("<name>").append(XMLUtil.toSafeXMLString(actionName)).append("</name>");
-				Set<String> userSet = actionUserMap.get(actionName);
-				if(userSet == null || userSet.size() == 0)
-					strb.append("<users/>");
-				else
-				{
-					strb.append("<users>");
-					for(String user : userSet)
-						strb.append("<user>").append(XMLUtil.toSafeXMLString(user)).append("</user>");
-					strb.append("</users>");
-				}
 				strb.append("</action>");
 			}
 
@@ -426,11 +419,13 @@ public class DataManager
 		return strb.toString();
 	}
 
-	public String getActionsXML(UUID[] dataIdArray, DataAccessSession das)
+	public String getActionsXML(UUID[] dataIdArray, String userName)
 	{
-		Map<String, Set<String>> actionUserMap = new LinkedHashMap<String, Set<String>>();
+		Map<Action, Set<String>> actionUserMap = new LinkedHashMap<Action, Set<String>>();
 
 		Set<String> nodeStatusSet = new HashSet<String>();
+		
+		Set<String> allProjectIdSet = new HashSet<String>();  //所有项目Id 用于查询指派人集合
 
 		for(UUID dataId : dataIdArray)
 		{
@@ -441,6 +436,16 @@ public class DataManager
 			Template template = das.queryTemplate(data.getTemplateId());
 			if(template == null)
 				continue;
+			
+			if (template.isProTemplate()) {
+				Field field = template.getField("对应项目");
+				if (field != null) {
+					UUID projectId = data.getSingleSelection(field.getId());
+					if (projectId != null) {
+						allProjectIdSet.add(projectId.getValue());
+					}
+				}
+			}
 
 			if(nodeStatusSet.contains(template.getId() + "|" + data.getStatusId()))
 				continue;
@@ -451,16 +456,14 @@ public class DataManager
 			if(flow == null)
 				continue;
 
-			boolean isEditAllow = flow.isEditActionAllow(das.getUsername(), template.getId(), data.getAssignUsername(), data.getActionUser());
-			if(isEditAllow)
-			{
-				String[] assignUserArray = flow.queryNodeStatAssignUsers(template.getId(), data.getStatusId());
-				if(assignUserArray != null)
+			if (!ConfigManager.getProjectInvolved()) {
+				boolean isEditAllow = flow.isEditActionAllow(userName, template.getId(), data.getAssignUsername(), data.getActionUser());
+				if(isEditAllow)
 				{
-					if(!actionUserMap.containsKey("编辑"))
-						actionUserMap.put("编辑", new LinkedHashSet<String>());
-
-					actionUserMap.get("编辑").addAll(Arrays.asList(assignUserArray));
+					String[] assignUserArray = flow.queryNodeStatAssignUsers(template.getId(), data.getStatusId());
+					if(assignUserArray != null){
+						actionUserMap.put(new ActionImpl(Action.editUUID,flow.getId(), "编辑"),new HashSet<String>(Arrays.asList(assignUserArray)));
+					}
 				}
 			}
 
@@ -469,28 +472,50 @@ public class DataManager
 			Action[] statActionArray = flow.queryStatActions(data.getStatusId());
 			if(statActionArray == null || statActionArray.length == 0)
 			{
-				Action[] userNodeBeginActionArray = flow.queryUserNodeBeginActions(das.getUsername(), template.getId());
+				Action[] userNodeBeginActionArray = flow.queryUserNodeBeginActions(userName, template.getId());
 				for(int i = 0; userNodeBeginActionArray != null && i < userNodeBeginActionArray.length; i++)
 					actionSet.add(userNodeBeginActionArray[i]);
 			}
 			else
 			{
-				Action[] userNodeStatActionArray = flow.queryUserNodeStatActions(das.getUsername(), template.getId(), data.getStatusId());
+				Action[] userNodeStatActionArray = flow.queryUserNodeStatActions(userName, template.getId(), data.getStatusId());
 				for(int i = 0; userNodeStatActionArray != null && i < userNodeStatActionArray.length; i++)
 					actionSet.add(userNodeStatActionArray[i]);
 			}
 
 			for(Action action : actionSet)
 			{
-				String actionName = action.getName();
-				if(action.getBeginStatId() == null)
-					actionName = "激活--" + actionName;
+				if(action.getBeginStatId() == null){
+					continue;
+//					action.setName("激活--" + action.getName());
+				}
+				actionUserMap.put(action, new LinkedHashSet<String>());
 
-				actionUserMap.put(actionName, new LinkedHashSet<String>());
-
-				String[] userArray = flow.queryNodeStatAssignUsers(template.getId(), action.getEndStatId());
-				if(userArray != null)
-					actionUserMap.get(actionName).addAll(Arrays.asList(userArray));
+				if (!ConfigManager.getProjectInvolved()) {
+					String[] userArray = flow.queryNodeStatAssignUsers(template.getId(), action.getEndStatId());
+					if(userArray != null)
+						actionUserMap.get(action).addAll(Arrays.asList(userArray));
+				}
+			}
+		}
+		
+		
+		if (ConfigManager.getProjectInvolved()) {
+			Set<UserInfo> allUsers = new HashSet<UserInfo>();
+			for (Action action : actionUserMap.keySet()) {
+				Flow flow = das.queryFlow(action.getFlowId());
+				String nextRoleIds = flow.queryNextActionRoleIdsByActionId(action.getId());
+				for (String projectId : allProjectIdSet) {
+					allUsers.addAll(ProjectInvolveManager.getInstance().getUserInfoByProjectAndRole(userName,projectId , nextRoleIds));
+				}
+			}
+			
+			Set<String> allUserSet = new HashSet<String>();
+			for (UserInfo userInfo : allUsers) {
+				allUserSet.add(userInfo.getUserName());
+			}
+			for (Action action : actionUserMap.keySet()) {
+				actionUserMap.put(action, allUserSet);
 			}
 		}
 
@@ -502,11 +527,11 @@ public class DataManager
 		{
 			strb.append("<actions>");
 
-			for(String actionName : actionUserMap.keySet())
+			for(Action action : actionUserMap.keySet())
 			{
 				strb.append("<action>");
-				strb.append("<name>").append(XMLUtil.toSafeXMLString(actionName)).append("</name>");
-				Set<String> userSet = actionUserMap.get(actionName);
+				strb.append("<name>").append(XMLUtil.toSafeXMLString(action.getName())).append("</name>");
+				Set<String> userSet = actionUserMap.get(action);
 				if(userSet == null || userSet.size() == 0)
 					strb.append("<users/>");
 				else
@@ -534,13 +559,18 @@ public class DataManager
 	 * @param das
 	 * @return
 	 */
-	public Template[] queryUserTemplates(UUID templateTypeId, DataAccessSession das)
+	public Template[] queryUserTemplates(UUID templateTypeId, String userMail)
 	{
 		Template[] templateArray = das.queryAllTemplates();
 		if(templateArray == null || templateArray.length == 0)
 			return new Template[0];
 
 		Set<Template> templateSet = new LinkedHashSet<Template>();
+		Set<String> companyUsers = null;
+		if (ConfigManager.getProjectInvolved()) {
+			companyUsers = ProjectInvolveManager.getInstance().getCompanyUserMails(userMail);
+		}
+		
 		for(Template template : templateArray)
 		{
 			if(templateTypeId != null && !template.getTemplateTypeId().equals(templateTypeId))
@@ -550,9 +580,42 @@ public class DataManager
 			if(flow == null)
 				continue;
 			
-			Action[] actionArray = flow.queryUserNodeBeginActions(das.getUsername(), template.getId());
-			if(actionArray != null && actionArray.length > 0)
-				templateSet.add(template);
+			if (ConfigManager.getProjectInvolved()) {
+				//项目管理 与表单创建者同公司可以查看 
+				if (companyUsers.contains(template.getCreateUser())) {
+					templateSet.add(template);
+				}
+			}else {
+				
+				if(flow.isRoleEditAction(Role.everyoneUUID) || flow.isRoleReadAction(Role.everyoneUUID)){
+					templateSet.add(template);
+					continue;
+				}
+				
+				boolean isAdd = false;
+				Action[] actionArray = flow.getActions();
+				if(actionArray != null)
+				{
+					for(Action action : actionArray)
+					{
+						if(flow.isActionEveryoneRole(action.getId()))
+						{
+							isAdd = true;
+							break;
+						}
+					}
+				}
+				
+				if(isAdd)
+				{
+					templateSet.add(template);
+					continue;
+				}
+				
+				Role[] roleArray = flow.queryUserNodeRoles(userMail, template.getId());
+				if(roleArray != null && roleArray.length > 0)
+					templateSet.add(template);
+			}
 		}
 
 		return templateSet.toArray(new Template[0]);
@@ -566,62 +629,65 @@ public class DataManager
 	 * @param das
 	 * @return
 	 */
-	public Template[] queryUserReadableTemplates(UUID templateTypeId, DataAccessSession das)
+	public Template[] queryUserReadableTemplates(UUID templateTypeId, String userMail)
 	{
-		Template[] templateArray = das.queryAllTemplates();
-		if(templateArray == null || templateArray.length == 0)
-			return new Template[0];
+		if (ConfigManager.getProjectInvolved()) {
+			return queryUserTemplates(templateTypeId, userMail);
+		}else {
+			Template[] templateArray = das.queryAllTemplates();
+			if(templateArray == null || templateArray.length == 0)
+				return new Template[0];
 
-		Set<Template> templateSet = new LinkedHashSet<Template>();
-		for(Template template : templateArray)
-		{
-			if(templateTypeId != null && !template.getTemplateTypeId().equals(templateTypeId))
-				continue;
-			
-			Flow flow = das.queryFlow(template.getFlowId());
-			if(flow == null)
-				continue;
-			
-			if(flow.isRoleEditAction(Role.everyoneUUID) || flow.isRoleReadAction(Role.everyoneUUID))
+			Set<Template> templateSet = new LinkedHashSet<Template>();
+			for(Template template : templateArray)
 			{
-				//everyone 查看 编辑
-				templateSet.add(template);
-				continue;
-			}
-			
-			//有everyone可操作的动作
-			boolean isAdd = false;
-			Action[] actionArray = flow.getActions();
-			if(actionArray != null)
-			{
-				for(Action action : actionArray)
+				if(templateTypeId != null && !template.getTemplateTypeId().equals(templateTypeId))
+					continue;
+				
+				Flow flow = das.queryFlow(template.getFlowId());
+				if(flow == null)
+					continue;
+				
+				if(flow.isRoleEditAction(Role.everyoneUUID) || flow.isRoleReadAction(Role.everyoneUUID))
 				{
-					if(flow.isActionEveryoneRole(action.getId()))
+					//everyone 查看 编辑
+					templateSet.add(template);
+					continue;
+				}
+				
+				//有everyone可操作的动作
+				boolean isAdd = false;
+				Action[] actionArray = flow.getActions();
+				if(actionArray != null)
+				{
+					for(Action action : actionArray)
 					{
-						isAdd = true;
-						break;
+						if(flow.isActionEveryoneRole(action.getId()))
+						{
+							isAdd = true;
+							break;
+						}
+					}
+				}
+				
+				if(isAdd)
+				{
+					templateSet.add(template);
+					continue;
+				}
+				
+				//其它角色查看
+				List<Role> userRoleList = Arrays.asList(flow.queryUserNodeRoles(userMail, template.getId()));
+				Role[] readActionRoles = flow.queryReadActionRoles();
+				
+				for(Role role : readActionRoles){
+					if(userRoleList.contains(role)){
+						templateSet.add(template);
 					}
 				}
 			}
-			
-			if(isAdd)
-			{
-				templateSet.add(template);
-				continue;
-			}
-			
-			//其它角色查看
-			List<Role> userRoleList = Arrays.asList(flow.queryUserNodeRoles(das.getUsername(), template.getId()));
-			Role[] readActionRoles = flow.queryReadActionRoles();
-			
-			for(Role role : readActionRoles){
-				if(userRoleList.contains(role)){
-					templateSet.add(template);
-				}
-			}
+			return templateSet.toArray(new Template[0]);
 		}
-
-		return templateSet.toArray(new Template[0]);
 	}
 	
 	/**
@@ -632,22 +698,36 @@ public class DataManager
 	 * @param das
 	 * @return
 	 */
-	public Template[] queryUserTemplates(DataAccessSession das)
+	public Template[] queryUserTemplates(String userMail)
 	{
 		Template[] templateArray = das.queryAllTemplates();
 		if(templateArray == null || templateArray.length == 0)
 			return new Template[0];
 
 		Set<Template> templateSet = new LinkedHashSet<Template>();
+		Set<String> companyUsers = null;
+		if (ConfigManager.getProjectInvolved()) {
+			companyUsers = ProjectInvolveManager.getInstance().getCompanyUserMails(userMail);
+		}
 		for(Template template : templateArray)
 		{
 			Flow flow = das.queryFlow(template.getFlowId());
 			if(flow == null)
 				continue;
+			if (ConfigManager.getProjectInvolved()) {
+				//项目管理 与表单创建者同公司可以查看 
+				if ((companyUsers.contains(template.getCreateUser()) || userMail.equals(template.getCreateUser()))) {
+					templateSet.add(template);
+				}
+			}else {
+				if (template.isProTemplate()) {
+					continue;
+				}
+				Action[] actionArray = flow.queryUserNodeBeginActions(userMail, template.getId());
+				if((actionArray != null && actionArray.length > 0))
+					templateSet.add(template);
+			}
 			
-			Action[] actionArray = flow.queryUserNodeBeginActions(das.getUsername(), template.getId());
-			if(actionArray != null && actionArray.length > 0)
-				templateSet.add(template);
 		}
 
 		return templateSet.toArray(new Template[0]);

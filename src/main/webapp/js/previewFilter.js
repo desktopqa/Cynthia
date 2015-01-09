@@ -1,10 +1,8 @@
 //全局变量
 var grid = null;
-var actionModifyUser = null;
-var curTagId = null;
-
 var defaultHeader = null;
-
+var searchXml = null;
+var needCheckBox = false; // 是否需要check框
 
 /********表格相关函数*******/
 function initMainGrid()
@@ -14,49 +12,24 @@ function initMainGrid()
 }
 function initinitMainGridSort()
 {
-	grid = $("#main-grid-outer").sortGrid();
+	if(!grid){
+		grid = $("#main-grid-outer").sortGrid();
+	}
 }
 /**----表格相关函数结束----**/
 
 
 /******整体函数******/
 
-/*文档被点击时触发一些事件
- * 例如把一些菜单隐藏
- * */
-
-function onWindowResize()
-{
-	var topHeight     = 80;
-	var mainGridHeaderHeight = 30;
-	var windowHeight  = $(window).height();
-	$('#left-tree').height(windowHeight - topHeight);
-	$('#left-tree-expand').height(windowHeight - topHeight);
-	$("#main-grid-div").height(windowHeight - topHeight - mainGridHeaderHeight);
-	$("#main-grid-outer").height(windowHeight - topHeight);
-}
-
-/*窗口重新初始化*/
-function bindWindowResize()
-{
-	$(window).resize(onWindowResize);
-}
-
-function bindEvents()
-{
-	bindWindowResize();
-}
 /******整体函数结束******/
 
 /**************loading*******************/
 function showLoading()
 {
-	//$('#over').fadeIn();
 	$('#layout').fadeIn("fast");
 }
 function hideLoading()
 {
-	//$('#over').fadeOut();
 	$('#layout').fadeOut("fast");
 }
 
@@ -74,87 +47,27 @@ function getDefaultHeader()
 	});
 }
 
+//搜索数据
+function searchDatas(){
+	grid.setCurrentPage(1);
+	var searchType = $("#searchType").val();
+	var searchData = $("#searchWord").val();
+	if(searchType=='id' && searchData != "")
+	{
+		if(isNaN(parseInt(searchData,10)))
+		{	
+			showInfoWin("error","请输入正确的ID号!");
+			return ;
+		}
+	}
+	initFilterData('',1,undefined,undefined,"true",searchXml);  //查询第一页
+}
 
 /***********************绘制数据********************/
-function setFieldBack(showFields, backFields){
-	$("#leftDisplayFields").empty();
-	for(var i = 0; i < backFields.length; i++)
-	{
-		$("#leftDisplayFields").append("<option value='" + backFields[i].fieldId + "'> " + backFields[i].fieldName + " </option>");
-	}
-	
-	$("#rightDisplayFields").empty();
-	for(var i = 0; i < showFields.length; i++)
-	{
-		$("#rightDisplayFields").append("<option value='" + showFields[i].fieldId + "'> " + showFields[i].fieldName + " </option>");
-	}
-}
-
-//设置列头部宽度
-function getFilterTableWidth(showFields)
-{
-	var widthHtml = "";
-	widthHtml+="<colgroup>";
-	widthHtml+="<col class='checkbox'></col>";
-	for(var i = 0 ; i < showFields.length ; i ++)
-	{
-		var fieldId = showFields[i].fieldId;
-		if(fieldId == "id" || fieldId == "assign_user" || fieldId == "create_user") //编号
-			widthHtml+="<col class='mini-col'></col>";
-		else if(fieldId == "priority" || fieldId == "status_id")
-			widthHtml+="<col class='middle-mini-col'></col>";
-		else if(fieldId == "title") //标题
-			widthHtml+="<col class='x-large-col'></col>";
-		else
-			widthHtml+="<col class='common-col'></col>";
-	}
-	widthHtml+="</colgroup>";
-	return widthHtml;
-}
-
-//设置列头部
-function showFilterDataHead(showFields)
-{
-	//画列头
-	var html = "";
-	html += getFilterTableWidth(showFields);
-	
-	html+="<thead>";
-	html+="<tr>";
-	html+="<th>序号</th>";
-	
-	for(var i = 0 ;i < showFields.length; i++)
-	{
-		html+="<th class='sort-header mini-col ";
-		if(showFields[i].fieldId == grid.getSortField() && grid.getSortType() == "asc")
-			html += "sort-down";
-		else if (showFields[i].fieldId == grid.getSortField() && grid.getSortType() == "desc")
-			html += "sort-up";
-		html += "'";
-		
-		if(showFields[i].fieldId == "title")
-			html += "style='text-align:left;'";
-		
-		html+= "value='" + showFields[i].fieldId + "'>" + showFields[i].fieldName + "</th>";
-		
-	}
-	
-	html+="</tr>";
-	html+="</thead>";
-	return html;
-}
-
 function showFilterDataTable(filterData,groupField,showFields)
 {
 	var html = "";
-	
-	//定义列宽度
-	html += getFilterTableWidth(showFields);
-	
-	html += "<tbody>";
-	
 	var actualData = filterData.rows;
-	
 	actualData = actualData == undefined ? new Array() : actualData;
 	
 	if(groupField == null)
@@ -162,7 +75,8 @@ function showFilterDataTable(filterData,groupField,showFields)
 		for(var i = 0 ; i < actualData.length; i ++ )
 		{		
 			html += "<tr>";
-			html += "<td>" +(i+1)+ "</td>";
+			if(needCheckBox)
+				html += "<td><i class='i-checkbox icon-input-checkbox-unchecked'></i></td>";
 			for(var j = 0 ;j < showFields.length; j++)
 			{
 				var content = getXMLStr(actualData[i][showFields[j].fieldId]);
@@ -180,7 +94,6 @@ function showFilterDataTable(filterData,groupField,showFields)
 						
 				}else if(showFields[j].fieldId == "title")
 				{
-					
 					html += getTitleTd(actualData[i].id, actualData[i].templateId , content);
 				}
 				else
@@ -230,18 +143,6 @@ function showFilterDataTable(filterData,groupField,showFields)
 	return html;
 }
 
-//分组头
-function getGroupHeader(data,showFields,groupField,groupCount)
-{
-	var groupHeadHtml = "";
-	groupHeadHtml += "<tr class='main-grid-grouprow'>";
-	groupHeadHtml += "<td style='text-align:left !important' colspan='"+ (showFields.length+1) +"'>";
-	groupHeadHtml += "<i class='icon-group-collapse group-button'></i>";
-	groupHeadHtml += groupField.fieldName + ":" + data[groupField.fieldId] + "(" + groupCount + ")";
-	groupHeadHtml += "</td></tr>";
-	return groupHeadHtml;
-}
-
 //单条数据 tr
 function getDataTr(data,showFields)
 {	
@@ -252,8 +153,7 @@ function getDataTr(data,showFields)
 	else
 		trHtml += "<tr>";
 		
-	trHtml += "<td><i class='i-checkbox icon-input-checkbox-unchecked'></i></td>";
-	
+	trHtml += "<td></td>";
 					
 	for(var j = 0 ;j < showFields.length; j++)
 	{
@@ -261,10 +161,7 @@ function getDataTr(data,showFields)
 		
 		if(showFields[j].fieldId == "id")
 		{
-			if(data.isNew == "true" )
-				trHtml += "<td>" + content + "</td>";
-			else
-				trHtml += "<td>" + content + "</td>";
+			trHtml += "<td>" + content + "</td>";
 		}
 		else if(showFields[j].fieldId == "title")
 		{
@@ -284,10 +181,9 @@ function getTitleTd(id, templateId , content)
 {
 	var curFilterId = $("#filterId").val();
 	if(curFilterId != "")
-		return "<td style='text-align:left !important'><div class='td-content-nowrap'><a class = 'data-title' href='taskManagement.html?operation=read&taskid=" +id + "&templateId=" + templateId + "&filterId=" + curFilterId + "'" +" target='_blank' onClick='cleanNewData(" + id + ", " +curFilterId+ ");' >" + content + "</a></div></td>";
+		return "<td style='text-align:left !important'><div class='td-content-nowrap'><a class = 'data-title' href='taskManagement.html?operation=read&taskid=" +id + "&templateId=" + templateId + "&filterId=" + curFilterId + "'" +" target='_blank'>" + content + "</a></div></td>";
 	else
 		return "<td style='text-align:left !important'><div class='td-content-nowrap'><a class = 'data-title' href='taskManagement.html?operation=read&taskid=" +id + "&templateId=" + templateId + "'" +" target='_blank'>" + content + "</a></div></td>";
-		
 }
 
 /***********************绘制数据结束********************/
@@ -295,25 +191,12 @@ function getTitleTd(id, templateId , content)
 //显示filter数据 绘制表格
 function showFilterData(filterData,groupField,showFields,backFields, reDrawHead)
 {
-	
-	if(reDrawHead == undefined || !reDrawHead == "false")
-	{
-		//画标头
-		var dataHeadHtml = showFilterDataHead(showFields);
-		$("#main-grid-header").html(dataHeadHtml);
-		setFieldBack(showFields, backFields);
-		//设置总页数 当前排序字段
-		grid.setMaxPage(filterData.totalCount);
-	}
-	
 	//画内容
 	var dataHeadTable = showFilterDataTable(filterData,groupField,showFields);
-	$("#main-grid-content").html(dataHeadTable);
-	onWindowResize();
+	$("#main-grid-content").empty().html(dataHeadTable);
+	//设置总页数 当前排序字段
+	grid.setMaxPage(filterData.totalCount);
 }
-
-
-var searchXml = null;
 
 function initFilterData(filterId,page,sortField,sortType,reDrawHead)
 {
@@ -322,7 +205,18 @@ function initFilterData(filterId,page,sortField,sortType,reDrawHead)
 	 params += "&limit=" + grid.getPageSize();
 	 params += "&sort=" + (sortField == undefined ? "" : sortField);
 	 params += "&dir=" + (sortType == undefined ? "" : sortType);
+	 var $searchType = $("#searchType");
+	 if($searchType && $searchType.val())
+		 params += "&searchType=" + $searchType.val();
+	 
+	 var $searchData = $("#searchWord");
+	 if($searchData && $searchData.val())
+		 params += "&searchData=" + $searchData.val();
 	 params += "&searchConfig=" + encodeURIComponent(searchXml);
+	 
+	 var $templateId = $("#templateId");
+	 if($templateId && $templateId.val())
+		 params += "&templateId=" + $templateId.val();
 	 
 	 $.ajax({
 		url:'filterManage/previewFilter.jsp',
@@ -330,27 +224,79 @@ function initFilterData(filterId,page,sortField,sortType,reDrawHead)
 		dataType:'json',
 		data:params,
 		success:function(data){
-			showFilterData(data, null, defaultHeader, '');
-			showLoading(false);
-		},
-		error:function(data){
-			showFilterData(eval('(' + data.responseText + ')'), null, defaultHeader, '');
+			showFilterData(data, null, defaultHeader, false);
 			showLoading(false);
 		}
 	});
 }
 
-function queryFilterData(filterXml){
+function initTableHeader()
+{
+	var html = '<tr>';
+	if(needCheckBox)
+		html+='<th style="width: 20px;max-width: 20px;cursor: pointer;"><i class="i-checkbox icon-input-checkbox-unchecked"></i></th>';
+	html += '<th style="width:5%" value="id">编号</th>';
+	html += '<th style="width:30%" value="title">标题</th>';
+	html += '<th style="width:10%" value="status">状态</th>';
+	html += '<th style="width:10%" value="createUser">创建人</th>';
+	html += '<th style="width:10%" value="assignUser">指派人</th>';
+	html += '<th style="width:16%" value="createTime">创建时间</th>';
+	html += '<th style="width:16%" value="createTime">修改时间</th>';
+	html += '</tr>';
+	$('#main-grid-header').html(html);
+}
+
+function queryFilterData(filterXml,cheekBox){
+	needCheckBox = cheekBox;
+	initMainGrid();	
+	initTableHeader();
 	getDefaultHeader();
 	searchXml = filterXml;
 	initFilterData('',1,undefined,undefined,"true",searchXml);  //查询第一页
 }
 
+function executeAddRefSubmit()
+{
+	//根据需要返回ID或者其他的数据
+	var dataIds = new Array();
+	$.each($("#main-grid-content").find('.icon-input-checkbox-checked') , function (i, node){
+		dataIds[dataIds.length] = new Object();
+		dataIds[dataIds.length - 1].id = $(node).parent().next().text();
+		dataIds[dataIds.length - 1].title = $(node).parent().next().next().text();
+	});
+
+	if(dataIds.length == 0){
+		showInfoWin("error","请选择相关任务!");
+		return;
+	}
+	if($("#dataType").val() == "single" && dataIds.length > 1){
+		showInfoWin("error","该字段只能添加一个任务!");
+		return;
+	}
+	
+	$('#cfgRefQueryDiv').modal('hide');
+	executeAddReference(dataIds,"field" + $("#fieldId").val());
+}
+
+function bindKeyDownEvent(){
+	//搜索
+	var $search = $("#searchWord");
+	if($search){
+		$search.keydown(function(e){
+			if(e.keyCode==13){
+				searchDatas(); //处理事件
+			}
+		});
+	}
+	
+	var $searchTemplateId =  $("#searchTemplateId");
+	if($searchTemplateId){
+		$searchTemplateId.change(function(e){
+			searchDatas();
+		});
+	}
+}
+
 $(function(){
-	//1. 开始的时候设置一下窗口div的大小
-	onWindowResize();
-	//2. bind events
-	bindEvents();
-	//3. 加载表格
-	initMainGrid();	
+	bindKeyDownEvent();
 });

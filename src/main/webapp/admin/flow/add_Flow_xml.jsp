@@ -31,6 +31,7 @@
 	
 	Flow flow = das.createFlow(key.getUsername());
 	flow.setName(request.getParameter("name"));
+	flow.setProFlow(request.getParameter("projectInvolved") != null && request.getParameter("projectInvolved").equals("true"));
 	
 	ErrorCode errorCode = das.updateFlow(flow);
 	if(errorCode.equals(ErrorCode.success)){

@@ -27,7 +27,8 @@ public class UserInfoImpl implements UserInfo{
 	private UserStat userStat = UserStat.not_auth;  
 	private Timestamp lastLoginTime = null; 
 	private Timestamp createTime = null; 
-	private String picId = ""; //user photo file id (attachment id)
+	private String picUrl = ""; //user photo url
+	private String picId;
 	
 	public String getPicId() {
 		return picId;
@@ -35,6 +36,14 @@ public class UserInfoImpl implements UserInfo{
 	
 	public void setPicId(String picId) {
 		this.picId = picId;
+	}
+	
+	public String getPicUrl() {
+		return picUrl;
+	}
+	
+	public void setPicUrl(String picUrl) {
+		this.picUrl = picUrl;
 	}
 	
 	public int getId() {

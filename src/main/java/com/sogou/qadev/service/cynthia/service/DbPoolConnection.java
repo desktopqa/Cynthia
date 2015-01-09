@@ -233,8 +233,11 @@ public class DbPoolConnection {
 	 * @return
 	 */
 	public int getSearchResultCount(String searchSql){
-		searchSql = searchSql.trim();
+		if (CynthiaUtil.isNull(searchSql)) {
+			return 0;
+		}
 		
+		searchSql = searchSql.trim();
 		searchSql = CynthiaUtil.cancelGroupOrder(searchSql);
 		int count = 0;
 		

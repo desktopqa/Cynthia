@@ -31,12 +31,12 @@ response.setContentType("application/vnd.ms-excel;charset=UTF-8");
 response.setHeader("Content-Disposition","attachment; filename="+CynthiaUtil.getToday()+".xls");
 
 out.clear();
-
 Key key = (Key)session.getAttribute("key");
 Long keyId = (Long)session.getAttribute("kid");
 
+
 if(keyId == null || keyId <= 0 || key == null){
-	response.sendRedirect(ConfigUtil.getCynthiaWebRoot());
+	response.sendRedirect(ConfigUtil.getCynthiaWebRoot() + "user/logou.do?targetUrl=" + ConfigUtil.getTargetUrl(request));
 	return;
 }
 String filterIdStr = request.getParameter("filterId");

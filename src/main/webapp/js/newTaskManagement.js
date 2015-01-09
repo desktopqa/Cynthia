@@ -10,12 +10,12 @@ var roles = new Array();
 var actions = new Array();
 var needAssignUser = false;
 var allDefaultValueMap = new Map();
-var username = "";
 var selectedTemplate = null;
 var gridIndex = -1;
 var url = null;
 var editor = null;
-var venusDesciption = null;
+var lastActionRoles = null;  //下一步的角色id
+var isProTemplate = false;  //是否为项目管理表单
 var dataTagArray = new Array();
 var base_url = getRootDir();
 
@@ -134,39 +134,25 @@ function showToolbar()
 	$(".ke-edit-iframe").height(277);
 }
 
-function initTaskManagement(param_operation, param_templateTypeId, param_taskId, param_filterId, param_clean, param_selectedTemplate, param_gridIndex, param_url,type, param_description)
+function initTaskManagement(param_operation, param_templateTypeId, param_taskId, param_filterId, param_clean, param_selectedTemplate, param_gridIndex, param_url,type)
 {
 	
 	addLoading();
-	venusDesciption = param_description;
 	var params = init_param(param_operation, param_templateTypeId, param_taskId, param_filterId, param_clean, param_selectedTemplate, param_gridIndex, param_url);
 	if(operation == '' || operation == 'create')
 		$("#tagLinkTitle").hide();
 	else
 		$("#tagLinkTitle").show();
-	if(type != null&&type == 'edit')
-	{
-		$.ajax({
-			url : 'task/initTaskManagement.jsp',
-			type : 'post',
-			dataType : 'xml',
-			async : false,
-			data: params,
-			success : function(request){
-				onCompleteInitTaskManagement(request,type);
-			}
-		});
-	}else
-	{
-		$.ajax({
-			url : 'task/initTaskManagement.jsp',
-			type : 'post',
-			dataType : 'xml',
-			data : params,
-			success : onCompleteInitTaskManagement
-		});
-	}
-
+	
+	$.ajax({
+		url : 'task/initTaskManagement.jsp',
+		type : 'post',
+		dataType : 'xml',
+		data: params,
+		success : function(request){
+			onCompleteInitTaskManagement(request,type);
+		}
+	});
 }
 
 //初始化数据的属性
@@ -184,11 +170,11 @@ function initTaskFields(rootNode)
 	task.assignUser = $(taskNode).children("assignUser").text();
 	task.assignUserAlias = $(taskNode).children("assignUser").attr("alias");
 	task.statusId = $(taskNode).children("statusId").text();
+	task.flowId = $(taskNode).children("flowId").text();
 	task.statusName = $(rootNode).children("statusName").text();
 	task.templateName = $(taskNode).children("templateName").text();
 	document.title = task.title;
 	task.description = $(taskNode).children("description").text();
-	
 }
 
 function onCompleteInitTaskManagement(request,type)
@@ -197,6 +183,8 @@ function onCompleteInitTaskManagement(request,type)
 	var taskNode = $(rootNode).children("task");
 
 	eval("var isError = " + $(rootNode).children("isError").text());
+	isProTemplate = $(rootNode).children("isProTemplate").text() == 'true';
+	lastActionRoles = $(rootNode).children("lastActionRoles").text();
 
 	if(isError)
 	{
@@ -231,10 +219,13 @@ function onCompleteInitTaskManagement(request,type)
 		actions[actionId].beginStatId = $(actionNodes[i]).children("beginStatId").text();
 		actions[actionId].endStatId = $(actionNodes[i]).children("endStatId").text();
 		actions[actionId].assignToMore = $(actionNodes[i]).children("assignToMore").text();
+		actions[actionId].nextActionRoles = $(actionNodes[i]).children("nextActionRoles").text();
+		actions[actionId].isEndAction = $(actionNodes[i]).children("isEndAction").text();
 	}
 	
 	var baseFieldForm = "";
 	var actionForm    = "";
+	
 	//新建任务
 	if(operation == 'create')
 	{
@@ -308,13 +299,14 @@ function onCompleteInitTaskManagement(request,type)
 		
 		initTaskFields(rootNode);
 		$("#input_taskDescription").val(task.description);
-		setTitleAndTag();
+		setTitleAndTag();  //设置标题和标签
 		$("#baseFieldForm").html(getBaseFieldFormHtml(task));
 		
 		actionForm += "<div class='control-group' style='display:none;'>";
 		actionForm += 	"<label class='control-label span2' for='select_action'>动作名称:</label>";
 		actionForm +=   "<div class='controls'>";
 		actionForm +=   	"<select id='select_action'>";
+		
 		if(isEdit)
 		{
 			actionForm += "<option value='|" + task.statusId +"'>编辑</option>";
@@ -365,8 +357,6 @@ function onCompleteInitTaskManagement(request,type)
 		$("#select_next_action_top").parent().hide();
 		var templateId = $("#select_template").val();
 		var descrition = unescape(allDefaultValueMap.get(templateId+"description")==null ? "" : allDefaultValueMap.get(templateId+"description"));
-		if(venusDesciption != null)
-			descrition += venusDesciption;
 		$("#input_taskDescription").val(descrition);
 	}else
 	{
@@ -441,20 +431,17 @@ function onCompleteInitTaskManagement(request,type)
 			$("#top_edit_li").click(function(){
 				executeUpdate("'|" + task.statusId + "'");
 			});
-			//$("#top_edit_li").attr("onclick","executeUpdate('|" + task.statusId + "')");
 		}
 	}
+	
     selectNextActionHtml = $("#select_next_action_top").html();
+	
 	if(operation == "read")
 	{
 		drawFieldsArea(rootNode);
-	}
-	
-	//生成日志信息
-	if(operation == "read")
-	{
 		try
 		{
+			//生成日志信息
 			var logHtml = getLogFieldDivHtml(taskNode);
 			$("#logContentDiv").html(logHtml);
 			$("#logInfoDiv").show();
@@ -473,11 +460,11 @@ function onCompleteInitTaskManagement(request,type)
 	
 	$(".ke-container").remove();
 	editor = KindEditor.create('textarea[id="input_taskDescription"]', options);
+	$(".ke-icon-removeformat").on('click',setDefaultDescription);
 	
 	if(operation == 'read')
 	{
 		disableEditor(true);
-		//$("#baseFieldsDiv input").addClass("readInput");
 		if(!isEdit)
 		{
 			$("#top_edit_li").hide();
@@ -488,7 +475,6 @@ function onCompleteInitTaskManagement(request,type)
 	
 	if(operation =='create')
 	{
-		//$('#select_template').selectseach({input:false});
 		$('#input_taskTitle')[0].focus();
 		$("#top_edit_li").hide();
 		showToolbar();
@@ -555,7 +541,6 @@ function onCompleteInitTaskManagement(request,type)
 			$("#displayEmptyLogDiv").find("span").text("显示全部日志");
 		else
 			$("#displayEmptyLogDiv").find("span").text("隐藏空日志");
-		//document.getElementsByTagName('body')[0].scrollTop = 0;  //页面滚动到顶端
 	}
 }
 
@@ -881,12 +866,11 @@ function getBaseFieldFormHtml(task)
 	baseFieldForm +=   	"<input type='text' id='input_taskLastModifyTime' class='span10 onlyRead' value='"+task.lastModifyTime +"' readOnly/>";
 	baseFieldForm +=    "</div>";
 	baseFieldForm +=  "</div>";
-		
 	//状态
 	baseFieldForm += "<div class='control-group'>";
 	baseFieldForm += 	"<label class='control-label span2' for='input_taskStatus'>状态:</label>";
 	baseFieldForm +=   "<div class='controls'>";
-	baseFieldForm +=   	"<input type='text' id='input_taskStatus' class='span10 onlyRead' value='"+task.statusName +"' readOnly/>";
+	baseFieldForm +=   	"<input type='text' id='input_taskStatus' class='span6 onlyRead' value='"+task.statusName +"' readOnly/><span class='label label-success' style='cursor:pointer' onclick='showInFlow(" + task.flowId + "," + task.statusId + ")'>查看流程</span>";
 	baseFieldForm +=    "</div>";
 	baseFieldForm +=  "</div>";
 	
@@ -899,6 +883,14 @@ function getBaseFieldFormHtml(task)
 	baseFieldForm +=  "</div>";
 	
 	return baseFieldForm;
+}
+
+//查看流程
+function showInFlow(flowId,statusId)
+{
+	var url = base_url + 'admin/admin_flow_edit.html?flowId=' + flowId + '&statusId=' + statusId + '&editable=false';
+	$('#flowIframe').attr('src',url);
+	$('#flowReadDiv').modal('show');
 }
 
 function setDefaultAction()
@@ -987,42 +979,35 @@ function executeUpdate(actionValue)
 	$("#select_taskAssignUser")[0].options.length = 0;
 	$("#select_taskAssignUser")[0].options[0] = new Option("--请选择--", "");
 	
-	var params = "taskId=" + getSafeParam(task.id);
-	params += "&statId=" + getSafeParam($("#select_action").val().split("|")[1]);
-	params += "&actionId=" + getSafeParam($("#select_action").val().split("|")[0]);
-	$.ajax({
-		url : 'task/initTaskAssignUsers.jsp',
-		type : 'post',
-		data : params,
-		dataType : 'xml',
-		success : onCompleteInitTaskAssignUsers
-	});
-	
-	$("#input_taskTitle").removeAttr("readonly").removeClass("onlyRead");
-	$("#actionForm").show();
-}
-function onCompleteInitBizTaskAssignUsers(request)
-{
-	var responseXML = request;
-	var rootNode = $(responseXML).children("root");
-	var isEorrorNode = $(rootNode).children("isError");
-	if(isEorrorNode)
+	if(isProTemplate)
 	{
+		var field = getFieldByName('对应项目');
+		if(field){
+			var productId = field.datas[0];
+			var actionId = actionValue.split('|')[0];
+			var action = getActionById(actionId);
+			if(action && action.isEndAction){
+				$('#select_taskAssignUser').attr("disabled","disabled");
+			}else{
+				$('#select_taskAssignUser').removeAttr("disabled");
+			}
+			setAssignUserByProjectIdAndRoles(productId,actionId);
+		}
+	}else{
 		var params = "taskId=" + getSafeParam(task.id);
 		params += "&statId=" + getSafeParam($("#select_action").val().split("|")[1]);
-
+		params += "&actionId=" + getSafeParam($("#select_action").val().split("|")[0]);
 		$.ajax({
 			url : 'task/initTaskAssignUsers.jsp',
 			type : 'post',
-			dataType : 'xml',
 			data : params,
+			dataType : 'xml',
 			success : onCompleteInitTaskAssignUsers
 		});
-	}else
-	{
-		onCompleteInitTaskAssignUsers(request);
+		
+		$("#input_taskTitle").removeAttr("readonly").removeClass("onlyRead");
+		$("#actionForm").show();
 	}
-
 }
 
 function executeCancel()
@@ -1116,35 +1101,48 @@ function displayQueryTaskPage(fieldId)
 	$("#dataType").val(field.dataType);
 	$("#alreadyIds").val(alreadyIds);
 	
-	if(field.defaultValues.length == 0){
-		//TODO
-//		initFilterPage('626813');
-//		$("#cfgAddRefDiv").modal("show");
-		window.open(base_url + "search/filterPageForAddReference.jsp?filterId=626813&fieldId=" + getSafeParam(fieldId) + "&dataType="  + field.dataType + "&alreadyIds=" + alreadyIds);
+	var filterId = field.defaultValues[0];
+	
+	$.ajax({
+		url: '/template/getAllTemplates.do',
+		async : false,
+		dataType:'json',
+		success: function(data){
+			var $templateId = $('#searchTemplateId');
+			$templateId.empty();
+			for(var id in data){
+				$templateId.append('<option value=' + id +  (id == selectedTemplate ? ' selected' : '' ) + '>' + data[id] + '</option>');
+			}
+		}
+	});
+	
+	if(filterId){
+		$.ajax({
+			url: '/filter/getFilterXml.do',
+			type :'POST',
+			async : false,
+			data: {'filterId':filterId},
+			success: function(filterXml){
+				filterXml = encodeAllUrl(filterXml);
+				queryFilterData(filterXml,true);
+				$("#cfgRefQueryDiv").modal('show');
+			},
+			error:function(msg){
+			}
+		});
+	}else{
+		queryFilterData('',true);
+		$("#cfgRefQueryDiv").modal('show');
 	}
-	else{
-//		var filterId = field.defaultValues[0];
-//		var filterXml = '';
-//		$.ajax({
-//			url: '/filter/getFilterXml.do',
-//			type :'POST',
-//			async : false,
-//			data: {'filterId':filterId},
-//			success: function(data){
-//				filterXml = data;
-//			},
-//			error:function(msg){
-//			}
-//		});
-//		filterXml = encodeAllUrl(filterXml);
-//		queryFilterData(filterXml);
-//		$("#cfgRefQueryDiv").modal('show');
-		user = $("#select_taskAssignUser").val();
-		window.open(base_url + "previewFilterResultForReference.jsp?fieldId=" + getSafeParam(fieldId) + "&dataType=" + field.dataType + "&defaultValue=" + getSafeParam(field.defaultValues[0]) + "&alreadyIds=" + alreadyIds + (user ? "&user=" + user : ""));
-	}
+	
+	
+//	if(field.defaultValues.length == 0){
+//		window.open(base_url + "search/filterPageForAddReference.jsp?filterId=626813&fieldId=" + getSafeParam(fieldId) + "&dataType="  + field.dataType + "&alreadyIds=" + alreadyIds);
+//	}else{
+//		user = $("#select_taskAssignUser").val();
+//		window.open(base_url + "previewFilterResultForReference.jsp?fieldId=" + getSafeParam(fieldId) + "&dataType=" + field.dataType + "&defaultValue=" + getSafeParam(field.defaultValues[0]) + "&alreadyIds=" + alreadyIds + (user ? "&user=" + user : ""));
+//	}
 }
-
-
 
 function executeAddReference(rev, objId)
 {
@@ -1334,6 +1332,28 @@ function getFieldInitValues(field)
 	}
 
 	return field.datas;
+}
+
+function getFieldByName(fieldName)
+{
+	for(var i = 0; i < rows.length; i++)
+	{
+		var columns = rows[i];
+		for(var j = 0; j < columns.length; j++)
+		{
+			var columnFields = columns[j];
+			for(var k = 0; k < columnFields.length ; k++ )
+			{
+				var columnField = columnFields[k];
+				if(columnField.name != null && columnField.name == fieldName)
+				{
+					return columnField;
+				}
+			}
+		}
+	}
+	
+	return null;
 }
 
 function getFieldById(fieldId)
@@ -1592,7 +1612,6 @@ function executeSubmit(closeWindow)
 		}
 	}
 	
-	
 	if(operation == "create")
 	{
 		if(closeWindow == 0)
@@ -1684,6 +1703,11 @@ function dealWithButton(disabled)
 
 }
 
+/**
+ * 字段是否必填
+ * @param field
+ * @returns
+ */
 function getFieldMust(field)
 {
 	if(field.controlFieldId != "")
@@ -1691,6 +1715,11 @@ function getFieldMust(field)
 		return getFieldMust(getFieldById(field.controlFieldId));
 	}
 
+	//项目管理表单 对应产品 与对应项目是必填项！！
+	if(isProTemplate && ( field.name == '对应产品' || field.name == '对应项目' )){
+		return true;
+	}
+	
 	var selectActionId = $("#select_action").val().split("|")[0];
 	if(selectActionId == "")
 	{
@@ -1918,20 +1947,102 @@ function onCompleteInitBizAssignUsers(request)
 	});
 }
 
+/**
+ * 设置对应项目
+ * @param data 
+ */
+function setProducts(data){
+	var field = getFieldByName('对应项目');
+	field.options = [];
+	if(field){
+		var $field = $("#field" + field.id);
+		$field.empty();
+		$field.append('<option value=>--请选择--</option>');
+		for(var id in data ){
+			$field.append('<option value=' + id + '>' + data[id] + '</option>' );
+			field.options.push({forbidden: "permit",id: id , name: data[id]});
+		}
+		
+		var value = '';
+		if(cynthia.url.getQuery('projectId')){
+			value = cynthia.url.getQuery('projectId');
+		}else if(field.datas && field.datas.length > 0){
+			value = field.datas[0];
+		}else if(allDefaultValueMap.get(field.id)){
+			value = allDefaultValueMap.get(field.id);	
+		}
+		$('#field' + field.id).val(value);
+		enableSelectSearch();
+	}
+}
 
-//TODO
+/**
+ * 设置对应项目
+ * @param projectId
+ */
+function setProjects(productId){
+	var field = getFieldByName('对应产品');
+	if(field){
+		$('#field' + field.id).val(productId);
+		//更新对应项目
+		$.ajax({
+			url : base_url + 'project/getProjects.do',
+			dataType : 'json',
+			data : { productId:productId },
+			success : setProducts,
+		});
+	}
+}
+
+/**
+ * 项目管理设置指派人
+ * @param projectId
+ * @param actionId
+ * @returns
+ */
+function setAssignUserByProjectIdAndRoles(projectId, actionId,redraw){
+	var action = getActionById(actionId);
+	var roles = action ? action.nextActionRoles : lastActionRoles;
+	$.ajax({
+		url : base_url + 'project/getAllUsersByRolesAndProductId.do',
+		type : 'post',
+		dataType : 'json',
+		data : {roles:roles,projectId:projectId},
+		success : function(data){
+			onCompleteInitProAssignUsers(data,redraw);
+		}
+	});
+}
+
+function getActionById(actionId){
+	for(var i in actions){
+		if(actions[i] && actions[i].id == actionId)
+			return actions[i];
+	}
+	return null;
+}
+
 function checkSingleSelect(fieldId)
 {
 	var field = getFieldById(fieldId);
-	var fieldSelect = $("#field" + fieldId)[0];
-	var optionId = fieldSelect.options[fieldSelect.selectedIndex].value;
-	/////////////////////////////////////////////////////////////////////////////
+	var optionId = $("#field" + fieldId).val();
 	field.datas[0] = optionId;
 
-	if(field.isControlHiddenField)
+	if(field.isControlHiddenField){
 		drawFieldsArea();
+	}
 	else
 	{
+		if(isProTemplate && field.name == '对应产品'){
+			setProjects(optionId);
+		}
+		
+		if(isProTemplate && field.name == '对应项目'){
+			//更新对应指派人
+			var actionId = $('#select_action').val().split('|')[0];
+			setAssignUserByProjectIdAndRoles(optionId,actionId);
+		}
+		
 		for(var i = 0; i < rows.length; i++)
 		{
 			var rowColumns = rows[i];
@@ -1961,6 +2072,7 @@ function checkSingleSelect(fieldId)
 							}
 
 							$("#field_"+tempField.id+"_div").html(drawSelectionField(tempField));
+							
 						}
 						else if(tempField.type == "reference")
 							$("#field_"+tempField.id+"_div").html(drawReferenceField(tempField));
@@ -1994,12 +2106,32 @@ function checkSingleSelect(fieldId)
 	}
 }
 
+function onCompleteInitProAssignUsers(data,redraw)
+{
+	$("#select_taskAssignUser").empty();
+	for(var i in data){
+		$("#select_taskAssignUser").append("<option value="+ data[i].userName +">" + data[i].nickName +"</option>");
+	}
+	
+	if(redraw != false){
+		afterCompleteInitTaskAssignUsers();
+		drawFieldsArea();
+		dealWithSelectAction();   //dealWithSelectAction()以后会重新drawInputField 所以得重新创建kindEditor
+	}
+	
+	dealWithButton(false);
+	disableEditor(false);
+	enableSelectSearch();
+}
+
 function initField(fieldNode)
 {
 	var tempField = new Object();
 	tempField.id = $(fieldNode).children("id").text();
 	tempField.name = $(fieldNode).children("name").text();
 	tempField.description = $(fieldNode).children("description").text();
+	tempField.timestampFormat = $(fieldNode).children("timeFormat").text();
+	tempField.dateCurTime = $(fieldNode).children("dateCurTime").text();
 	tempField.type =  $(fieldNode).children("type").text();
 	tempField.dataType = $(fieldNode).children("dataType").text();
 	tempField.controlFieldId = $(fieldNode).children("controlFieldId").text();
@@ -2098,10 +2230,8 @@ function initField(fieldNode)
 	return tempField;
 }
 
-//TODO
 function isFieldHidden(field)
 {
-	
 	if(!field)
 		return false;
 	if(field.controlFieldId != "")
@@ -2271,10 +2401,22 @@ function drawFieldsArea(node)
 	}
 	
 	layoutContent = layoutContent + bugsOfCurrentTaskField;
-	//
 	$("#layoutContent").html(layoutContent);
-	enableSelectSearch();
 
+	/***项目管理默认值设置时特殊处理************/
+	if(isProTemplate && operation != 'read'){
+		var fieldProduct = getFieldByName('对应产品');
+		if(fieldProduct){
+			setProjects($('#field' + fieldProduct.id).val());
+		}
+		var fieldProject = getFieldByName('对应项目');
+		var actionId = $('#select_action').val().split('|')[0];
+		setAssignUserByProjectIdAndRoles($('#field' + fieldProject.id).val(),actionId,false);
+	}
+
+	/***项目管理默认值设置时特殊处理************/
+	
+	enableSelectSearch();
 }
 
 function getFieldContent(columnField)
@@ -2312,7 +2454,7 @@ function setAllDefaultValues(){
 				var columnField = columnFields[k];
 				if(columnField.id == null || isFieldHidden(columnField))
 					continue;
-				if(((columnField.name!=null)&&(columnField.name.indexOf("废弃"))>=0))
+				if(((columnField.name!=null) && (columnField.name.indexOf("废弃"))>=0))
 					continue;
 
 				if(!isFieldDisplay(columnField)){  //字段没显示则跳过
@@ -2647,9 +2789,8 @@ function drawSelectionField(field)
 		fieldHtml += "<select  id='field"+field.id+"' ";
 		if(field.dataType == 'multiple')
 		{
-			fieldHtml += "class='span10 singleLine' multiple onChange='checkNoValue(\'"+field.id+"\')";
+			fieldHtml += "class='span10 singleLine' multiple onChange='checkNoValue(" + field.id + ")'";
 			fieldHtml += ">";
-			//fieldHtml += "<option value='' " +(fieldInitValues.length == 0 ? " selected" : "") + ">--请选择--</option>";
 		}else
 		{
 			fieldHtml += "class='span10 singleLine' onChange=\"checkSingleSelect('"+field.id+"')\"";
@@ -2693,7 +2834,6 @@ function drawSelectionField(field)
 		}
 		
 		fieldHtml += "</select><i class='icon-heart-empty' realValue='设为默认值' onClick=\"setSelectionDefaultValues('" + field.id + "')\"></i>";
-		
 		fieldHtml += "</div>";
 	}else
 	{
@@ -2711,23 +2851,6 @@ function drawSelectionField(field)
 		
 		if(field.dataType == 'multiple')
 		{
-			/*
-			fieldHtml += "<label class='span10 singleLine' id='field"+field.id+"_label'>";
-			for(var i = 0; i < field.options.length ; i++)
-			{
-				for (var j = 0; j < field.datas.length; j++)
-				{
-					if(field.options[i].id == field.datas[j])
-					{
-						fieldHtml += getXMLStr(field.options[i].name);
-						fieldHtml += "<br />";
-						break;
-					}
-				}
-			}
-			fieldHtml += "</label>";
-			*/
-			
 			fieldHtml += "<select class='span10 singleLine' multiple id='field"+field.id+"_label' disabled>";
 			for(var i = 0; i < field.options.length ; i++)
 			{
@@ -2741,7 +2864,6 @@ function drawSelectionField(field)
 				}
 			}
 			fieldHtml += "</select>";
-			
 		}else
 		{
 			fieldHtml += "<label class='span10 singleLine' id='field"+field.id+"_label'>";
@@ -2759,21 +2881,6 @@ function drawSelectionField(field)
 			}
 			fieldHtml += "</label>";
 		}
-		
-		/*for(var i = 0; i < field.options.length ; i++)
-		{
-			for (var j = 0; j < field.datas.length; j++)
-			{
-				if(field.options[i].id == field.datas[j])
-				{
-					fieldHtml += getXMLStr(field.options[i].name);
-					fieldHtml += "<br />";
-					break;
-				}
-			}
-		}
-		fieldHtml += "</label>";
-		*/
 		fieldHtml += "</div>";
 	}
 	return fieldHtml;
@@ -2784,7 +2891,6 @@ function drawAttachmentField(field)
 	var fieldHtml = "";
 	if(isFieldDisplay(field))
 	{
-		
 		if(getFieldMust(field) == 1)
 			fieldHtml += "<label class='control-label span2 must_font' for='field"+field.id+"' >";
 		else
@@ -2973,8 +3079,13 @@ function drawInputField(field)
 			fieldHtml += "</textarea>";
 		}else if(field.dataType == 'timestamp')
 		{
-			fieldHtml += "<input class='Wdate span10 singleLine' type='text'  id='field" +  field.id + "'  onfocus=\"WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})\" value='";
-			fieldHtml += (fieldInitValues.length > 0 ? getXMLStr(fieldInitValues[0]) : "");
+			var timeFormat = field.timestampFormat || 'yyyy-MM-dd HH:mm:ss';
+			fieldHtml += "<input class='Wdate span10 singleLine' type='text'  id='field" +  field.id + "'  onfocus=\"WdatePicker({dateFmt:'" + timeFormat + "'})\" value='";
+			var defaultDateValue = fieldInitValues.length > 0 ? getXMLStr(fieldInitValues[0]) : '';
+			if(!defaultDateValue && field.dateCurTime){
+				defaultDateValue = cynthia.date.format(timeFormat);
+			}
+			fieldHtml += defaultDateValue;
 			fieldHtml += "'/>";
 		}else if(field.dataType =='editor')
 		{
@@ -3017,9 +3128,6 @@ function drawInputField(field)
 			{
 				fieldHtml += "<label class='span10 multiLine' id='field"+field.id+"_label' ";
 			}
-			
-			if(field.id == "192099" || field.id == "192098") //bug产生的原因 || bug修改范围和方案
-				fieldHtml += " style='height:225px;'";
 			fieldHtml += ">";
 		}else if(field.dataType == 'editor')
 		{
@@ -3060,15 +3168,11 @@ function drawInputField(field)
 						}
 					}
 				}
-			}
-			else
-			{
+			}else{
 				fieldHtml += field.datas[0];
 			}
-		}else
-		{
-			if(field.dataType == "text"||field.dataType == "editor")
-			{
+		}else{
+			if(field.dataType == "text"||field.dataType == "editor"){
 				fieldHtml += "";
 			}
 		}
@@ -3251,10 +3355,6 @@ function setCurrentTime(fieldId)
 	$("#span_field" + fieldId + "minute").show();
 }
 
-function onCompleteInitFields(request)
-{
-	drawFieldsArea(request.responseXML);
-}
 
 function clearFieldsTables()
 {
@@ -3266,10 +3366,6 @@ function clearFieldsTables()
 	$("#bottomRightTable").html("");
 }
 
-function isUEDTemplate(templateId)
-{
-	return templateId == "590924";
-}
 
 function selectTemplate()
 {
@@ -3314,6 +3410,7 @@ function onCompleteInitStartActions(request)
 	var templateId = $("#select_template").val();
 
 	var defaultAction = readCookie("action" + templateId);
+	isProTemplate = $(rootNode).children("isProTemplate").text() == 'true';
 
 	var actionNodes = $(rootNode).children("actions").children("action");
 	
@@ -3323,11 +3420,16 @@ function onCompleteInitStartActions(request)
 		var actionName = $(actionNodes[i]).children("name").text();
 		var endStatId = $(actionNodes[i]).children("endStatId").text();
 		var assignToMore = $(actionNodes[i]).children("assignToMore").text();
+		var nextActionRoles = $(actionNodes[i]).children("nextActionRoles").text();
+		var isEndAction = $(actionNodes[i]).children("isEndAction").text();
+		
 		actions[actionId] = new Object();
 		actions[actionId].id = actionId;
 		actions[actionId].name = actionName;
 		actions[actionId].endStatId = endStatId;
 		actions[actionId].assignToMore = assignToMore;
+		actions[actionId].nextActionRoles = nextActionRoles;
+		actions[actionId].isEndAction = isEndAction; 
 		
 		$("#select_action")[0].options[i + 1] = new Option(actionName, actionId + "|" + endStatId);
 
@@ -3362,15 +3464,16 @@ function onCompleteInitStartActions(request)
 
 	drawRootNode = rootNode;
 
-	if($("#select_action")[0].selectedIndex > 0)
+	if($("#select_action").val())
 	{
 		selectAction();
 		drawFieldsArea(rootNode);
 	}
-
+	
 	dealWithButton(false);
 	enableSelectSearch();
 }
+
 
 /**
  * 根据actionId将指派人动态调整为多选
@@ -3405,12 +3508,12 @@ function afterCompleteInitTaskAssignUsers()
 	
 	$("#top_modify_li").attr("flag","1");
 	$("#topSubmitDiv").show();
-	operation = "modify";
+	if(operation != 'create')
+		operation = "modify";
 }
 
 function enableSelectSearch()
 {
-	//$('select').selectseach({input:false});
 	$("select").each(function(idx,select){
 		if(!($(select).hasClass("multiLine")||$(select).hasClass('noSearch')))
 		{
@@ -3422,8 +3525,7 @@ function enableSelectSearch()
 			});
 		}else if($(select).hasClass("multiLine")&&!($(select).hasClass('noSearch')))
 		{
-			$(select).select2({
-			});
+			$(select).select2({});
 		}
 	});
 }
@@ -3476,9 +3578,16 @@ function onCompleteInitTaskAssignUsers(request)
 	{
 		hideSetDefaultAssignUser();
 		drawFieldsArea(drawRootNode);
-	}
-	else
-	{
+		
+		//项目管理新建bug
+		if(operation == 'create'){
+			var productId = cynthia.url.getQuery('productId');
+			var projectId = cynthia.url.getQuery('projectId');
+			if(productId && projectId){
+				setProjects(productId);
+			}
+		}
+	}else{
 		afterCompleteInitTaskAssignUsers();
 		drawFieldsArea();
 		dealWithSelectAction();   //dealWithSelectAction()以后会重新drawInputField 所以得重新创建kindEditor
@@ -3625,11 +3734,6 @@ function checkNoValue(fieldId)
 	var fieldObj = document.getElementById("field" + fieldId);
 
 	if(fieldObj.selectedIndex < 0)
-	{
-		fieldObj.selectedIndex = 0;
-	}
-
-	if(fieldObj.selectedIndex == 0)
 	{
 		for(var i = 1; i < fieldObj.options.length; i++)
 		{
@@ -3839,10 +3943,6 @@ function onReadyLoad()
 		}
 	}
 	
-	var venusTaskId = request('taskId')||"";
-	var venusCaseId = request('caseId')||"";
-	var venusTaskItemId = request("taskItemId")||"";
-	var venusCaseStep = request('caseStep');
 	var filterId = request('filterId');
 	var templateId = request('templateId');
 	if(templateId == 'null')
@@ -3851,10 +3951,7 @@ function onReadyLoad()
 	var url = (request('url')==""?null:request('url'));
 	var type = request('type');
 	
-	$("#venusTaskId").val(venusTaskId);
-	$("#venusCaseId").val(venusCaseId);
-	$("#venusTaskItemId").val(venusTaskItemId);
-	initTaskManagement(operation, templateTypeId, taskId,filterId, 'yes',templateId, gridIndex, url, type,venusCaseStep);
+	initTaskManagement(operation, templateTypeId, taskId,filterId, 'yes',templateId, gridIndex, url, type);
 }
 
 function bindHover()
@@ -3896,16 +3993,16 @@ function bindHover()
 	});
 	
 	//标签hover出现删除按纽
-	$(".titleTag").live('mouseover',function(){
+	$("#titleSpan").on('mouseover','.titleTag',function(){
 		$(this).find("span").show();
-	}).live('mouseout',function(){
+	}).on('mouseout','.titleTag',function(){
 		$(this).find("span").hide();
 	});
 	
 	//Hover上关闭按纽
-	$(".closeTag").live('mouseover',function(){
+	$("#titleSpan").on('mouseover','.closeTag',function(){
 		$(this).addClass('tag-hover');
-	}).live('mouseout',function(){
+	}).on('mouseout','.closeTag',function(){
 		$(this).removeClass('tag-hover');
 	});
 }

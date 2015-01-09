@@ -1,3 +1,4 @@
+<%@page import="com.sogou.qadev.service.cynthia.service.ConfigManager"%>
 <%@page import="com.sogou.qadev.service.cynthia.bean.Pair"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.DataManager"%>
 <%@page import="com.sogou.qadev.service.cynthia.bean.DataAccessAction"%>
@@ -229,23 +230,27 @@
 				}
 			}
 			
-			String[] assignUserArray = flow.queryNodeStatAssignUsers(template.getId(), action.getEndStatId());
-			if(assignUserArray == null || assignUserArray.length == 0){
-				if(assignUser != null){
-					resultXml.append(DataManager.getInstance().makeResult(data.getTitle(), stat.getName(), data.getAssignUsername(), false));
-					continue;
+			
+			if(!ConfigManager.getProjectInvolved()){
+				//非项目管理验证
+				String[] assignUserArray = flow.queryNodeStatAssignUsers(template.getId(), action.getEndStatId());
+				if(assignUserArray == null || assignUserArray.length == 0){
+					if(assignUser != null){
+						resultXml.append(DataManager.getInstance().makeResult(data.getTitle(), stat.getName(), data.getAssignUsername(), false));
+						continue;
+					}
 				}
-			}
-			else{
-				if(assignUser == null&&!batchClose){
-					resultXml.append(DataManager.getInstance().makeResult(data.getTitle(), stat.getName(), data.getAssignUsername(), false));
-					continue;
-				}
-				
-				Set<String> assignUserSet = new HashSet<String>(Arrays.asList(assignUserArray));
-				if(!assignUserSet.contains(assignUser)){
-					resultXml.append(DataManager.getInstance().makeResult(data.getTitle(), stat.getName(), data.getAssignUsername(), false));
-					continue;
+				else{
+					if(assignUser == null&&!batchClose){
+						resultXml.append(DataManager.getInstance().makeResult(data.getTitle(), stat.getName(), data.getAssignUsername(), false));
+						continue;
+					}
+					
+					Set<String> assignUserSet = new HashSet<String>(Arrays.asList(assignUserArray));
+					if(!assignUserSet.contains(assignUser)){
+						resultXml.append(DataManager.getInstance().makeResult(data.getTitle(), stat.getName(), data.getAssignUsername(), false));
+						continue;
+					}
 				}
 			}
 			

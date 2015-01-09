@@ -33,7 +33,6 @@ String checkXML(String xml, String encode) throws Exception{
 			byteArray[i] = 78;
 		}
 	}
-	
 	return new String(byteArray, encode);
 }
 %>
@@ -58,7 +57,7 @@ String checkXML(String xml, String encode) throws Exception{
 	
 	String xml = null;
 		
-	Template[] templateArray  = DataManager.getInstance().queryUserTemplates(das);
+	Template[] templateArray  = DataManager.getInstance().queryUserTemplates(key.getUsername());
 		
 	StringBuffer xmlb = new StringBuffer(64);
 	xmlb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");

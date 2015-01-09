@@ -2,6 +2,7 @@ package com.sogou.qadev.service.cynthia.bean.impl;
 
 import com.sogou.qadev.service.cynthia.bean.Role;
 import com.sogou.qadev.service.cynthia.bean.UUID;
+import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
 
 /**
  * @description:role implements
@@ -41,6 +42,12 @@ public class RoleImpl implements Role{
 		this.name = name;
 	}
 
+	public RoleImpl(String id, String flowId,String name){
+		this.id	= DataAccessFactory.getInstance().createUUID(id);
+		this.flowId	= DataAccessFactory.getInstance().createUUID(flowId);
+		this.name = name;
+	}
+	
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:getId</p>
@@ -113,6 +120,6 @@ public class RoleImpl implements Role{
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode(){
-		return this.id.hashCode() ^ this.flowId.hashCode();
+		return this.id.hashCode() ^ this.name.hashCode();
 	}
 }

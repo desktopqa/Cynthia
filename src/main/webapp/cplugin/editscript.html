@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="Description" content="Cynthia项目缺陷管理系统，拥有表单流程化设计，可视化拖动布局等功能，提供项目管理，缺陷管理，，统计，查询等服务，是您项目上的好帮手！">
+	<meta name="Keywords" content="Cynthia,BUG管理,项目管理 ,缺陷管理,任务管理,BUG,缺陷,开源">
+	<link href="../lib/bootstrap2/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="../lib/g_bootstrap/css/google-bootstrap.css" rel="stylesheet" type="text/css">
+	<link href="../css/top.css" rel="stylesheet" type="text/css">
+	<link href='../lib/select2/select2.css' rel="stylesheet" style="text/css"/>
+	<script type="text/javascript" src="../lib/jquery/jquery-1.9.3.min.js"></script>
+	<script type="text/javascript" src='../lib/bootstrap2/js/bootstrap.cynthia.min.js'></script>
+	<script type="text/javascript" src="../js/util.js"></script>
+	<script type="text/javascript" src="../js/script.js"></script>
+	<script type="text/javascript" src="../lib/My97DatePicker/WdatePicker.js"></script>
+	<title>脚本</title>
+</head>
+<body onload="initScript(<%=request.getParameter("id") %>)">
+	<div class="container-fluid">
+	<div id ="header-nav">
+	</div>
+	<div id="main" style="margin-top:50px;">
+		<div id="shortmenu">
+			<ul>
+				<li><a href="editscript.jsp">新建</a></li>
+			</ul>
+		</div>
+		<div id="content">
+			<div id="box">
+			<form action="" >
+				<table class="maintable" cellpadding="0" cellspacing="0">
+ 					<caption>编辑脚本</caption>
+    					<tr>
+     						<td>脚本名称</td>
+        					<td colspan="4"><input style="width: 400px;" type="text" id="scriptName" name="scriptName"></td>
+   		 				</tr>
+   		 				<tr>
+   		 					<td>脚本信息</td>
+   		 					<td>
+   		 						<textarea class="span12" id="script" rows="30" cols="150"></textarea>
+   		 					</td>
+   		 				</tr>
+   		 				<tr>
+   		 					<td>
+   		 						是否异步
+   		 					</td>
+   		 					<td>
+   		 						<input type="checkbox" name="isAsync" id="isAsync" checked="checked">是
+   		 					</td>
+   		 				</tr>
+   		 				<tr>
+   		 					<td>
+   		 						提交数据之前执行
+   		 					</td>
+   		 					<td>
+   		 						<input type="checkbox" name="isBeforeCommit" id="isBeforeCommit" />是
+   		 					</td>
+   		 				</tr>
+   		 				<tr>
+   		 					<td>
+   		 						提交数据成功之后执行
+   		 					</td>
+   		 					<td>
+   		 						<input type="checkbox" name="isAfterSuccess" id="isAfterSuccess">是
+   		 					</td>
+   		 				</tr>
+   		 				<tr>
+   		 					<td>
+   		 						提交数据失败之后执行
+   		 					</td>
+   		 					<td>
+   		 						<input type="checkbox" name="isAfterFail" id="isAfterFail">是
+   		 					</td>
+   		 				</tr>
+   		 				<tr>
+   		 					<td>
+   		 						动作可配置
+   		 					</td>
+   		 					<td>
+   		 						<input type="checkbox" name="isActionEdit" id="isActionEdit">是
+   		 					</td>
+   		 				</tr>
+   		 				<tr>
+   		 					<td>
+   		 						状态可配置
+   		 					</td>
+   		 					<td>
+   		 						<input type="checkbox" name="isStatEdit" id="isStatEdit">是
+   		 					</td>
+   		 				</tr>
+   		 				<tr>
+   		 					<td>
+   		 						是否有效
+   		 					</td>
+   		 					<td>
+   		 						<input type="checkbox" name="isValid" id="isValid">是
+   		 					</td>
+   		 				</tr>
+   		 				<tr>
+   		 					<td>
+   		 						可挂载的表单
+   		 					</td>
+   		 					<td>
+   		 						<select style="width: 300px;height: 300px;" id="allowedTemplates" multiple="multiple"></select>
+   		 					</td>
+   		 				</tr>
+   		 				<tr>
+   		 					<td colspan="4" align="center" valign="middle">
+   		 					<input type="button" class="btn btn-danger" onclick="executeAddOrUpdateScript()" value="提交" class='defaultButton' />
+   		 					<input type="button" class="btn" onclick="javascript:history.go(-1);" value="取消" class='defaultButton' /></td>
+   		 				</tr>
+				</table>
+			</form>
+			</div>
+		</div>
+	</div>
+	<input type="hidden" id="scriptId" value="">
+	</div>
+</body>
+</html>

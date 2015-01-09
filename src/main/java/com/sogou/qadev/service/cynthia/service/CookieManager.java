@@ -7,6 +7,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
+
 /**
  * @description:Cookie processor(cookie get , set ,delete)
  * @author:liming
@@ -25,11 +27,15 @@ public class CookieManager {
 	 * @param value:cookie value
 	 * @param maxAge:cookie max age
 	 */
-	public static void addCookie(HttpServletResponse response,String name,String value,int maxAge){
+	public static Cookie addCookie(HttpServletResponse response,String name,String value,int maxAge,String domain){
 		Cookie cookie = new Cookie(name,value);
 		cookie.setPath("/");
 		if(maxAge>0)  cookie.setMaxAge(maxAge);
+		if (domain != null && !domain.equals("")) {
+			cookie.setDomain(domain);
+		}
 		response.addCookie(cookie);
+		return cookie;
 	}
 
 	/**

@@ -21,6 +21,22 @@ public interface Template extends BaseType{
 	public void setId(UUID id);
 	
 	/**
+	 * @Title: setProTemplate
+	 * @Description: set is project involve template
+	 * @param isProTemplate
+	 * @return: void
+	 */
+	public void setProTemplate(boolean isProTemplate);
+	
+	/**
+	 * @Title: getIsProTemplate
+	 * @Description: get is project involve template
+	 * @return
+	 * @return: boolean
+	 */
+	public boolean isProTemplate();
+	
+	/**
 	 * @description:get template templatetype id
 	 * @date:2014-5-6 下午4:28:38
 	 * @version:v1.0

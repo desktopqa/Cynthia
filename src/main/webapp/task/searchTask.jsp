@@ -1,3 +1,6 @@
+<%@page import="com.sogou.qadev.service.cynthia.util.ArrayUtil"%>
+<%@page import="com.sogou.qadev.service.cynthia.service.ProjectInvolveManager"%>
+<%@page import="com.sogou.qadev.service.cynthia.service.ConfigManager"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.impl.DataFilterMemory"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.TableRuleManager"%>
 <%@page import="java.util.LinkedHashSet"%>
@@ -103,6 +106,17 @@
 				whereBuffer.append(" where ").append(searchType).append(" in (").append(searchKey).append(")");
 			}else{
 				whereBuffer.append(" where ").append(searchType).append(" like '%").append(searchKey).append("%'");
+			}
+			
+			if(ConfigManager.getProjectInvolved()){
+				Set<String> allCompanyUser = ProjectInvolveManager.getInstance().getCompanyUserMails(key.getUsername());
+				StringBuffer userBuffer = new StringBuffer();
+				if(allCompanyUser.size() > 0){
+					for(String user : allCompanyUser){
+						userBuffer.append(userBuffer.length() > 0 ? "," : "").append("'").append(user).append("'");
+					}
+					whereBuffer.append(" and createUser in (").append(userBuffer.toString()).append(") ");
+				}
 			}
 		}
 		

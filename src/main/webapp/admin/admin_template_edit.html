@@ -265,6 +265,32 @@
                     <input type="text" id="input_fieldName" />
                 </div>
             </div>
+            
+            <!-- 时间类型独有 -->
+            <div class="control-group dt_timestamp control_show" style='display:none'>
+                <label class="control-label danger" for="input_fieldName">精度配置：</label>
+                <div class="controls">
+                	<select id="input_timestampFormat" style="width:228px;">
+                        <option value="yyyy-MM-dd HH:mm:ss" selected>精确到秒</option>
+                        <option value="yyyy-MM-dd HH:mm">精确到分</option>
+                        <option value="yyyy-MM-dd HH">精确到时</option>
+                        <option value="yyyy-MM-dd">精确到天</option>
+                        <option value="yyyy-MM">精确到月</option>
+                        <option value="yyyy">精确到年</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="control-group dt_timestamp control_show" style='display:none'>
+                <label class="control-label danger" for="input_fieldName">默认当前：</label>
+                <div class="controls">
+                	<select id="date_curtime" style="width:228px;">
+                        <option value="true">是</option>
+                        <option value="false" selected>否</option>
+                    </select>
+                </div>
+            </div>
+            <!-- 时间类型独有结束 -->
 			
             <div class="control-group">
                 <label class="control-label" for="input_fieldDescription">字段描述：</label>
@@ -283,7 +309,7 @@
 			<div class="control-group" style="display: none;">
                 <label class="control-label" for="input_fieldSize">字段大小：</label>
                 <div class="controls">
-                    <select id="input_fieldSize">
+                    <select id="input_fieldSize" style="width:228px;">
                     	<option value='1'>正常</option>
                     	<option value='2'>加倍</option>
                     </select>
@@ -294,14 +320,13 @@
             <div class="control-group" id="input_defaultValue_div">
                 <label class="control-label" for="input_defaultValue_controls">默认取值：</label>
                 <div class="controls" id="input_defaultValue_controls">
-
                 </div>
             </div>
 
             <div class="control-group">
                 <label class="control-label" for="select_controlFieldId">控制字段：</label>
                 <div class="controls">
-                    <select id="select_controlFieldId" onchange="initControlOptions()">
+                    <select id="select_controlFieldId" onchange="initControlOptions()" style="width:228px;">
                         <option value="">无</option>
                     </select>
                 </div>
@@ -310,7 +335,7 @@
             <div class="control-group" id="select_controlOptionId_div">
                 <label class="control-label" for="select_controlOptionId">控制选项：</label>
                 <div class="controls">
-                    <select id="select_controlOptionId" multiple onchange="checkClear(select_controlOptionId)">
+                    <select id="select_controlOptionId" multiple onchange="checkClear(select_controlOptionId)" style="width:228px;">
                         <option value="">无</option>
                     </select>
                 </div>
@@ -319,8 +344,7 @@
             <div class="control-group" id="select_controlActionId_div">
                 <label class="control-label" for="select_controlActionId">控制动作：</label>
                 <div class="controls">
-                    <select id="select_controlActionId" multiple onchange="checkClear(select_controlOptionId)">
-
+                    <select id="select_controlActionId" multiple onchange="checkClear(select_controlOptionId)" style="width:228px;">
                     </select>
                     <input type="button" value="添加" onclick="addControlActions()">
                 </div>

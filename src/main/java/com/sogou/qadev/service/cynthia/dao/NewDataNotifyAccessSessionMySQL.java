@@ -177,6 +177,15 @@ public class NewDataNotifyAccessSessionMySQL
 		return xmlBuffer.toString();
 	}
 	
+	/**
+	 * @Title: getFilterCount
+	 * @Description: 查询过滤器数据总量
+	 * @param filterId
+	 * @param username
+	 * @return
+	 * @throws TransformerException
+	 * @return: int
+	 */
 	private int getFilterCount(UUID filterId , String username) throws TransformerException{
 		Set<String> querySpeFieldSet = new HashSet<String>();
 		Filter filter = das.queryFilter(filterId);

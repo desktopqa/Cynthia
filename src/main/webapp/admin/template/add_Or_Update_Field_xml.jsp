@@ -62,24 +62,24 @@
 		template.removeField(fieldId , templateId);
 		ErrorCode errorCode = das.updateTemplate(template);
 		if(errorCode.equals(ErrorCode.success)){
-	String fieldColName = FieldNameCache.getInstance().getFieldName(fieldId , templateId);
-	FieldNameCache.getInstance().remove(fieldId.getValue(),templateId.getValue());
-	das.updateCache(DataAccessAction.update, template.getId().getValue(), template);
-	//记录修改日志
-	TemplateOperateLog tol = new TemplateOperateLog();
-	tol.setTemplateId(templateId.getValue());
-	tol.setFieldId(beforeField.getId().getValue());
-	tol.setFieldName(beforeField.getName());
-	tol.setOperateType(TemplateOperateLog.DELETE);
-	tol.setCreateTime(new Timestamp(System.currentTimeMillis()));
-	tol.setCreateUser(key.getUsername());
-	tol.setBefore(beforeField.toXMLString());
-	tol.setAfter("");
-	das.addTemplateOpreateLog(tol);
-	out.println(ErrorManager.getCorrectXml());
+			String fieldColName = FieldNameCache.getInstance().getFieldName(fieldId , templateId);
+			FieldNameCache.getInstance().remove(fieldId.getValue(),templateId.getValue());
+			das.updateCache(DataAccessAction.update, template.getId().getValue(), template);
+			//记录修改日志
+			TemplateOperateLog tol = new TemplateOperateLog();
+			tol.setTemplateId(templateId.getValue());
+			tol.setFieldId(beforeField.getId().getValue());
+			tol.setFieldName(beforeField.getName());
+			tol.setOperateType(TemplateOperateLog.DELETE);
+			tol.setCreateTime(new Timestamp(System.currentTimeMillis()));
+			tol.setCreateUser(key.getUsername());
+			tol.setBefore(beforeField.toXMLString());
+			tol.setAfter("");
+			das.addTemplateOpreateLog(tol);
+			out.println(ErrorManager.getCorrectXml());
 		}
 		else{
-	out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));
+			out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));
 		}
 		return;
 	}
@@ -94,11 +94,11 @@
 		template.moveField(field, rowIndex, columnIndex, positionIndex);
 		ErrorCode errorCode = das.updateTemplate(template);
 		if(errorCode.equals(ErrorCode.success)){
-	das.updateCache(DataAccessAction.update, template.getId().getValue(), template);
-	out.println(ErrorManager.getCorrectXml());
+			das.updateCache(DataAccessAction.update, template.getId().getValue(), template);
+			out.println(ErrorManager.getCorrectXml());
 		}
 		else{
-	out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));
+			out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));
 		}
 		return;
 	}
@@ -117,8 +117,8 @@
 		Field field = template.addField(type, dataType);
 		if(field == null)
 		{
-	out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
-	return;
+			out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
+			return;
 		}
 		int rowIndex = Integer.parseInt(request.getParameter("rowIndex"));
 		int columnIndex = Integer.parseInt(request.getParameter("columnIndex"));
@@ -128,12 +128,14 @@
 		field.setName(request.getParameter("fieldName"));
 		field.setDescription(request.getParameter("fieldDescription"));
 		field.setFieldTip(request.getParameter("fieldTip"));
+		field.setTimestampFormat(request.getParameter("timestampFormat"));
+		field.setDateCurTime(Boolean.parseBoolean(request.getParameter("dateCurTime")));
 		field.setFieldSize(request.getParameter("fieldSize"));
 		field.setDefaultValue(request.getParameter("defaultValue"));
 		String controlFieldIdStr = request.getParameter("controlFieldId");
 		
 		if(controlFieldIdStr != null)
-	field.setControlFieldId(DataAccessFactory.getInstance().createUUID(controlFieldIdStr));
+			field.setControlFieldId(DataAccessFactory.getInstance().createUUID(controlFieldIdStr));
 		
 		
 		//control option ids
@@ -141,7 +143,7 @@
 		
 		String[] controlOptionIdStrArray = (String[])ArrayUtil.format(request.getParameterValues("controlOptionId"), new String[0]);
 		for(String controlOptionIdStr : controlOptionIdStrArray)
-	controlOptionIdSet.add(DataAccessFactory.getInstance().createUUID(controlOptionIdStr));
+			controlOptionIdSet.add(DataAccessFactory.getInstance().createUUID(controlOptionIdStr));
 	
 		field.setControlOptionIds(controlOptionIdSet);
 		
@@ -158,68 +160,68 @@
 		
 		String[] actionIdStrArray = (String[])ArrayUtil.format(request.getParameterValues("actionId"), new String[0]);
 		for(String actionIdStr : actionIdStrArray)
-	actionIdSet.add(DataAccessFactory.getInstance().createUUID(actionIdStr));
+			actionIdSet.add(DataAccessFactory.getInstance().createUUID(actionIdStr));
 		
 		field.setActionIds(actionIdSet);
 		
 		//先添加字段，再更新表单
 		String fieldColName = FieldNameMapMySQL.getInstance().getOneFieldName(field, template.getId().getValue());
 		if(fieldColName == null || fieldColName.length() == 0 ){
-	out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
-	return;			
+			out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
+			return;			
 		}
 		else{
-	if(das.addFieldColName(template.getId().getValue(), fieldColName, field.getId().getValue(),  FieldNameMapMySQL.getInstance().getFieldColNameType(field))){
-		FieldNameCache.getInstance().set(field.getId().getValue(), fieldColName);
-		ErrorCode errorCode = das.updateTemplate(template);
-		if(errorCode.equals(ErrorCode.success)){
-	das.updateCache(DataAccessAction.update, template.getId().getValue(),template);
-	
-	//记录修改日志
-	TemplateOperateLog tol = new TemplateOperateLog();
-	tol.setTemplateId(templateId.getValue());
-	tol.setFieldId(field.getId().getValue());
-	tol.setFieldName(field.getName());
-	tol.setOperateType(TemplateOperateLog.ADD);
-	tol.setCreateTime(new Timestamp(System.currentTimeMillis()));
-	tol.setCreateUser(key.getUsername());
-	tol.setBefore("");
-	tol.setAfter(field.toXMLString());
-	das.addTemplateOpreateLog(tol);
-		}else{
-	out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
-	return;	
-		}
-	}else{
-		out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));
-		return;
-	}
-	if(das.addFieldColName(template.getId().getValue(), fieldColName, field.getId().getValue(),  FieldNameMapMySQL.getInstance().getFieldColNameType(field))){
-		FieldNameCache.getInstance().set(field.getId().getValue(), fieldColName);
-		ErrorCode errorCode = das.updateTemplate(template);
-		if(errorCode.equals(ErrorCode.success)){
-	das.updateCache(DataAccessAction.update, template.getId().getValue(),template);
-	
-	//记录修改日志
-	TemplateOperateLog tol = new TemplateOperateLog();
-	tol.setTemplateId(templateId.getValue());
-	tol.setFieldId(field.getId().getValue());
-	tol.setFieldName(field.getName());
-	tol.setOperateType(TemplateOperateLog.ADD);
-	tol.setCreateTime(new Timestamp(System.currentTimeMillis()));
-	tol.setCreateUser(key.getUsername());
-	tol.setBefore("");
-	tol.setAfter(field.toXMLString());
-	das.addTemplateOpreateLog(tol);
-	out.println(ErrorManager.getCorrectXml());
-		}else{
-	out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
-	return;	
-		}
-	}else{
-		out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));
-		return;
-	}
+			if(das.addFieldColName(template.getId().getValue(), fieldColName, field.getId().getValue(),  FieldNameMapMySQL.getInstance().getFieldColNameType(field))){
+				FieldNameCache.getInstance().set(field.getId().getValue(), fieldColName);
+				ErrorCode errorCode = das.updateTemplate(template);
+				if(errorCode.equals(ErrorCode.success)){
+			das.updateCache(DataAccessAction.update, template.getId().getValue(),template);
+			
+			//记录修改日志
+			TemplateOperateLog tol = new TemplateOperateLog();
+			tol.setTemplateId(templateId.getValue());
+			tol.setFieldId(field.getId().getValue());
+			tol.setFieldName(field.getName());
+			tol.setOperateType(TemplateOperateLog.ADD);
+			tol.setCreateTime(new Timestamp(System.currentTimeMillis()));
+			tol.setCreateUser(key.getUsername());
+			tol.setBefore("");
+			tol.setAfter(field.toXMLString());
+			das.addTemplateOpreateLog(tol);
+				}else{
+			out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
+			return;	
+				}
+			}else{
+				out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));
+				return;
+			}
+			if(das.addFieldColName(template.getId().getValue(), fieldColName, field.getId().getValue(),  FieldNameMapMySQL.getInstance().getFieldColNameType(field))){
+				FieldNameCache.getInstance().set(field.getId().getValue(), fieldColName);
+				ErrorCode errorCode = das.updateTemplate(template);
+				if(errorCode.equals(ErrorCode.success)){
+			das.updateCache(DataAccessAction.update, template.getId().getValue(),template);
+			
+			//记录修改日志
+			TemplateOperateLog tol = new TemplateOperateLog();
+			tol.setTemplateId(templateId.getValue());
+			tol.setFieldId(field.getId().getValue());
+			tol.setFieldName(field.getName());
+			tol.setOperateType(TemplateOperateLog.ADD);
+			tol.setCreateTime(new Timestamp(System.currentTimeMillis()));
+			tol.setCreateUser(key.getUsername());
+			tol.setBefore("");
+			tol.setAfter(field.toXMLString());
+			das.addTemplateOpreateLog(tol);
+			out.println(ErrorManager.getCorrectXml());
+				}else{
+			out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
+			return;	
+				}
+			}else{
+				out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));
+				return;
+			}
 		}
 	}else if("update".equals(flag))
 	{
@@ -229,25 +231,27 @@
 		String fieldXmlBefore = field.toXMLString();
 		if(field == null)
 		{
-	out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
-	return;
+			out.println(ErrorManager.getErrorXml(ErrorType.field_update_error));
+			return;
 		}
 		field.setName(request.getParameter("fieldName"));
+		field.setTimestampFormat(request.getParameter("timestampFormat"));
 		field.setDescription(request.getParameter("fieldDescription"));
 		field.setFieldTip(request.getParameter("fieldTip"));
 		field.setFieldSize(request.getParameter("fieldSize"));
+		field.setDateCurTime(Boolean.parseBoolean(request.getParameter("dateCurTime")));
 		
 		field.setDefaultValue(request.getParameter("defaultValue"));
 		String controlFieldIdStr = request.getParameter("controlFieldId");
 		if(controlFieldIdStr != null)
-	field.setControlFieldId(DataAccessFactory.getInstance().createUUID(controlFieldIdStr));
+			field.setControlFieldId(DataAccessFactory.getInstance().createUUID(controlFieldIdStr));
 		
 		//control option ids
 		Set<UUID> controlOptionIdSet = new LinkedHashSet<UUID>();
 		
 		String[] controlOptionIdStrArray = (String[])ArrayUtil.format(request.getParameterValues("controlOptionId"), new String[0]);
 		for(String controlOptionIdStr : controlOptionIdStrArray)
-	controlOptionIdSet.add(DataAccessFactory.getInstance().createUUID(controlOptionIdStr));
+			controlOptionIdSet.add(DataAccessFactory.getInstance().createUUID(controlOptionIdStr));
 	
 		field.setControlOptionIds(controlOptionIdSet);
 		
@@ -264,26 +268,26 @@
 		
 		String[] actionIdStrArray = (String[])ArrayUtil.format(request.getParameterValues("actionId"), new String[0]);
 		for(String actionIdStr : actionIdStrArray)
-	actionIdSet.add(DataAccessFactory.getInstance().createUUID(actionIdStr));
+			actionIdSet.add(DataAccessFactory.getInstance().createUUID(actionIdStr));
 		
 		field.setActionIds(actionIdSet);
 		ErrorCode errorCode = das.updateTemplate(template);
 		if(errorCode.equals(ErrorCode.success)){
-	das.updateCache(DataAccessAction.update, template.getId().getValue(),template);
-	//记录修改日志
-	TemplateOperateLog tol = new TemplateOperateLog();
-	tol.setTemplateId(templateId.getValue());
-	tol.setFieldId(field.getId().getValue());
-	tol.setFieldName(field.getName());
-	tol.setOperateType(TemplateOperateLog.MODIFY);
-	tol.setCreateTime(new Timestamp(System.currentTimeMillis()));
-	tol.setCreateUser(key.getUsername());
-	tol.setBefore(fieldXmlBefore);
-	tol.setAfter(field.toXMLString());
-	das.addTemplateOpreateLog(tol);
-	out.println(ErrorManager.getCorrectXml());
+			das.updateCache(DataAccessAction.update, template.getId().getValue(),template);
+			//记录修改日志
+			TemplateOperateLog tol = new TemplateOperateLog();
+			tol.setTemplateId(templateId.getValue());
+			tol.setFieldId(field.getId().getValue());
+			tol.setFieldName(field.getName());
+			tol.setOperateType(TemplateOperateLog.MODIFY);
+			tol.setCreateTime(new Timestamp(System.currentTimeMillis()));
+			tol.setCreateUser(key.getUsername());
+			tol.setBefore(fieldXmlBefore);
+			tol.setAfter(field.toXMLString());
+			das.addTemplateOpreateLog(tol);
+			out.println(ErrorManager.getCorrectXml());
 		}else{
-	out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));
+			out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));
 		}
 	}
 %>

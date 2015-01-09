@@ -1,0 +1,137 @@
+body,input,select
+{
+	font-family: 'Microsoft Yahei', Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	line-height: 20px;
+	color: #333333;
+}
+
+#all_stat_div
+{
+	border: 2px solid rgb(218, 218, 218);
+	border-radius:4px;
+	position:fixed;
+	width:230px;
+}
+
+#all_content_div
+{
+	position: relative;
+	min-height: 100px;
+	margin-left:250px;
+	min-width:500px;
+	border: 2px solid rgb(218, 218, 218);
+	border-radius:4px;
+}
+
+.statistic_div
+{
+	border: 1px solid rgb(228, 216, 216);
+	border-radius:10px;
+	padding:20px;
+	margin:20px;
+}
+.stat
+{
+	display :none;
+	border-top: 1px solid rgb(206, 191, 191);
+	padding: 10px 0px;
+}
+
+#base_info
+{
+	padding: 0px 0px 10px 0px;
+}
+
+.box-title
+{
+	background-color: #edf3fe;
+	margin: 0;
+	padding: 6px;
+	text-align: left;
+	font-weight: bold;
+	color: #333;
+}
+
+.box-content
+{
+	border-bottom: 1px solid #e4e4e4;
+}
+.box-footer
+{
+	margin: 10px;
+}
+
+.box-content label
+{
+	margin: 5px 10px;
+}
+
+#statdiv
+{
+	width:80%;
+	left:10%;
+	margin-left:0px;
+}
+
+#all_statistic_div
+{
+	min-height: 200px;
+	overflow-y:scroll;
+	max-height:500px;
+}
+
+#all_statistic_div a
+{
+	word-break: break-word;
+}
+
+
+#statdiv label
+{
+	width:120px;
+}
+
+.select-width
+{
+	width:230px;
+}
+
+#focus_user
+{
+	height: 74px;
+	width: 423px;
+}
+
+#all_statistic_div .checkbox>a
+{
+	display: block;
+	margin: 0 0 -1px;
+	padding: 0px 10px 0px 5px;
+	font-size: 13px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+#all_statistic_div .icon-stat
+{
+	display:none;
+	margin-top:5px !important;	
+	float:right;
+}
+
+#all_statistic_div .checkbox:hover .icon-stat
+{
+	display:block;
+}
+
+.icon-edit
+{
+	margin-top: 9px;
+	margin-right:6px;
+	float: right;
+	cursor: pointer;
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKAQMAAAC3/F3+AAAAA3NCSVQICAjb4U/gAAAABlBMVEX///+/v7+jQ3Y5AAAAAnRSTlMA/1uRIrUAAAAJcEhZcwAACvAAAArwAUKsNJgAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzQGstOgAAAAFnRFWHRDcmVhdGlvbiBUaW1lADA5LzIwLzEyBpChvgAAACBJREFUCJlj4GFgyG1gqG9gMGZgeHgAhIAMIBcoyMMAAHJSB5lFqnfgAAAAAElFTkSuQmCC) no-repeat;
+}
+

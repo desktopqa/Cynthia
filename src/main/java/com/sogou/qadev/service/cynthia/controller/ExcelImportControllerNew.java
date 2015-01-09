@@ -291,19 +291,13 @@ public class ExcelImportControllerNew extends BaseController {
 	
 	public String checkDataControlValid(Data data, Template template){
 		String errorString = "";
-		
 		try {
 			for (Field field : template.getFields()) {
 				if (field.getType().equals(Type.t_selection) && field.getControlFieldId() != null) {
-					
 					UUID controlFieldId = field.getControlFieldId();
-					
 					UUID controlOptionId = data.getSingleSelection(controlFieldId);
-					
 					UUID curOptionId = data.getSingleSelection(field.getId());
-					
 					Option curOption = field.getOption(curOptionId);
-					
 					if (curOption == null || !curOption.getControlOptionId().getValue().equals(controlOptionId.getValue())) {
 						Field controlField = template.getField(controlFieldId);
 						return controlField.getName() + "选项下没有" + field.getName() + "值！"; 
@@ -332,11 +326,8 @@ public class ExcelImportControllerNew extends BaseController {
 		}
 		
 		UUID roleId = DataAccessFactory.getInstance().createUUID("238784"); //筛选录入人员
-		
 		Set<Field> allMultFieldSet = new HashSet<Field>();
-		
 		allMultFieldSet.addAll(getMustFieldByAction(template, roleId, actionId));
-		
 		Iterator<Field> iterator = allMultFieldSet.iterator();
 		while(iterator.hasNext()){
 			if (data.getObject(iterator.next().getId()) !=  null) {
@@ -480,7 +471,6 @@ public class ExcelImportControllerNew extends BaseController {
 			multipartFile.transferTo(tmpFile);
 			String realFileName = multipartFile.getOriginalFilename();
 			FileInputStream fis = new FileInputStream(tmpFile);
-			
 			Workbook workbook = WorkbookFactory.create(fis); 
 			
 			if (fis != null) {
@@ -531,7 +521,6 @@ public class ExcelImportControllerNew extends BaseController {
 				if (isAllNeedFieldsIn) {
 					for(int j=1;j<rows;j++)
 					{
-
 						row = sheet.getRow(j);
 						if(row!=null)
 						{

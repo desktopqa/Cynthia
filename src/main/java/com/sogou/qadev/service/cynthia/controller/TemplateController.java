@@ -3,6 +3,7 @@ package com.sogou.qadev.service.cynthia.controller;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,10 +31,13 @@ import com.sogou.qadev.service.cynthia.bean.Role;
 import com.sogou.qadev.service.cynthia.bean.Template;
 import com.sogou.qadev.service.cynthia.bean.TemplateMailOption;
 import com.sogou.qadev.service.cynthia.bean.UUID;
+import com.sogou.qadev.service.cynthia.bean.UserInfo;
 import com.sogou.qadev.service.cynthia.dao.DataAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
 import com.sogou.qadev.service.cynthia.service.DataAccessSession.ErrorCode;
 import com.sogou.qadev.service.cynthia.service.DataManager;
+import com.sogou.qadev.service.cynthia.service.ProjectInvolveManager;
+import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
 
 /**
  * @description:template processor
@@ -58,14 +62,33 @@ public class TemplateController extends BaseController{
 	 */
 	@RequestMapping("/getAllTemplates.do")
 	@ResponseBody
-	public String getAllTemplate(HttpServletRequest request, HttpServletResponse response ,HttpSession session) throws Exception {
-		Set<Pair<String, String>> allTemplateSet = new HashSet<Pair<String, String>>();
-		
-		Template[] allTemplates = das.queryAllTemplates();
-		for (Template template : allTemplates) {
-			allTemplateSet.add(new Pair<String, String>(template.getId().getValue(),template.getName()));
+	public String getAllTemplate(HttpServletRequest request, HttpServletResponse response ,HttpSession httpSession) throws Exception {
+		String queryUser = request.getParameter("userMail");
+		String isProTemplate = request.getParameter("isProTemplate");
+		if (CynthiaUtil.isNull(queryUser)) {
+			queryUser = ((Key)httpSession.getAttribute("key")).getUsername();
 		}
-		return JSONArray.toJSONString(allTemplateSet);
+		
+		Template[] allTemplates = DataManager.getInstance().queryUserTemplates(queryUser);
+		Map<String, String> allTemplateMap = new HashMap<String, String>();
+		for (Template template : allTemplates) {
+			if (!CynthiaUtil.isNull(isProTemplate) && isProTemplate.equals("true") && !template.isProTemplate()) 
+				continue;
+			allTemplateMap.put(template.getId().getValue(), template.getName());
+		}
+		
+		String jsonStr = JSONArray.toJSONString(allTemplateMap);
+		String callback = request.getParameter("callback");
+		if (callback != null && !callback.equals("")) {
+			String jsonp = callback + "(" + jsonStr + ")";
+			response.setContentType("application/javascript;charset=UTF-8");
+			response.getWriter().print(jsonp);
+			response.getWriter().flush();
+			response.getWriter().close();
+			return "";
+		}else {
+			return jsonStr;
+		}
 	}
 	
 	/**
@@ -81,15 +104,13 @@ public class TemplateController extends BaseController{
 	@RequestMapping("/getUserTemplate.do")
 	public String getUserTemplate(HttpServletRequest request , HttpSession httpSession) throws Exception {
 		Key key   = ((Key)httpSession.getAttribute("key"));
-		Long keyId = (Long)httpSession.getAttribute("kid");
 		String templateTypeId = request.getParameter("templateTypeId");
 		UUID templateTypeUUID = null;
 		if (templateTypeId != null && !templateTypeId.equals("")) {
 			templateTypeUUID = DataAccessFactory.getInstance().createUUID(templateTypeId);
 		}
 		
-		das = DataAccessFactory.getInstance().createDataAccessSession(key.getUsername(), keyId);
-		Template[] allTemplates = DataManager.getInstance().queryUserTemplates(das);
+		Template[] allTemplates = DataManager.getInstance().queryUserTemplates(key.getUsername());
 		
 		Set<Pair<String, String>> allTemplateSet = new HashSet<Pair<String, String>>();
 			
@@ -117,15 +138,13 @@ public class TemplateController extends BaseController{
 	@RequestMapping("/getUserReadableTemplate.do")
 	public String getUserReadableTemplate(HttpServletRequest request , HttpSession httpSession) throws Exception {
 		Key key   = ((Key)httpSession.getAttribute("key"));
-		Long keyId = (Long)httpSession.getAttribute("kid");
 		String templateTypeId = request.getParameter("templateTypeId");
 		UUID templateTypeUUID = null;
 		if (templateTypeId != null && !templateTypeId.equals("")) {
 			templateTypeUUID = DataAccessFactory.getInstance().createUUID(templateTypeId);
 		}
 		
-		das = DataAccessFactory.getInstance().createDataAccessSession(key.getUsername(), keyId);
-		Template[] allTemplates = DataManager.getInstance().queryUserReadableTemplates(templateTypeUUID,das);
+		Template[] allTemplates = DataManager.getInstance().queryUserReadableTemplates(templateTypeUUID,key.getUsername());
 		
 		Set<Pair<String, String>> allTemplateSet = new HashSet<Pair<String, String>>();
 			
@@ -204,6 +223,7 @@ public class TemplateController extends BaseController{
 	@RequestMapping("/getTemplateMailConfig.do")
 	public String getTemplateMailConfig(HttpServletRequest request , HttpSession httpSession) throws Exception {
 		String templateIdStr = request.getParameter("templateId");
+		Key key   = ((Key)httpSession.getAttribute("key"));
 		if (templateIdStr == null || templateIdStr.equals("")) {
 			return "";
 		}
@@ -216,13 +236,22 @@ public class TemplateController extends BaseController{
 		Flow flow = das.queryFlow(template.getFlowId());
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		returnMap.put("actions", flow.getActions());
+		returnMap.put("templateMailOptions", template.getTemplateMailOption());
 		Map<String, String> usersMap = new HashMap<String, String>();
-		for (Right right : flow.queryNodeUserRight(template.getId())) {
-			usersMap.put(right.getUsername(), right.getNickname());
+		
+		if (template.isProTemplate()) {
+			List<UserInfo> allUsers = ProjectInvolveManager.getInstance().getCompanyUsersByMail(key.getUsername());
+			for (UserInfo userInfo : allUsers) {
+				usersMap.put(userInfo.getUserName(),userInfo.getNickName());
+			}
+			returnMap.put("roles", ProjectInvolveManager.getInstance().getAllRole(key.getUsername()));
+		}else {
+			for (Right right : flow.queryNodeUserRight(template.getId())) {
+				usersMap.put(right.getUsername(), right.getNickname());
+			}
+			returnMap.put("roles", flow.getRoleMap().values().toArray(new Role[0]));
 		}
 		returnMap.put("users", usersMap);
-		returnMap.put("templateMailOptions", template.getTemplateMailOption());
-		returnMap.put("roles", flow.getRoleMap().values().toArray(new Role[0]));
 		return JSONArray.toJSONString(returnMap);
 	}
 

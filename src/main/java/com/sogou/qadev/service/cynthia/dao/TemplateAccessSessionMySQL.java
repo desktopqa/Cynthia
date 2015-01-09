@@ -143,18 +143,21 @@ public class TemplateAccessSessionMySQL {
 		try
 		{
 			conn = DbPoolConnection.getInstance().getConnection();
-			String sql = "insert into template (id,name,layout_xml,is_new) values (?,?,?,?)";
+			String sql = "insert into template (id,name,layout_xml,is_new,create_user) values (?,?,?,?,?)";
 			
 			pstm = conn.prepareStatement(sql);
 			pstm.setString(1, template.getId().getValue());
 			pstm.setString(2, template.getName());
 			pstm.setString(3, template.toXMLString());
 			pstm.setBoolean(4, true);
+			pstm.setString(5, template.getCreateUser());
+			
 			if (pstm.executeUpdate()>0) {
 				return true;
 			}else {
 				return false;
 			}
+			
 		}catch(Exception e)
 		{
 			e.printStackTrace();

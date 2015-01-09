@@ -44,8 +44,6 @@
 	
 	DataAccessSession das = DataAccessFactory.getInstance().createDataAccessSession(key.getUsername(), keyId);
 	
-	System.out.println("in upload.jsp");
-	
 	response.setContentType("text/html; charset=UTF-8");
 	
 	if(!ServletFileUpload.isMultipartContent(request)){
@@ -63,7 +61,6 @@
 	while (itr.hasNext()) {
 		FileItem item = (FileItem) itr.next();
 		String fileName = item.getName();
-		System.out.println(fileName);
 		if(fileName == null)
 			continue;
 		fileName = fileName.substring(fileName.lastIndexOf("\\")+1);

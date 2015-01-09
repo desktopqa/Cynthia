@@ -83,7 +83,6 @@
 	for(Node node : filtersNode)
 	{
 		//只显示总数
-// 		String tempString = "("+XMLUtil.getAttribute(node,"newAccount")+"/"+XMLUtil.getAttribute(node,"totalAccount")+")";
 		String tempString = "("+XMLUtil.getAttribute(node,"totalAccount")+")";
 		filterDatas.put(XMLUtil.getAttribute(node,"id"),tempString);
 	}

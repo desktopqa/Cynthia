@@ -6,8 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.sogou.qadev.service.cynthia.bean.UserInfo;
 import com.sogou.qadev.service.cynthia.bean.impl.UserInfoImpl;
@@ -115,6 +117,34 @@ public class BackRightAccessSessionMySQL {
 		}
 	}
 
+	
+	public Set<String> getTemplateRightUserMails(String templateId) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		Set<String> allUsers = new HashSet<String>();
+		try
+		{
+			conn = DbPoolConnection.getInstance().getReadConnection();
+			String sql = "select admin_user from template_admin_user where template_id = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, templateId);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				allUsers.add(rs.getString("admin_user"));
+			}
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}finally
+		{
+			DbPoolConnection.getInstance().closeResultSet(rs);
+			DbPoolConnection.getInstance().closeStatment(pstmt);
+			DbPoolConnection.getInstance().closeConn(conn);
+		}
+		return allUsers;
+	}
+	
 
 	/**
 	 * @description:get template right users

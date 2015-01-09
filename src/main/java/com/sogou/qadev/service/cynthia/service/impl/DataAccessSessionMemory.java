@@ -1,8 +1,10 @@
 package com.sogou.qadev.service.cynthia.service.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -16,10 +18,13 @@ import com.sogou.qadev.service.cynthia.bean.GuideBean;
 import com.sogou.qadev.service.cynthia.bean.JSTree;
 import com.sogou.qadev.service.cynthia.bean.Script;
 import com.sogou.qadev.service.cynthia.bean.TagBean;
+import com.sogou.qadev.service.cynthia.bean.Template;
 import com.sogou.qadev.service.cynthia.bean.Timer;
 import com.sogou.qadev.service.cynthia.bean.TimerAction;
 import com.sogou.qadev.service.cynthia.bean.UUID;
 import com.sogou.qadev.service.cynthia.bean.UserInfo;
+import com.sogou.qadev.service.cynthia.bean.UserInfo.UserRole;
+import com.sogou.qadev.service.cynthia.bean.impl.UserInfoImpl;
 import com.sogou.qadev.service.cynthia.dao.AttachmentAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.dao.BackRightAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.dao.DataAccessSessionMySQL;
@@ -41,9 +46,12 @@ import com.sogou.qadev.service.cynthia.dao.UserDefaultTemplateMySQL;
 import com.sogou.qadev.service.cynthia.dao.UserInfoAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
 import com.sogou.qadev.service.cynthia.factory.ScriptAccessFactory;
+import com.sogou.qadev.service.cynthia.service.ConfigManager;
 import com.sogou.qadev.service.cynthia.service.DataFilter;
+import com.sogou.qadev.service.cynthia.service.ProjectInvolveManager;
 import com.sogou.qadev.service.cynthia.service.ScriptAccessSession;
 import com.sogou.qadev.service.cynthia.util.ConfigUtil;
+import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
 import com.sogou.qadev.service.cynthia.util.XMLUtil;
 
 public class DataAccessSessionMemory extends AbstractDataAccessSession
@@ -1171,7 +1179,11 @@ public class DataAccessSessionMemory extends AbstractDataAccessSession
 	 * @see com.sogou.qadev.service.cynthia.service.DataAccessSession#queryUserInfoByUserName(java.lang.String)
 	 */
 	public UserInfo queryUserInfoByUserName(String userName) {
-		return new UserInfoAccessSessionMySQL().queryUserInfoByUserName(userName);
+		if (ConfigManager.getEnableSso()) {
+			return ProjectInvolveManager.getInstance().getUserInfoByMail(userName);
+		}else {
+			return new UserInfoAccessSessionMySQL().queryUserInfoByUserName(userName);
+		}
 	}
 	
 	/**
@@ -1410,7 +1422,20 @@ public class DataAccessSessionMemory extends AbstractDataAccessSession
 	 */
 	@Override
 	public List<UserInfo> getTemplateRightUser(String templateId){
-		return new BackRightAccessSessionMySQL().getTemplateRightUser(templateId);
+		
+		if (ConfigManager.getProjectInvolved()) {
+			List<UserInfo> allUsers = new ArrayList<UserInfo>();
+			Set<String> users = new BackRightAccessSessionMySQL().getTemplateRightUserMails(templateId);
+			for (String user : users) {
+				UserInfo userInfo = new UserInfoImpl();
+				userInfo.setUserName(user);
+				userInfo.setNickName(CynthiaUtil.getUserAlias(user));
+				allUsers.add(userInfo);
+			}
+			return allUsers;
+		}else {
+			return new BackRightAccessSessionMySQL().getTemplateRightUser(templateId);
+		}
 	}
 	
 	/**
@@ -1536,8 +1561,12 @@ public class DataAccessSessionMemory extends AbstractDataAccessSession
 	 * @return
 	 * @see com.sogou.qadev.service.cynthia.service.DataAccessSession#queryAllUsersByStatAndName(java.lang.String, java.lang.String)
 	 */
-	public List<UserInfo> queryAllUsersByStatAndName(String userStat,String userName){
-		return new UserInfoAccessSessionMySQL().queryAllUsersByStatAndName(userStat,userName);
+	public List<UserInfo> queryAllUsersByStatAndName(String curUser,String userStat,String queryUser){
+		if (ConfigManager.getProjectInvolved()) {
+			return ProjectInvolveManager.getInstance().getCompanyUsersByMail(curUser);
+		}else {
+			return new UserInfoAccessSessionMySQL().queryAllUsersByStatAndName(userStat,queryUser);
+		}
 	}
 	
 	/**

@@ -78,7 +78,6 @@ if ( "image".equalsIgnoreCase(type) )
 	}
 }else
 {
-	//response.addHeader("Content-Disposition","attachment;filename='" + URLEncoder.encode(attachment.getName(), "utf-8")+"'");
 	response.setHeader( "Content-Disposition", "attachment;filename=" + new String( attachment.getName().getBytes("gb2312"), "ISO8859-1" ) );
 	response.setContentType("application/x-attachment");
 	try

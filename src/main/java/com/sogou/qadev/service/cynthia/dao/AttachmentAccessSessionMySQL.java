@@ -16,7 +16,10 @@ import com.sogou.qadev.service.cynthia.bean.Attachment;
 import com.sogou.qadev.service.cynthia.bean.UUID;
 import com.sogou.qadev.service.cynthia.bean.impl.AttachmentImpl;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
+import com.sogou.qadev.service.cynthia.service.ConfigManager;
 import com.sogou.qadev.service.cynthia.service.DbPoolConnection;
+import com.sogou.qadev.service.cynthia.service.FileUpDownLoadHandler;
+import com.sogou.qadev.service.cynthia.service.ProjectInvolveManager;
 
 /**
  * @description:attachment db processor
@@ -88,6 +91,9 @@ public class AttachmentAccessSessionMySQL
 			return null;
 		}
 
+		int dataLength = data.length;
+		byte[] returnData = data;
+		
 		Connection conn = null;
 		PreparedStatement pstm = null;
 		try{
@@ -97,19 +103,22 @@ public class AttachmentAccessSessionMySQL
 			
 			String fileId = "";
 			
-			//分布式上传
-//			String fileId = FileUpDownLoadHandler.postFile(name,data);
-//			if (fileId == null || fileId.length() == 0) {
-//				throw new Exception("上传文件出错");
-//			}
+			if (ConfigManager.getEnableFileSystem()) {
+				//分布式上传
+				fileId = FileUpDownLoadHandler.postFile(name,data);
+				if (fileId == null || fileId.length() == 0) {
+					throw new Exception("上传文件出错");
+				}
+				data = null;
+			}
 			
 			pstm = conn.prepareStatement("insert into attachment set id = ?, size = ?, create_user = ?, name = ?, create_time = ?, file_id=? ,data=?");
 			pstm.setLong(1, Long.parseLong(id.getValue()));
-			pstm.setLong(2, data.length);
+			pstm.setLong(2, dataLength);
 			pstm.setString(3, username);
 			pstm.setString(4, name);
 			pstm.setTimestamp(5, createTime);
-			pstm.setString(6, fileId==null?"":fileId);
+			pstm.setString(6, fileId);
 			pstm.setBytes(7, data);
 			pstm.execute();
 
@@ -117,8 +126,8 @@ public class AttachmentAccessSessionMySQL
 			attachment.setName(name);
 			attachment.setCreateUser(username);
 			attachment.setCreateTime(createTime);
-			attachment.setData(data);
-			attachment.setSize(data.length);
+			attachment.setData(returnData);
+			attachment.setSize(dataLength);
 			attachment.setFileId(fileId);
 
 			return attachment;
@@ -158,12 +167,16 @@ public class AttachmentAccessSessionMySQL
 			sql.append("select id, size, name, create_user, create_time, file_id,data from attachment");
 
 			for(int i = 0; i < ids.length; i++){
+				if (ids[i] == null)
+					continue;
 				sql.append(" " + (i == 0 ? "where" : "or") + " id = ?");
 			}
 
 			statement = conn.prepareStatement(sql.toString());
 
 			for(int i = 0; i < ids.length; i++){
+				if (ids[i] == null)
+						continue;
 				statement.setLong(i + 1, Long.parseLong(ids[i].getValue()));
 			}
 
@@ -175,10 +188,14 @@ public class AttachmentAccessSessionMySQL
 				attachment.setCreateUser(rs.getString(4));
 				attachment.setCreateTime(rs.getTimestamp(5));
 				if (needData){
-					//分布式文件系统
-//					byte[] data = FileUpDownLoadHandler.downloadData(rs.getString("file_id"));
+					byte[] data = null;
+					if(ConfigManager.getEnableFileSystem()){
+						//分布式文件系统
+						data = FileUpDownLoadHandler.downloadData(rs.getString("file_id"));
+					}
+					if(data == null)
+						data = rs.getBytes("data");
 					
-					byte[] data = rs.getBytes("data");
 					attachment.setData(data);
 				}
 				attachmentList.add(attachment);

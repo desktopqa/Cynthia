@@ -24,6 +24,7 @@ import com.sogou.qadev.service.cynthia.bean.UUID;
 import com.sogou.qadev.service.cynthia.dao.DataAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.dao.FieldNameAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
+import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
 import com.sogou.qadev.service.cynthia.util.XMLUtil;
 
 /**
@@ -45,6 +46,15 @@ public class TemplateImpl implements Template
 	private String description = null;
 	private static final long serialVersionUID = -1L;
 	private TemplateMailOption tmo = new TemplateMailOption();
+	private boolean isProTemplate = false;  //是否项目管理相关表单  
+
+	public boolean isProTemplate() {
+		return isProTemplate;
+	}
+
+	public void setProTemplate(boolean isProTemplate) {
+		this.isProTemplate = isProTemplate;
+	}
 
 	/**
 	 * (non-Javadoc)
@@ -139,6 +149,14 @@ public class TemplateImpl implements Template
 
 			String fieldName = XMLUtil.getSingleNode(fieldNode, "name").getTextContent();
 			field.setName(fieldName);
+			
+			String timeFormat = XMLUtil.getSingleNodeTextContent(fieldNode, "timeFormat");
+			if(timeFormat!=null)
+				field.setTimestampFormat(timeFormat);
+			
+			String dateCurTime = XMLUtil.getSingleNodeTextContent(fieldNode, "dateCurTime");
+			if(dateCurTime!=null)
+				field.setDateCurTime(Boolean.parseBoolean(dateCurTime));
 
 			String fieldDescription = XMLUtil.getSingleNode(fieldNode, "description").getTextContent();
 			if (fieldDescription.length() > 0)
@@ -301,6 +319,7 @@ public class TemplateImpl implements Template
 			this.templateTypeId = templateTypeId;
 			this.name = name;
 			this.description = XMLUtil.getSingleNodeTextContent(templateNode, "description");
+			this.isProTemplate = Boolean.parseBoolean(XMLUtil.getSingleNodeTextContent(templateNode, "isProTemplate"));
 
 			String flowIdStr = XMLUtil.getSingleNode(templateNode, "flowId").getTextContent();
 			this.flowId = DataAccessFactory.getInstance().createUUID(flowIdStr);
@@ -331,7 +350,8 @@ public class TemplateImpl implements Template
 			this.tmo.setTemplateId(id);
 			Node templateMailNode = XMLUtil.getSingleNode(templateNode, "mail");
 			if (templateMailNode != null) {
-				this.tmo.setMailSubject(XMLUtil.getSingleNodeTextContent(templateMailNode, "subject"));
+				String subject = XMLUtil.getSingleNodeTextContent(templateMailNode, "subject");
+				this.tmo.setMailSubject(CynthiaUtil.isNull(subject) ? "" : subject);
 				String sendMailStr = XMLUtil.getSingleNodeTextContent(templateMailNode, "sendMail");
 				this.tmo.setSendMail( sendMailStr != null && sendMailStr.equals("true"));
 				List<Node> allActionMailNodes = XMLUtil.getNodes(templateMailNode, "actions/action");
@@ -389,6 +409,8 @@ public class TemplateImpl implements Template
 		templateImpl.flowId = this.flowId;
 		templateImpl.name = this.name;
 		templateImpl.description = this.description;
+		templateImpl.isProTemplate = this.isProTemplate;
+		templateImpl.createUser = this.createUser;
 
 		templateImpl.fieldRowList = new ArrayList<FieldRow>();
 		for(FieldRow fieldRow : fieldRowList)
@@ -704,6 +726,7 @@ public class TemplateImpl implements Template
 		xmlb.append("<templateTypeId>").append(this.getTemplateTypeId()).append("</templateTypeId>");
 		xmlb.append("<name>").append(XMLUtil.toSafeXMLString(this.getName())).append("</name>");
 		xmlb.append("<description>").append(XMLUtil.toSafeXMLString(this.getDescription())).append("</description>");
+		xmlb.append("<isProTemplate>").append(XMLUtil.toSafeXMLString(String.valueOf(this.isProTemplate))).append("</isProTemplate>");
 		xmlb.append("<flowId>").append(this.getFlowId()).append("</flowId>");
 		if(this.fieldRowList.size() == 0)
 		{

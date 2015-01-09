@@ -1,3 +1,4 @@
+<%@page import="com.sogou.qadev.service.cynthia.service.FilterQueryManager"%>
 <%@page language="java" contentType="text/xml; charset=UTF-8"%>
 
 <%@page import="com.sogou.qadev.service.cynthia.bean.Key"%>
@@ -88,12 +89,17 @@ if(filterId != null)
 		List<Node> displayNodes = XMLUtil.getNodes(filterXmlDoc,"query/template/display/field");
 		Node newDisplayNode = XMLUtil.getSingleNode(searchConfigDoc,"query/template/display");
 		newDisplayNode.setTextContent("");
+		Map<String,String> fieldWidthMap = FilterQueryManager.getDisplayFieldAndWidth(filter.getXml(), das);
 		for(Node node : displayNodes)
 		{
 			Node newNode = searchConfigDoc.createElement("field");
+			String name = XMLUtil.getAttribute(node,"name");
 			XMLUtil.setAttribute(newNode,"id",XMLUtil.getAttribute(node,"id"));
 			XMLUtil.setAttribute(newNode,"name",XMLUtil.getAttribute(node,"name"));
 			XMLUtil.setAttribute(newNode,"type",XMLUtil.getAttribute(node,"type"));
+			if(fieldWidthMap.get(name) != null){
+				XMLUtil.setAttribute(newNode,"width",fieldWidthMap.get(name));
+			}
 			if(XMLUtil.getAttribute(node,"datatype")!=null)
 			{
 				XMLUtil.setAttribute(newNode,"datatype",XMLUtil.getAttribute(node,"datatype"));

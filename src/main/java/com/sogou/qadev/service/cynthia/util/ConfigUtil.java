@@ -1,5 +1,7 @@
 package com.sogou.qadev.service.cynthia.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -10,6 +12,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.http.HttpRequest;
+
+import net.sf.ehcache.statistics.extended.ExtendedStatistics.Statistic;
+
 import com.sogou.qadev.service.cynthia.bean.Action;
 import com.sogou.qadev.service.cynthia.bean.Flow;
 import com.sogou.qadev.service.cynthia.bean.Role;
@@ -18,12 +27,12 @@ import com.sogou.qadev.service.cynthia.bean.UUID;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
 import com.sogou.qadev.service.cynthia.service.ConfigManager;
 import com.sogou.qadev.service.cynthia.service.DataAccessSession;
+import com.sogou.qadev.service.cynthia.service.ProjectInvolveManager;
 
 public class ConfigUtil {
 
 	// 缓存默认配置字段
 	final static public String templateFieldCacheprefix = "templateFieldCache_";
-
 	// 内部使用
 	final static public long ProductId = 45;
 
@@ -118,6 +127,19 @@ public class ConfigUtil {
 			webRootBuffer.append("/");
 		}
 		return webRootBuffer.toString();
+	}
+	
+	public static String getTargetUrl(HttpServletRequest request){
+		String requestURI = request.getRequestURI();
+		if(!CynthiaUtil.isNull(requestURI)){
+			requestURI = requestURI.substring(1);
+		}
+		String targetUrl = ConfigUtil.getCynthiaWebRoot() + requestURI + (request.getQueryString() != null ? "?" + request.getQueryString() : "" );
+		try {
+			return URLEncoder.encode(targetUrl,"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return targetUrl;
+		}
 	}
 
 	public static String[] getTaskTableHeaderKey() {
@@ -232,6 +254,25 @@ public class ConfigUtil {
 		return allSysFilterList;
 	}
 
+	public static String getLoginUrl(){
+		if (ConfigManager.getEnableSso()) {
+			//SSO单点登录
+			return ConfigManager.getSsoProperties().getProperty("sso.login.url");
+		}else {
+			//系统本机登录
+			return ConfigUtil.getCynthiaWebRoot() + "userInfo/login.jsp";
+		}
+	}
+	
+	public static String getLogOutUrl(){
+		if (ConfigManager.getEnableSso()) {
+			//SSO单点登录
+			return ConfigManager.getSsoProperties().getProperty("sso.logout.url");
+		}else {
+			//系统本机登录
+			return ConfigUtil.getCynthiaWebRoot() + "userInfo/login.jsp";
+		}
+	}
 	/**
 	 * 传进一个时间区域参数，传出时间区域的边界值，传出参数的0下标位置为起始时间，下标１为终止时间
 	 * 
@@ -247,7 +288,6 @@ public class ConfigUtil {
 		range[1] = null;
 
 		Calendar calendar = Calendar.getInstance();
-		// clear calendar
 		Calendar cc = (Calendar) calendar.clone();
 		cc.set(Calendar.HOUR_OF_DAY, 0);
 		cc.set(Calendar.MINUTE, 0);

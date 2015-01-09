@@ -7,6 +7,7 @@
 var flows = null;
 var allFlowRight = new Array();
 var optionRightControl = false;
+
 function initFlowList()
 {
 	if(optionRightControl){
@@ -47,9 +48,9 @@ function onInitFlowListAjax(rootNode)
 	$(rootNode).find("flows").children("flow").each(function(idx,node){
 		flows[idx] = new Object();
 		flows[idx].id = $(node).children("id").text();
-		flows[idx].name =$(node).children("name").text(); 
-		
-		if(!optionRightControl  || userRole === "super_admin" ||  $.inArray(flows[idx].id, allFlowRight) != -1){
+		flows[idx].name = $(node).children("name").text(); 
+		flows[idx].isProFlow = $(node).children("isProFlow").text(); 
+		if(!optionRightControl || flows[idx].isProFlow || userRole === "super_admin" ||  $.inArray(flows[idx].id, allFlowRight) != -1){
 			gridHtml += "<tr>";
 			gridHtml += "<td>" + index ++ +"</td>";
 			gridHtml += "<td><a href=\"admin_flow_edit.html?flowId="+ flows[idx].id + "&flowName=" + encodeURIComponent(flows[idx].name) + "\" target=\"_blank\">"+ flows[idx].name +"</a></td>";
@@ -68,10 +69,22 @@ function onInitFlowListAjax(rootNode)
 }
 
 
-function displayCreateDiv()
+function displayCreateDiv(projectInvolve)
 {
 	$("#input_name").val('');
+	$('#projectInvolve').val(projectInvolve);
 	$("#addFlowDiv").modal('show');
+	
+}
+
+
+function checkFlowName(name){
+	for(var i in flows){
+		if(flows[i].name == name){
+			return true;
+		}
+	}
+	return false;
 }
 
 function addFlow()
@@ -83,10 +96,15 @@ function addFlow()
 		return;
 	}
 	
+	if(checkFlowName(name)){
+		alert('己存在该名称流程,请修改!');
+		return;
+	}
+	
 	$.ajax({
 		url : 'flow/add_Flow_xml.jsp',
 		type : 'POST',
-		data : {'name':name},
+		data : {'name':name,'projectInvolved' : $('#projectInvolve').val()},
 		success :onCompleteAddFlow
 	});
 	
@@ -196,12 +214,13 @@ function initSystem()
 		dataType:'json',
 		async:false,
 		success:function(data){
-			data = eval('(' + data + ')');
-			for(var key in data){
-				if(key == 'openRight'){
-					optionRightControl = (data[key] == 'true' ? true : false);
-					break;
-				}
+			optionRightControl = (data.openRight == 'true' ? true : false);
+			if(data.projectInvolved == 'true'){
+				$('.project_involved_true').show();
+				$('.project_involved_false').hide();
+			}else{
+				$('.project_involved_true').hide();
+				$('.project_involved_false').show();
 			}
 		}
 	});

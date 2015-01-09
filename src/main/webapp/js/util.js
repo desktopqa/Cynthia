@@ -1,5 +1,5 @@
 var userPicUrl,  //用户头像地址
-	WEB_ROOT_URL = WEB_ROOT_URL || readCookie('webRootDir') || document.location.href,//项目部署主路径
+	WEB_ROOT_URL = WEB_ROOT_URL || readCookie('webRootDir'),
 	base_url = getRootDir(); //相对路径
 
 var ESCAPE_APOS = "QADEV_ESCAPE_APOS";
@@ -24,6 +24,513 @@ noSearchUrl.push('guide.html');
 var noAddHeadUrl = new Array();
 noAddHeadUrl.push('login.jsp');
 noAddHeadUrl.push('register.jsp');
+
+window.cynthia = {
+		version : '1.0' //# cynthia 版本号
+		, noop  : function() { //#空函数
+			return function(){
+				//空函数
+			};
+		}
+		, isArray : Array.isArray || function( array ) {  //# 判断变量 是否为数组
+			return '[object Array]' == Object.prototype.toString.call( array );
+		}
+		, config : {} //用户传入
+};
+
+//通用url操作
+cynthia.url = { 
+		//#URL
+		//参数：变量名，url为空则表从当前页面的url中取
+		getQuery : function(name, url){
+			var u = arguments[1] || window.location.search
+				, reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)")
+				, r = u.substr(u.indexOf("?")+1).match(reg)
+			;
+			return r != null ? r[2] : "";
+		}
+		, getHash : function(name, url){ //# 获取 hash值
+			var u = arguments[1] || location.hash;
+			var r = u.substr(u.indexOf("#") + 1);
+			return r;
+		}
+		, parse : function(url) { //# 解析URL
+			var a =  document.createElement('a');
+			url = url || document.location.href;
+			a.href = url ;
+			return {
+				source		: url
+				, protocol	: a.protocol.replace(':','')
+				, host		: a.hostname
+				, port		: a.port
+				, query		: a.search
+				, file		: (a.pathname.match(/([^\/?#]+)$/i) || [,''])[1]
+				, hash		: a.hash.replace('#','')
+				, path		: a.pathname.replace(/^([^\/])/,'/$1')
+				, relative	: (a.href.match(/tps?:\/\/[^\/]+(.+)/) || [,''])[1]
+				, segments	: a.pathname.replace(/^\//,'').split('/')
+			};
+		}
+};
+
+//通用数组操作
+cynthia.array = {
+		//判断变量是否为数组
+		isArray : Array.isArray || function( array ) {  //# 判断变量 是否为数组
+			return '[object Array]' == Object.prototype.toString.call( array );
+		}
+
+		// inArray, 返回位置！ 不存在则返回 -1；
+		,index : function(t, arr){ //# 返回当前值所在数组的位置
+			if(arr.indexOf){
+				return arr.indexOf(t);
+			}
+			for(var i = arr.length ; i--; ){
+				if(arr[i]===t){
+					return i*1;
+				}
+			};
+			return -1;
+		}
+		
+		//返回对象 的 键值！  返回值 类型为数组。
+		, getKey : function( data ){ //# 返回对象所有的键值
+			var arr = [], k;
+			for( k in data) {
+				arr.push( k );
+			};
+			return arr ;
+		}
+		// max , 数组中最大的项
+		, max : function( array ){//#求数组中最大的项
+			return Math.max.apply(null, array);
+		}
+		// min , 数组中最小的项
+		, min : function( array ){ //#求数组中最小的项
+			return Math.min.apply(null, array);
+		}
+		// remove ， 移除
+		, remove : function( array, value ){ //#移除数组中某值
+			var length = array.length;
+			while( length-- ){
+				if( value === array[ length ] ){
+					array.splice(length, 1);
+				}
+			}
+			return array;
+		}
+		
+		//  removeAt ，删除指定位置的 值
+		//@index , 索引. 不传递 index ，会删除第一个
+		, removeAt : function( array, index ){ //#删除数组中 指定位置的值
+			array.splice( index, 1);
+			return array;
+		}
+};
+
+
+cynthia.browser = { //#浏览器
+		browsers : { //# 浏览器内核类别
+			weixin		: /micromessenger(\/[\d\.]+)*/   //微信内置浏览器
+			, mqq		: /mqqbrowser(\/[\d\.]+)*/       //手机QQ浏览器
+			, uc		: /ucbrowser(\/[\d\.]+)*/            //UC浏览器
+			, chrome	: /(?:chrome|crios)(\/[\d\.]+)*/  //chrome浏览器
+			, firefox	: /firefox(\/[\d\.]+)*/          //火狐浏览器
+			, opera		: /opera(\/|\s)([\d\.]+)*/     //欧朋浏览器
+			, sougou	: /sogoumobilebrowser(\/[\d\.]+)*/   //搜狗手机浏览器
+			, baidu		: /baidubrowser(\/[\d\.]+)*/          //百度手机浏览器
+			, 360		: /360browser([\d\.]*)/                         //360浏览器
+			, safari	: /safari(\/[\d\.]+)*/		//苹果浏览器
+			, ie		: /msie\s([\d\.]+)*/    // ie 浏览器
+		}
+		//@errCall : 错误回调
+		, addFav : function( url, title, errCall){ //#加入收藏夹
+			try{
+				window.external.addFavorite(url, title);
+			}catch(e){
+				try{
+					window.sidebar.addPanel(title, url, '');
+				}catch (e){
+					errCall();
+				}
+			}
+		},
+		//浏览器版本
+		coreInit : function(){ //#noadd
+			var i 			= null
+				, browsers 	= this.browsers
+				, ua		= window.navigator.userAgent.toLowerCase()
+				, brower	= ''
+				, pos		= 1
+			;
+			for( i in browsers){
+				if( brower = ua.match( browsers[i] ) ){
+					if( i == 'opera'){
+						pos = 2;
+					}else{
+						pos = 1;
+					}
+					this.version = (brower[ pos ] || '').replace(/[\/\s]+/, '');
+					this.core = i ;
+					return i;
+				}
+			}
+		}
+		// 检测IE版本 ！仅支持IE:  5,6,7,8,9 版本
+		, ie : (function(){ //# 检测IE版本 ！仅支: ie5,6,7,8,9
+			var v = 3, div = document.createElement('div'), all = div.getElementsByTagName('i');
+			while (
+				div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
+					all[0]
+				);
+			return v > 4 ? v : false ;
+		})()
+		, isWebkit : /webkit/i.test(navigator.userAgent)
+		, version : 0
+		, core	: ''
+
+};
+
+cynthia.date = {
+        format: function (formatType, time, weeks) { //格式化输出时间
+            var pre = '0';
+            var formatType = formatType || 'YYYY-MM-DD';
+            //格式化时间
+            var weeks = weeks || '日一二三四五六';
+            var time = time || new Date();
+            return (formatType || '')
+                .replace(/yyyy|YYYY/g, time.getFullYear())
+                .replace(/yy|YY/g, cynthia.string.addPre(pre, time.getFullYear() % 100), 2)
+                .replace(/mm|MM/g, cynthia.string.addPre(pre, time.getMonth() + 1, 2))
+                .replace(/m|M/g, time.getMonth() + 1)
+                .replace(/dd|DD/g, cynthia.string.addPre(pre, time.getDate(), 2))
+                .replace(/d|D/g, time.getDate())
+                .replace(/hh|HH/g, cynthia.string.addPre(pre, time.getHours(), 2))
+                .replace(/h|H/g, time.getHours())
+                .replace(/ii|II/g, cynthia.string.addPre(pre, time.getMinutes(), 2))
+                .replace(/i|I/g, time.getMinutes())
+                .replace(/ss|SS/g, cynthia.string.addPre(pre, time.getSeconds(), 2))
+                .replace(/s|S/g, time.getSeconds())
+                .replace(/w/g, time.getDay())
+                .replace(/W/g, weeks[time.getDay()])
+                ;
+        },
+
+        convertTZtime: function (time) {
+            time = time || "";
+            time = time.replace("T", " ");
+            time = time.replace("Z", "");
+            return time;
+        },
+
+        getLastDayDate : function(day,formatType,date){
+            var startTime;
+            if(date){
+                startTime = new Date(date).getTime();
+            }else{
+                startTime = new Date().getTime();
+            }
+            startTime = startTime - 1000 * 60 * 60 * 24 * parseInt(day);
+            formatType = formatType || 'YYYY-mm-dd HH:ii:ss';
+            return this.format(formatType, new Date(startTime));
+        }
+};
+
+//字符串匹配通用
+cynthia.regExp = {  
+		//是否为 数字！整数，浮点数
+		isNum : function( num ){ //# 是否为数组
+			return ! isNaN( num ) ;
+		}
+		, isEmail : function( mail ){//# 是否为 邮箱
+			return /^([a-z0-9]+[_\-\.]?)*[a-z0-9]+@([a-z0-9]+[_\-\.]?)*[a-z0-9]+\.[a-z]{2,5}$/i.test( mail );
+		}
+		, isIdCard : function( card ){ //# 是否为 身份证
+			return /^(\d{14}|\d{17})(\d|[xX])$/.test( card );
+		}
+		, isMobile : function( mobile ){ //# 是否为 手机
+			return /^0*1\d{10}$/.test( mobile ) ;
+		}
+		, isQQ : function( qq ){ //# 是否为 QQ
+			return /^[1-9]\d{4,10}$/.test( qq );
+		}
+		, isTel:function( tel ){ //# 是否为 电话
+			return /^\d{3,4}-\d{7,8}(-\d{1,6})?$/.text( tel ) ;
+		}
+		, isUrl : function( url ){ //# 是否为 URL
+			return /https?:\/\/[a-z0-9\.\-]{1,255}\.[0-9a-z\-]{1,255}/i.test( url );
+		}
+		, isColor : function( color ){ //# 是否为 16进制颜色
+			return /#([\da-f]{3}){1,2}$/i.test( color );
+		}
+		//@id ： 身份证 ，
+		// @now : 当前时间 如：new Date('2013/12/12') , '2013/12/12'
+		// @age ： 允许的年龄
+		, isAdult : function( id, allowAge, now ){ //# 是否年龄是否成年
+			var age = 0 // 用户 年月日
+				, nowDate = 0  //当前年月日
+			;
+			allowAge = parseFloat( allowAge ) || 18;
+			now = typeof now == 'string' ? new Date( now ) : ( now || new Date() );
+
+
+			if( ! this.isIdCard( id ) ){
+				return false ;
+			}
+			//15位身份证
+			if( 15 == id.length ){
+				age = '19'+ id.slice(6, 6);
+			}else{
+				age = id.slice(6, 14);
+			}
+			// 类型转换 整型
+			age = ~~age;
+			nowDate = ~~( julyJs.date.format('YYYYMMDD', now) );
+			//比较年龄
+			if( nowDate - age < allowAge * 1e4 ){
+				return false ;
+			}
+			return true ;
+		}
+		//浮点数
+		, isFloat : function( num ){ //# 是否为 浮点数
+			return /^(([1-9]\d*)|(\d+\.\d+)|0)$/.test( num );
+		}
+		//正整数
+		, isInt : function( num ){ //# 是否为 正整数
+			return /^[1-9]\d*$/.test( num );
+		}
+		//是否全为汉字
+		, isChinese : function( str ){ //# 是否全为 汉字
+			return /^([\u4E00-\u9FA5]|[\uFE30-\uFFA0])+$/gi.test(str);
+		}
+};
+
+
+//# 字符串
+cynthia.string = {
+		codeHtml : function(content){ //# 转义 HTML 字符
+			return this.replace(content, {
+				'&'			: "&amp;"
+				, '"'		: "&quot;"
+				, "'"		: '&#39;'
+				, '<'		: "&lt;"
+				, '>'		: "&gt;"
+				, ' '		: "&nbsp;"
+				, '\t'		: "&#09;"
+				, '('		: "&#40;"
+				, ')'		: "&#41;"
+				, '*'		: "&#42;"
+				, '+'		: "&#43;"
+				, ','		: "&#44;"
+				, '-'		: "&#45;"
+				, '.'		: "&#46;"
+				, '/'		: "&#47;"
+				, '?'		: "&#63;"
+				, '\\'		: "&#92;"
+				, '\n'		: "<br>"
+			});
+		}, 
+		//去除两边空格
+		trim : function( text ){ //# 去除两边空格
+			return ( text || '' ).replace(/^\s+|\s$/, '');
+		}, 
+		//字符串替换
+		replace : function(str, re){ //# 字符串替换
+			str = str || '';
+			for(var key in re){
+				replace(key,re[key]);
+			};
+			function replace(a,b){
+				var arr = str.split(a);
+				str = arr.join(b);
+			};
+			return str;
+		},
+		
+		//格式化
+		format : function(src)
+		{
+		    if (arguments.length == 0) return null;
+		    var args = Array.prototype.slice.call(arguments, 1);
+		    return src.replace(/\{(\d+)\}/g, function (m, i) {
+		        return args[i];
+		    });
+		},
+		
+		//增加前缀
+        addPre : function (pre, word, size) { //# 补齐。如给数字前 加 0
+            pre = pre || '0';
+            size = parseInt(size) || 0;
+            word = String(word || '');
+            var length = Math.max(0, size - word.length);
+            return this.repeat(pre, length, word);
+        },
+        
+        //重复字符串
+        repeat : function (word, length, end) {
+            end = end || ''; //加在末位
+            length = ~~length;
+            return new Array(length * 1 + 1).join(word) + '' + end;
+        }
+};
+
+
+//其它一些通用方法
+cynthia.util = {
+		//阻止浏览器默认行为
+		stopDefault : function( e ){
+		    if ( e && e.preventDefault ){
+		    	e.preventDefault(); 
+		    }else{
+		    	//IE中阻止函数器默认动作的方式 
+		    	window.event.returnValue = false; 
+		    }
+		    return false; 
+		},
+		//给多选时间字段赋值
+		//@timeSelectId: select id
+		//@minTime:时间最小值
+		//@maxTime：时间最大值
+		//@choosedArr：选中的时间
+		setTimeValue : function(timeSelectId, minTime, maxTime,choosedArr ){
+			var $timeNode = $("#" + timeSelectId);
+			$timeNode.empty();
+			for(var i = minTime ; i <= maxTime; i ++ )
+			{
+				if(inArrayIndex(i,choosedArr)>=0)
+					$timeNode.append("<option value='"+i+"' selected='selected'>"+i+"</option>");
+				else
+					$timeNode.append("<option value='"+i+"'>"+i+"</option>");
+			}
+		},
+		
+		moveOptions : function ( sourceSelObjId, targetSelObjId ){
+			sourceSelObj = document.getElementById(sourceSelObjId);
+			targetSelObj = document.getElementById(targetSelObjId);
+
+			if( sourceSelObj == null || targetSelObj == null
+					|| sourceSelObj.tagName != "SELECT" || targetSelObj.tagName != "SELECT" )
+				return;
+
+			for( var is = 0; is < sourceSelObj.options.length; is++ )
+			{
+				if( !sourceSelObj.options[is].selected )
+					continue;
+
+				var option = sourceSelObj.options[is];
+
+				sourceSelObj.remove( is );
+				is--;
+
+				targetSelObj.options[ targetSelObj.options.length ] = option;
+			}
+		},
+		
+		showLoading : function (isShow)
+		{
+			if(isShow){
+				if($("#layout").length == 0){
+					var info="<div id=\"layout\" style=\"display: none;position: absolute;top:40%;left: 40%;width: 20%;height: 20%;z-index: 999999;\"><img src=\"/images/refresh.gif\"/></div>";
+					$("body").append(info);
+				}
+				$('#layout').fadeIn("fast");
+			}else{
+				$('#layout').fadeOut("fast");
+			}
+		},
+
+		showInfoWin : function (type, message , time)
+		{
+			$("#warning-info").remove();
+			var info="<div class='alert alert-"+type+" hide' style='position:fixed;top:5px;left:500px;width:30%;height:20px; margin:0 auto; z-index:99999' id='warning-info'>";
+			info += "<button type='button' class='close' data-dismiss='alert'>&times;</button>";
+			info += "<p id='message'>"+message+"</p>";
+			info += "</div>";
+			$("body").append(info);
+			$("#warning-info").show();
+			if(time == undefined)
+				window.setTimeout("this.closeInfoWin()", 2000);
+			else
+				window.setTimeout("this.closeInfoWin()", time);
+		},
+		
+		closeInfoWin : function (type) {  
+			$("#warning-info").hide();
+		} 
+};
+
+
+//xml通用
+cynthia.xml = {
+		
+		getXMLStr : function(str){
+			str = replaceAll(str, "&", "&amp;");
+			str = replaceAll(str, "<", "&lt;");
+			str = replaceAll(str, ">", "&gt;");
+			str = replaceAll(str, "'", "&apos;");
+			str = replaceAll(str, "\"", "&quot;");
+			return str;
+		},
+
+		getNoXMLStr : function(str){
+			str = replaceAll(str, "&lt;", "<");
+			str = replaceAll(str, "&gt;", ">");
+			str = replaceAll(str, "&apos;", "'");
+			str = replaceAll(str, "&quot;", "\"");
+			str = replaceAll(str, "&amp;", "&");
+			return str;
+		},
+		
+		getXMLDoc : function(){
+			if(document.implementation && document.implementation.createDocument){
+				return document.implementation.createDocument("", "", null);
+			}
+
+			if(window.ActiveXObject){
+				return new ActiveXObject("Msxml.DOMDocument");
+			}
+			return null;
+		},
+		
+		getDocXML : function (doc)
+		{
+			if(doc.xml)
+			{
+				return doc.xml;
+			}
+			return new XMLSerializer().serializeToString(doc);
+		},
+		
+		setTextContent : function (node, text)
+		{
+			while(node.childNodes.length > 0)
+			{
+				node.removeChild(node.firstChild);
+			}
+
+			if(text != "")
+			{
+				var textNode = node.ownerDocument.createTextNode("text");
+				textNode.nodeValue = text;
+				node.appendChild(textNode);
+			}
+		},
+
+		getTextContent : function (node)
+		{
+			var value = "";
+
+			for(var i = 0; i < node.childNodes.length; i++)
+			{
+				if(node.childNodes[i].nodeValue != null)
+					value += node.childNodes[i].nodeValue;
+			}
+
+			return trim(value);
+		}
+};
+
 
 String.format = function (src) 
 {
@@ -832,80 +1339,6 @@ function arrayContainsString(arr,str){
 			return true;
 }
 
-//发送邮件
-function showSendMailWin()
-{
-	$("#send_mail_win").css('display','block');
-	$("#send_mail_win_back").css('display','block');
-	$("#sendMailReceivers").val("");
-	$("sendMailContent").val("");
-}
-
-
-function executeSendMailCancel()
-{
-	$("#send_mail_win").hide();
-	$("#send_mail_win_back").hide();
-}
-
-
-function executeSendMailSubmit()
-{
-	var sendMailReceivers = $("#sendMailReceivers").val();
-	if(sendMailReceivers == "")
-	{
-		alert("请填写收件人");
-		return;
-	}
-	var usrArray = sendMailReceivers.split(";");
-	for(var i = 0 ; i< usrArray.length ; i++){
-		if(usrArray[i].indexOf("@")!=-1)
-			if(!isEmail(usrArray[i])){
-				alert("邮箱格式不正确，请重新填写");
-				$("#sendMailReceivers").focus();
-				return;
-			}
-	}
-
-	if($("#sendMailContent").val() == "")
-	{
-		alert("请填写邮件正文");
-		return;
-	}
-
-	var sendMailContent = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=GBK\"/>";
-	sendMailContent += "<style type=\"text/css\">table{border:1px #E1E1E1 solid;}td{border:1px #E1E1E1 solid;padding:10px;}</style></head>"
-	sendMailContent += "<body><table>";
-	sendMailContent += "<tr><td>邮件正文 </td><td>" + replaceAll(getXMLStr($("#sendMailContent").val()), "\n", "<br>") + "</td>";
-	sendMailContent += "<tr><td>bug编号</td><td><a href=\"" + WEB_ROOT_URL + "taskManagement.html?operation=read&taskid="+taskId+"\">"+taskId+"</a></td>";
-	sendMailContent += "<tr><td>bug描述</td><td>" + replaceAll($("#input_taskDescription").val(),"../attachment/download_json.jsp", WEB_ROOT_URL + "attachment/download_json.jsp") +"</td>";
-	sendMailContent += "</table></body></html>";
-
-	var params = "sendMailReceivers=" + getSafeParam(sendMailReceivers);
-	params += "&sendMailSubject=" + getSafeParam("[Cynthia]有数据需要您的处理意见，请关注并处理");
-	params += "&sendMailContent=" + getSafeParam(sendMailContent);
-
-	$("#mail_send_ok").disabled = true;
-
-	$.ajax({
-		url : "../mail/executeSendMail.jsp",
-		data : params,
-		type : 'POST',
-		success : send_mail_success
-	});
-}
-
-function send_mail_success()
-{
-	alert("邮件发送成功!");
-	executeSendMailCancel();
-	$("#mail_send_ok").disabled = false;
-}
-
-
-//end of send mail
-
-
 function isEmail(strEmail)
 {
 	if (strEmail.search(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) != -1)
@@ -983,33 +1416,34 @@ function showInfoWin(type, message , time)
 
 function logout()
 {
+	deleteCookie('id');
+	deleteCookie('login_username');
+	deleteCookie('login_nickname');
 	if(!window.confirm("确定要退出Cynthia吗？"))
 		return;
-	window.location = base_url + 'logout.jsp';
+	window.location = base_url + 'user/logout.do?isReturn=true&targetUrl=' + encodeURIComponent(window.location.href);
 }
 
 /**
  * 返回根目录路径,方便不同路径下的ajax请求
  * @returns {String}
  */
-function getRootDir()
-{
-	var contextPath='',count,webBaseUrl=WEB_ROOT_URL,webBaseCount;
+function getRootDir(){
+	var contextPath='',count,webBaseUrl = WEB_ROOT_URL , webBaseCount;
 	var pathName = document.location.pathname;
     pathName = pathName.substr(1);
     //求pathName中 / 的个数 多少个则向上返回多少级；
     count = pathName.replace(/[^\/]/g,'').length;
     webBaseUrl = trim(webBaseUrl).substring(8);
     webBaseCount = webBaseUrl.replace(/[^\/]/g,'').length - 1;
-    
-    count -= webBaseCount;
-
+    //TODO改进
+    if(isEffevo())
+    	count -= 1;
+    else
+    	count -= webBaseCount;
     if(count > 0){
     	for(var i = 0; i < count; i++)
     		contextPath += "../";
-    }else{
-    	//当前在根目录路径
-    	contextPath += "";
     }
     return contextPath;
 }
@@ -1112,47 +1546,49 @@ function queryUserInfo()
 		type:'POST',
 		async:false,
 		dataType:'json',
-		data:{'user':readCookie("login_username")},
+		data:{'userMail':readCookie("login_username"),'userId':readCookie("id")},
 		success:function(data){
 			user = data;
-			if(!data.picId)
-				userPicUrl = base_url + "images/default_user.png";
-			else
-				userPicUrl = base_url + "attachment/download.jsp?method=download&id=" + data.picId;
+			userPicUrl = user.picUrl || base_url + "images/default_user.png";
+			if(data){
+				createCookie("login_nickname=" + encodeURIComponent(data.nickName));
+				createCookie("login_username=" + data.userName);
+			}
 		}
 	});
 	return user;
 }
 
-function addHeadHtml()
+function isEffevo(){
+	return ( window.location.href.indexOf('www.effevo.com') != -1 || window.location.href.indexOf('server2.weibo.shouji.sogou.com') != -1 );
+}
+
+function checkLogin()
 {
-	var rootDir = base_url,userInfo;
-	var userMail = readCookie("login_username");
+	var userInfo,userMail = readCookie("login_username");
 	//用户头像id
-	if(!userPicUrl)
+	if(!userPicUrl || !userMail)
 		userInfo = queryUserInfo();
 	
-	if(!userMail)  
-	{
-		//cookie失效重新跳转到登录页
-		if(window.parent){
-			window.parent.location.href = rootDir + "userInfo/login.jsp";  
-		}else{
-			window.location.href = rootDir + "userInfo/login.jsp";
+	if(!userInfo)  {
+		if(window.location.href.indexOf('/userInfo/login.jsp') == -1){
+			//cookie失效重新跳转到登录页
+			var url = base_url + 'user/logout.do?isReturn=false&targetUrl=' + encodeURIComponent( window.location.href );
+			window.parent ? window.parent.location.href = url : window.location.href = url;
 		}
 	}
-	
-	var userName = readCookie("login_nickname");
-	userName = !userName ? userMail.substring(0,userMail.indexOf("@")):userName;
-	userName = decodeURIComponent(userName); //中文名解码
-	
+	return userInfo;
+}
+
+function addHeadHtml(userInfo)
+{
 	var headHtml = "";
 	headHtml += "<div class=\"row-fluid navbar navbar-fixed-top\">";
 	headHtml += "<div class=\"container\" style=\"width:100%;\">";
 	//图片logo链接
-	headHtml += "<a href='" + rootDir + "index.html' class='pull-left'><img src='" + rootDir + "images/logo.png' style='width:65px;min-width:65px;height:40px;margin-left: 20px;'/></a>"; 
+	headHtml += "<a href='" + base_url + "index.html' class='pull-left'><img src='" + base_url + "images/logo.png' style='width:65px;min-width:65px;height:40px;margin-left: 20px;'/></a>"; 
 	//专心专注专业
-	headHtml += "<a class=\"brand\" href='" + rootDir + "index.html' style=\"font-size:14px;color:#666;padding: 10px 10px 0px;margin-left:0px;\">专心、专注、专业</a>";
+	headHtml += "<a class=\"brand\" href='" + base_url + "index.html' style=\"font-size:14px;color:#666;padding: 10px 10px 0px;margin-left:0px;\">专心、专注、专业</a>";
     
 	//搜索框
 	if(judgeNeedSearch())
@@ -1164,41 +1600,39 @@ function addHeadHtml()
 		headHtml += "<option value='description'>描述</option>";
 		headHtml += " </select>";
 		headHtml += "<input id=\"searchWord\" type=\"text\" placeholder=\"Search\">";
-		headHtml += "<button class=\"btn\" type=\"button\" style='height:30px;' id='searchBtn'><img src=\"" + rootDir + "images/search.png\" style=\"width: 16px; min-width:16px;vertical-align:text-bottom\"></button>";
+		headHtml += "<button class=\"btn\" type=\"button\" style='height:30px;' id='searchBtn'><img src=\"" + base_url + "images/search.png\" style=\"width: 16px; min-width:16px;vertical-align:text-bottom\"></button>";
 		headHtml += "</div>";
 	}
-	
 		
 	//右部导航菜单
 	headHtml += "<div class=\"nav-collapse collapse navbar-inverse-collapse\">";
 	headHtml += "<ul class=\"nav pull-right\" style=\"margin-right:20px;\">";
-	headHtml += "<li><a href=\"" + rootDir + "editFilter.html\" target=\"_self\">过滤器</a></li>";
+	headHtml += "<li><a href=\"" + base_url + "editFilter.html\" target=\"_self\">过滤器</a></li>";
 	headHtml += "<li><a href=\"#\">|</a></li>";
 	
 	//管理员增加系统配置菜单
 	if(userInfo && (userInfo.userRole === "super_admin" || userInfo.userRole === "admin")){
-		headHtml += "<li><a href=\"" + rootDir + "admin/admin_index.html\" target=\"_self\">系统配置</a></li>";
+		headHtml += "<li><a href=\"" + base_url + "admin/admin_index.html\" target=\"_self\">系统配置</a></li>";
 		headHtml += "<li><a href=\"#\">|</a></li>";
 	}	
 
-	headHtml += "<li><a href=\"" + rootDir + "cplugin/index.jsp\" target=\"_self\">插件</a></li>";
+	headHtml += "<li><a href=\"" + base_url + "cplugin/index.html\" target=\"_self\">插件</a></li>";
 	headHtml += "<li><a href=\"#\">|</a></li>";
 	
 	//为统计添加new标识
-	headHtml += "<li><a href=\"" + rootDir + "statistic/index.html\" target=\"_self\">统计";
+	headHtml += "<li><a href=\"" + base_url + "statistic/index.html\" target=\"_self\">统计";
 	//new样式
-//	headHtml += "<img src=\"" + rootDir + "images/new.gif\" style=\"margin-top: -15px;\"></a>";
+//		headHtml += "<img src=\"" + base_url + "images/new.gif\" style=\"margin-top: -15px;\"></a>";
 	headHtml += "</li>";
-	
 	headHtml += "<li><a href=\"#\">|</a></li>";
 	
 	//更多
 	headHtml += "<li class=\"dropdown\">"; 
 	headHtml += "<a href='#' class='dropdown-toggle' data-toggle='dropdown'>更多<b class='caret'></b></a>";
 	headHtml += "<ul class='dropdown-menu'>";
-	headHtml += "<li><a href='" + rootDir + "about.html' target='_self'>关于</a></li>";
+	headHtml += "<li><a href='" + base_url + "about.html' target='_self'>关于</a></li>";
 	headHtml += "<li><a href='mailto:cynthiafb@sogou-inc.com&subject=cynthia使用反馈' target='_self'>反馈建议</a></li>";
-	headHtml += "<li><a href='" + rootDir + "guide/guide.html?guideId=start' target='_self'>使用说明</a></li>";
+	headHtml += "<li><a href='" + base_url + "guide.html?guideId=start' target='_self'>使用说明</a></li>";
 	headHtml += "</ul>";
 	headHtml += "</li>";
 	
@@ -1214,31 +1648,27 @@ function addHeadHtml()
 	headHtml += "</div>";
 	
 	headHtml += "<div class='span6' style='padding: 0px 5px;'>";
-	headHtml += "<p title='" + userName + "' style='font-weight:bold;margin:0;overflow:hidden;text-overflow:ellipsis;width:130px;' id='userName'>" + userName + "</p>";
-	headHtml += "<p title='" + userMail + "' style='font-weight:bold;margin:0;overflow:hidden;text-overflow:ellipsis;width:130px;' id='userMail'>" + userMail + "</p>";
+	headHtml += "<p title='" + userInfo.nickName + "' style='font-weight:bold;margin:0;overflow:hidden;text-overflow:ellipsis;width:130px;' id='userName'>" + userInfo.nickName + "</p>";
+	headHtml += "<p title='" + userInfo.userName + "' style='font-weight:bold;margin:0;overflow:hidden;text-overflow:ellipsis;width:130px;' id='userMail'>" + userInfo.userName + "</p>";
 	headHtml += "<div style='margin-top:15px;'>";
-	headHtml += "<a href='javascript:logout();'>退出</a>&nbsp;<a href=" + rootDir + "userInfo/userConfig.html target='_blank'>修改资料</a>";
+	headHtml += "<a href='javascript:logout();'>退出</a>&nbsp;";
+	if(!isEffevo())
+		headHtml += "<a class='project_header' href=" + base_url + "userInfo/userConfig.html target='_blank'>修改资料</a>";
 	headHtml += "</div>";
 	headHtml += "</div>";
-	
 	headHtml += "</div>";
 	headHtml += "</li>";
-	
 	headHtml += "</ul>";
-        
 	headHtml += "</div>";
 	headHtml += "</div>";
 	headHtml += "</div>";
-	
 	$("#header-nav").html(headHtml);
-
 }
 
 $(function(){
-	deleteCookie('webRootDir');
-	if(judgeNeedHeader())
-		addHeadHtml(); //添加头部导航条
+	var userInfo = checkLogin();
+	if(userInfo)
+		addHeadHtml(userInfo); //添加头部导航条
 	addCnzzStatic(); 
 });
 	
-

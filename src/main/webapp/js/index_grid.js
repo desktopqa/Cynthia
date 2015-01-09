@@ -105,7 +105,7 @@
 			var dataIds = new Array();
 			
 			$.each($(mainContent).find('.icon-input-checkbox-checked') , function (i, node){
-				dataIds.push($.trim($(node).parent().next().next().text()));
+				dataIds.push($.trim($(node).closest('tr').attr('value')));
 			});
 			return dataIds;
 		};
@@ -227,6 +227,7 @@
 		//选择某一行 但是根据其他行的情况 定义头部全选按钮是否是选择状态
 		function selectCurrentRow(e)
 		{
+			console.log(true);
 			//阻止shift默认事件
 			stopDefault(e);
 			var max,min,thisIndex;

@@ -11,7 +11,6 @@ public class ArrayUtil {
 
 		return array;
 	}
-	
 	/**
 	 * @description:id array to string 
 	 * @date:2014-5-6 下午5:48:16

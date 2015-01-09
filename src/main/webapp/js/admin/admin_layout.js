@@ -34,13 +34,7 @@ function initSystem()
 		dataType:'json',
 		async:false,
 		success:function(data){
-			data = eval('(' + data + ')');
-			for(var key in data){
-				if(key == 'openRight'){
-					$('#openRight').val(data[key]);
-					break;
-				}
-			}
+			$('#openRight').val(data.openRight);
 		}
 	});
 }
