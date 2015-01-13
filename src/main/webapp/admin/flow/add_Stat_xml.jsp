@@ -41,7 +41,7 @@
 	}
 	
 	//备份flow
-	flow = (Flow)flow.clone();
+// 	flow = (Flow)flow.clone();
 	
 	Stat stat = flow.addStat();
 	stat.setName(request.getParameter("name"));

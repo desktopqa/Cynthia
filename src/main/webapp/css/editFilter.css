@@ -27,14 +27,8 @@
 }
 
 .form-horizontal .control-group {
-	margin-bottom: 10px;
-	margin-top: 10px;
-}
-
-#conditionsForm
-{
-	border-bottom: 1px solid #F1F1F1;
-	border-top: 1px solid #F1F1F1;
+	margin-bottom: 15px;
+	margin-top: 15px;
 }
 
 #ttip
@@ -48,7 +42,138 @@
 	z-index: 9999;
 }
 
+.filter_field_del
+{
+	display:none;
+}
+
+#conditions_table >tbody >tr:hover .filter_field_del
+{
+	display:table-cell;
+}
+
+.project-category-title
+{
+	display: inline-block;
+	margin-bottom: 0;
+	padding: 0 20px 10px 0;
+	font-size: 18px;
+}
+
+#main_content hr
+{
+	margin-top: -20px;
+	margin-bottom: 20px;
+	border-top: 1px solid #eee;
+	height: 1px;
+	margin-left: 80px;
+	border: 0 none;
+	background-image: -webkit-linear-gradient(left, rgba(0,0,0,0.12) 0, rgba(0,0,0,0) 100%);
+	background-image: -o-linear-gradient(left, rgba(0,0,0,0.12) 0, rgba(0,0,0,0) 100%);
+	background-image: linear-gradient(to right, rgba(0,0,0,0.12) 0, rgba(0,0,0,0) 100%);
+	background-repeat: repeat-x;
+}
+
+.filter_center
+{
+	padding-left:10px;
+	padding-top:10px
+}
+
+#main_content form
+{
+	margin-left: 50px;
+}
+
+
+#topSubmitDiv
+{
+	padding-left:20px;
+}
+
 #topSubmitDiv button
 {
 	margin-right:15px;
+}
+
+#topSubmitDiv .set_btn
+{
+	width:40px;
+	height:40px;
+	background:red;
+	border: 2px solid rgb(199, 176, 176);
+	background-size: 100% 100%;
+	list-style: none;
+	margin: 20px;
+	border-radius: 50px;
+	cursor:pointer;
+	background:url(../images/editor/editor-icon.png) no-repeat;
+}
+
+
+#topSubmitDiv .set_btn:hover
+{
+	border:4px solid rgb(170, 184, 184);
+}
+
+
+#topSubmitDiv .sort
+{
+	background-position: 0 -82px; width: 32px; height: 32px;
+}
+
+#topSubmitDiv .sort:hover
+{
+	background-position: 0 0; width: 32px; height: 32px;
+}
+
+#topSubmitDiv .focus-user
+{
+	background-position: 0 -246px; width: 32px; height: 32px;
+}
+
+#topSubmitDiv .focus-user:hover
+{
+	background-position: 0 -328px; width: 32px; height: 32px;
+}
+
+#topSubmitDiv .time
+{
+	background-position: 0 -410px; width: 32px; height: 32px;
+}
+
+#topSubmitDiv .time:hover
+{
+	 background-position: 0 -164px; width: 32px; height: 32px; 
+}
+
+.base-info
+{
+	height:200px;
+}
+
+.base-info>div
+{
+	float:left;
+}
+
+#submitButtons
+{
+}
+
+#submitButtons button
+{
+	margin-right:50px;
+}
+
+.jstree a
+{
+	padding:5px 5px !important;
+	font-size:14px;
+}
+
+#vakata-contextmenu a
+{
+	padding:5px 5px !important;
+	font-size:14px;
 }

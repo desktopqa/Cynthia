@@ -155,6 +155,7 @@ public class LoginFilter implements Filter {
 				}
 				String targetUrl = ConfigUtil.getCynthiaWebRoot() + requestURI + (httpRequest.getQueryString() != null ? "?" + httpRequest.getQueryString() : "" );
 				String redirectUrl = ConfigUtil.getLoginUrl() + ( ConfigUtil.getLoginUrl().indexOf("?") != -1 ? "&" : "?" ) +  "targetUrl=" + URLEncoder.encode(targetUrl,"UTF-8");
+				System.out.println("loginfilter sendredirect:" + redirectUrl);
 				httpResponse.sendRedirect(redirectUrl);
 				return;
 			}else {
@@ -172,10 +173,33 @@ public class LoginFilter implements Filter {
 			session.setAttribute("kid", kid);
 		}
 		
+		if (!authUserRole(dataAndEventId, userName)) {
+			httpResponse.sendRedirect(ConfigUtil.getCynthiaWebRoot() + "error.html");
+			return;
+		}
+		
 		if (nextFilter != null)
 			nextFilter.doFilter(request, response);
 	}
 
+	protected boolean authUserRole(int eventId, String userName) {
+		if (userName == null)
+			return false;
+		if (eventId == 1)
+			return true;
+		//判断是否具有后台权限
+		UserInfo userInfo = das.queryUserInfoByUserName(userName);
+		
+		if (userInfo == null) {
+			return false;
+		}else {
+			//状态正常 并且为管理员或超级管理员具有后台权限 
+			return userInfo.getUserStat().equals(UserStat.normal) && 
+					(userInfo.getUserRole().equals(UserRole.admin) ||
+							userInfo.getUserRole().equals(UserRole.super_admin));
+		}
+	}
+	
 	protected String trimSafe(String str) {
 		if (str == null)
 			return null;

@@ -23,7 +23,9 @@ public class ConfigManager {
 	
 	static{
 		properties = loadPropertyFile("config.properties");
-		projectProperties = loadPropertyFile("pro-involve.properties");
+		if (properties.get("project_involve") != null && properties.get("project_involve").equals("true")) {
+			projectProperties = loadPropertyFile("pro-involve.properties");
+		}
 	}
 	
 	/**
@@ -138,7 +140,7 @@ public class ConfigManager {
 	 */
 	public static boolean getProjectInvolved(){
 		try {
-			return Boolean.parseBoolean(projectProperties.getProperty("project_involve"));
+			return Boolean.parseBoolean(properties.getProperty("project_involve"));
 		} catch (Exception e) {
 			return false;
 		}
@@ -194,7 +196,6 @@ public class ConfigManager {
 	 * @return
 	 */
 	public static Properties loadPropertyFile(String fullFile) {
-		String webRootPath = null;
 		if (null == fullFile || fullFile.equals(""))
 			throw new IllegalArgumentException(
 					"Properties file path can not be null : " + fullFile);
@@ -204,14 +205,13 @@ public class ConfigManager {
 			inputStream = ConfigManager.class.getClassLoader().getResourceAsStream(fullFile);
 			p = new Properties();
 			p.load(inputStream);
-		} catch (FileNotFoundException e) {
-		} catch (IOException e) {
-			throw new IllegalArgumentException(
-					"Properties file can not be loading: " + fullFile);
+		} catch (Exception e) {
+			System.out.println("Error !!!! Properties file can not be loading: " + fullFile);
 		} finally {
 			try {
-				if (inputStream != null)
+				if (inputStream != null){
 					inputStream.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

@@ -39,9 +39,6 @@
 		return;
 	}
 	
-	//备份flow
-	flow = (Flow)flow.clone();
-	
 	UUID beginStatId = null;
 	if(request.getParameter("beginStatId") != null)
 		beginStatId = DataAccessFactory.getInstance().createUUID(request.getParameter("beginStatId"));

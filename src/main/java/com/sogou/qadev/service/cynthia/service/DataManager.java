@@ -30,6 +30,7 @@ import com.sogou.qadev.service.cynthia.bean.Stat;
 import com.sogou.qadev.service.cynthia.bean.Template;
 import com.sogou.qadev.service.cynthia.bean.UUID;
 import com.sogou.qadev.service.cynthia.bean.UserInfo;
+import com.sogou.qadev.service.cynthia.bean.UserInfo.UserRole;
 import com.sogou.qadev.service.cynthia.bean.impl.ActionImpl;
 import com.sogou.qadev.service.cynthia.dao.DataAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
@@ -706,6 +707,8 @@ public class DataManager
 
 		Set<Template> templateSet = new LinkedHashSet<Template>();
 		Set<String> companyUsers = null;
+		UserInfo userInfo = das.queryUserInfoByUserName(userMail);
+		
 		if (ConfigManager.getProjectInvolved()) {
 			companyUsers = ProjectInvolveManager.getInstance().getCompanyUserMails(userMail);
 		}
@@ -714,15 +717,27 @@ public class DataManager
 			Flow flow = das.queryFlow(template.getFlowId());
 			if(flow == null)
 				continue;
+			
+			if (userMail.equals(template.getCreateUser())) {
+				templateSet.add(template);
+				continue;
+			}
+			
 			if (ConfigManager.getProjectInvolved()) {
 				//项目管理 与表单创建者同公司可以查看 
-				if ((companyUsers.contains(template.getCreateUser()) || userMail.equals(template.getCreateUser()))) {
+				if ((companyUsers.contains(template.getCreateUser()))) {
 					templateSet.add(template);
 				}
 			}else {
 				if (template.isProTemplate()) {
 					continue;
 				}
+				
+				if(userInfo.getUserRole().equals(UserRole.super_admin)){
+					templateSet.add(template);
+					continue;
+				}
+				
 				Action[] actionArray = flow.queryUserNodeBeginActions(userMail, template.getId());
 				if((actionArray != null && actionArray.length > 0))
 					templateSet.add(template);

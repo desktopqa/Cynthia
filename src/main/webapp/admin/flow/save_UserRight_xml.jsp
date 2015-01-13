@@ -39,9 +39,6 @@
 		return;
 	}
 	
-	//备份flow
-	flow = (Flow)flow.clone();
-	
 	UUID templateId = DataAccessFactory.getInstance().createUUID(request.getParameter("templateId"));
 	UUID roleId = DataAccessFactory.getInstance().createUUID(request.getParameter("roleId"));
 	

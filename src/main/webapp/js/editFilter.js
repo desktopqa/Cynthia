@@ -110,7 +110,7 @@ function onCompleteInitFilterPage(data,textStatus)
 		var content = $(node).find("fieldContent").text();
 		if(content!=null&&content!="")
 		{
-			$("#conditions_table>tbody").append("<tr><td>"+content+"</td><td onclick='subCondition(this)'><span style=\"cursor:pointer;\"class=\"label label-important\">删除</span></td></tr>");
+			$("#conditions_table>tbody").append("<tr><td>"+content+"</td><td class='filter_field_del' onclick='subCondition(this)'><span style=\"cursor:pointer;\"class=\"label label-important\">删除</span></td></tr>");
 		}
 	});
 	enableSelectSearch();
@@ -197,7 +197,7 @@ function onCompleteInitFilterPage(data,textStatus)
 	
 	if(readonly){
 		$("#filter_content").find("input,select,textarea,button").attr('disabled','disabled');
-		$("#main_content").find("span").removeAttr('onclick');
+		$("#filter_content").find("li").removeAttr('onclick');
 		$("#main_content").find("td").removeAttr('onclick');
 	}else{
 		$("#filter_content").find("input,select,textarea,button").removeAttr('disabled');
@@ -331,7 +331,7 @@ function onCompleteAddCondition(data,textStatus)
 	{
 		var content = $(data).find("field").text();
 		if(content!="")
-			$("#conditions_table>tbody").append("<tr><td>"+content+"</td><td onclick='subCondition(this)'><span style=\"cursor:pointer;\"class=\"label label-important\">删除</span></td></tr>");
+			$("#conditions_table>tbody").append("<tr><td>"+content+"</td><td class='filter_field_del' onclick='subCondition(this)'><span style=\"cursor:pointer;\"class=\"label label-important\">删除</span></td></tr>");
 	}
 	setFindCurrent();
 	enableSelectSearch();
@@ -343,20 +343,20 @@ function getFilterParams(){
 				
 	//deal with env
 	var envNode = rootDoc.createElement("env");
-	if(!$("#input_is_current").attr("checked")&&!$("#input_is_history").attr("checked"))
+	if(!$("#input_is_current").prop("checked")&&!$("#input_is_history").prop("checked"))
 	{
 		alert("查找当前记录或者历史记录选项必须选择一个.");
 		return;
 	}
 				
-	if($("#input_is_current").attr("checked") == "checked")
+	if($("#input_is_current").prop("checked") == true)
 	{
 		var timerangeNode = rootDoc.createElement("timerange");
 		setTextContent(timerangeNode, "current");
 		envNode.appendChild(timerangeNode);
 	}
 				
-	if($("#input_is_history").attr("checked") == "checked")
+	if($("#input_is_history").prop("checked") == true)
 	{
 		var timerangeNode = rootDoc.createElement("timerange");
 		setTextContent(timerangeNode, "history");

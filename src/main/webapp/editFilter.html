@@ -37,17 +37,14 @@
 	<div class="row-fluid" style="margin-top: 40px;">
 		<div class="span3" style="border-right:2px solid #f1f1f1;" id='left_tree'>
 		</div>
-		<div class="span9" style="margin-left:5px;margin-top:5px;">
-			<div class="row-fluid">
-				<div class="span12" id='topSubmitDiv' style="display: none;">
-					<button class="btn btn-primary" id='input_order' onclick="showOrderArea(true)" type='button'>打开排序设置</button>
-					<button class="btn btn-primary" id='input_defaultUser' onclick="showDefaultUser(true)" type='button'>设置默认关注人</button>
-					<button class="btn btn-primary" id='input_filterTimer' data-toggle='modal' data-target='#filterTimerDiv' type='button'>定时器设置</button>
-				</div>
-			</div>
-			<div class="row-fluid">
+		<div class="span9" id ="filter_content" style="margin-left:10px;">
+			<div class="row-fluid filter_center">
 				<div id="main_content" style="display: none;" class='span12'>
-					<form class="form-horizontal">
+				
+					<div class="project-category-title">基本信息</div><hr>
+					
+					<form class="form-horizontal base-info">
+						<div>
 						  <div class="control-group">
 						    <label class="control-label" for="input_filter_name">名称:</label>
 						    <div class="controls">
@@ -75,6 +72,30 @@
 						  </div>
 						  
 						  <div class="control-group">
+						    <label class="control-label" style="width:116px;margin-top:2px;">字段间关系:</label>
+				    		<label class="control-label" class="radio">
+						       <input type="radio" id="input_and" name="betweenField"  checked="checked" value ="and" />且
+						    </label>
+	 						<label class="control-label" class="radio">
+						     	<input type="radio" id="input_or"  name="betweenField" value ="or" />或
+						    </label>
+					      </div>
+						</div>
+						<div>
+						  <div class="span12" id='topSubmitDiv' style="float:right">
+								<ul>
+									<li onclick="showOrderArea(true)" class="set_btn sort" title="打开排序设置"></li>
+									<li onclick="showDefaultUser(true)" class="set_btn focus-user" title="设置默认关注人"></li>
+									<li data-toggle='modal' data-target='#filterTimerDiv' class="set_btn time" title="定时器设置"></li>
+								</ul>
+						  </div>
+						</div>
+					</form>
+					
+					<div class="project-category-title">过滤条件</div><hr>
+					<!-- conditions form -->
+					<form class="form-horizontal" id='conditionsForm'>
+						<div class="control-group">
 						    <label class="control-label" for="fields">选择字段:</label>
 						    <div class="controls">
 						      <select id="fields" style="width: 228px;" onchange="addCondition()">
@@ -83,10 +104,6 @@
 						    </div>
 						    <span style="color:#999;cursor: auto; margin-left:5px;">( 多次选择可以添加多个条件 )</span>
 						  </div>
-					</form>
-					
-					<!-- conditions form -->
-					<form class="form-horizontal" id='conditionsForm'>
 						<table id="conditions_table">
 							<tbody>
 								
@@ -103,15 +120,6 @@
 						    <input id="input_is_history" type="radio" name='find_time' value="history"/>查找修改日志
 						</label>
 					</form>
-					<form class="form-inline" >  
-					    <label  style="width:116px;margin-top:2px;">字段间关系:</label>
-			    		<label class="radio">
-					       <input type="radio" id="input_and" name="betweenField"  checked="checked" value ="and" />且
-					    </label>
- 						<label class="radio">
-					     	<input type="radio" id="input_or"  name="betweenField" value ="or" />或
-					    </label>
-					</form>
 					
 					<form class="form-inline" >  
 						<div class="control-group">
@@ -119,7 +127,6 @@
 						    <div class="controls">
 						    	<div id="submitButtons">
 						    		<button type="button" onclick="executeSubmit(1)" class='btn btn-danger' >提交</button>
-									&nbsp;&nbsp;&nbsp;&nbsp;
 									<button type="button" onclick="executeSubmit(2)" class='btn' >预览</button>
 						    	</div>
 						    </div>
@@ -127,7 +134,17 @@
 					</form>
 		 		</div> 
 		 		<!-- end of main_content -->
+<!-- 		 		<div class="span12" id='topSubmitDiv' style="display: none;"> -->
+<!-- 					<button class="btn btn-primary" id='input_order' onclick="showOrderArea(true)" type='button'>打开排序设置</button> -->
+<!-- 					<button class="btn btn-primary" id='input_defaultUser' onclick="showDefaultUser(true)" type='button'>设置默认关注人</button> -->
+<!-- 					<button class="btn btn-primary" id='input_filterTimer' data-toggle='modal' data-target='#filterTimerDiv' type='button'>定时器设置</button> -->
+<!-- 				</div> -->
+				
 			</div>
+			
+			
+			
+			
 		</div>
 	</div>
 </div>

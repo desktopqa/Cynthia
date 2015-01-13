@@ -141,13 +141,15 @@ public class UserController extends BaseController{
 	@ResponseBody
 	public String getUserInfo(HttpServletRequest request, HttpServletResponse response ,HttpSession session) throws Exception {
 		String userId = request.getParameter("userId");
+		String userMail = request.getParameter("userMail");
+		System.out.println("getUserInfo.do, userId:" + userId + ",userMail:" + userMail );
 		UserInfo userInfo = null;
 		if (!CynthiaUtil.isNull(userId) && ConfigManager.getProjectInvolved()) {
+			System.out.println("getUserInfo.do, userId:" + userId);
 			userInfo = ProjectInvolveManager.getInstance().getUserInfoById(userId);
 		}
 		
 		if(userInfo == null){
-			String userMail = request.getParameter("userMail");
 			userInfo = das.queryUserInfoByUserName(userMail);
 		}
 		
@@ -292,6 +294,7 @@ public class UserController extends BaseController{
 		if (!CynthiaUtil.isNull(targetUrl)) {
 			String logoutUrl  = ConfigUtil.getLogOutUrl();
 			logoutUrl += (logoutUrl.indexOf("?") != -1 ? "&" : "?") + "targetUrl=" + URLEncoder.encode(targetUrl,"UTF-8");
+			System.out.println("usercontroller sendredirect:" + logoutUrl);
 			response.sendRedirect(logoutUrl);
 		}
 		return "";

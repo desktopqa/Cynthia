@@ -44,9 +44,11 @@ import com.sogou.qadev.service.cynthia.bean.Template;
 import com.sogou.qadev.service.cynthia.bean.UUID;
 import com.sogou.qadev.service.cynthia.bean.UserInfo;
 import com.sogou.qadev.service.cynthia.bean.UserInfo.UserRole;
+import com.sogou.qadev.service.cynthia.bean.UserInfo.UserStat;
 import com.sogou.qadev.service.cynthia.bean.impl.RoleImpl;
 import com.sogou.qadev.service.cynthia.bean.impl.UserInfoImpl;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
+import com.sogou.qadev.service.cynthia.util.ArrayUtil;
 import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
 import com.sogou.qadev.service.cynthia.util.URLUtil;
 
@@ -139,6 +141,7 @@ public class ProjectInvolveManager {
 						}
 					}
 				} catch (Exception e) {
+					System.out.println("getProjectNameById error! projectId:" + projectId);
 					e.printStackTrace();
 				}
 			}
@@ -332,6 +335,12 @@ public class ProjectInvolveManager {
 	 */
 	public UserInfo getUserInfoById(String userId){
 		UserInfo userInfo = null;
+		if (userId == null) {
+			return null;
+		}
+		if (userId.indexOf(".") != -1) {
+			userId = userId.split("\\.")[0];
+		}
 		String cookie = getUserSign("",userId);
 		if (CynthiaUtil.isNull(userId)) {
 			return userInfo;
@@ -398,6 +407,7 @@ public class ProjectInvolveManager {
 				userInfo.setUserName(jsonObject.getString("email"));
 				userInfo.setNickName(jsonObject.getString("name"));
 				userInfo.setCreateTime(Timestamp.valueOf(jsonObject.getString("updateTime").replace("T", " ").replace("Z", "")));
+				userInfo.setUserStat(UserStat.normal);
 				userInfo.setUserRole(priviledgeQuery(String.valueOf(userInfo.getId()), "cynthia_entryConfig") ? UserRole.admin : UserRole.normal);
 				userInfo.setPicUrl("http://www.effevo.com/resource/user/logo/" + userInfo.getId()+ "/large");
 				userNameMap.put(userInfo.getUserName(), userInfo.getNickName());
@@ -567,8 +577,42 @@ public class ProjectInvolveManager {
 		return userMails;
 	}
 	
+	public boolean sendMail(String fromUser,String title,String[] recievers,String content){
+		UserInfo userInfo = getUserInfoByMail(fromUser);
+//		int userId = userInfo != null ? userInfo.getId() : 1;
+		String cookie = getUserSign("","1");
+		if (ConfigManager.getProjectInvolved()) {
+			try {
+				String mailPostUrl = ConfigManager.getProInvolvedProperties().getProperty("mail_post_url");
+				Map<String, Object> mailParams = new HashMap<String, Object>();
+//				mailParams.put("userId", userId);
+				mailParams.put("appName", "缺陷管理");
+				mailParams.put("recommendConsumer", new String[]{"mail"});
+				
+				List<Map<String, String>> toMailList = new ArrayList<Map<String,String>>();
+				Map<String, String> toUserMap = new HashMap<String, String>();
+				toUserMap.put("type", "mail");
+				toUserMap.put("address", ArrayUtil.strArray2String(recievers));
+				toMailList.add(toUserMap);
+				
+				mailParams.put("to", toMailList);
+				mailParams.put("title", title);
+				mailParams.put("contentType", "text/html");
+				mailParams.put("content", content);
+				
+				String result = URLUtil.sendPost(mailPostUrl, JSONArray.toJSONString(mailParams) ,cookie);
+				return result.indexOf("OK") != -1;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return false;
+	}
+	
 	public static void main(String[] args){
-		System.out.println(new ProjectInvolveManager().getUserInfoByProjectAndRole("dev@163.com","2416","5"));
+		System.out.println(new ProjectInvolveManager().getProductMap("liming@sogou-inc.com"));
+//		new ProjectInvolveManager().sendMail("liming@sogou-inc.com","测试邮件", new String[]{"liming@sogou-inc.com"}, "这是一封测试邮件");
 	}
 	
 }

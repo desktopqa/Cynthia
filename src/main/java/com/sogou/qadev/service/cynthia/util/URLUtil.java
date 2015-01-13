@@ -102,10 +102,12 @@ public class URLUtil {
             conn.setRequestProperty("accept", "*/*");
             conn.setRequestProperty("connection", "Keep-Alive");
             conn.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)");
+            conn.setRequestProperty("Content-Type", "application/json");  
             
             if (!cookies.equals("")) {
             	conn.setRequestProperty("Cookie", cookies);
 			}
+            
             // 发送POST请求必须设置如下两行
             conn.setDoOutput(true);
             conn.setDoInput(true);

@@ -45,7 +45,7 @@
 		return;
 	}
 	//备份flow
-	flow = (Flow)flow.clone();
+// 	flow = (Flow)flow.clone();
 	
 	flow.setName(request.getParameter("name"));
 	

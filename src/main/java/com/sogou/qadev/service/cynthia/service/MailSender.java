@@ -58,8 +58,7 @@ public class MailSender {
 	}
 	public void sendMail(String uid,String fr_name,String fr_addr,String title,String body,String mode,String maillist,String attname,String attbody,String cclist)
 	{
-		if(maillist!=null && !"".equals(maillist) && cclist!=null && !"".equals(cclist))
-		{
+		if(maillist!=null && !"".equals(maillist) && cclist!=null && !"".equals(cclist)){
 			maillist = maillist+";"+cclist;
 		}
 		
@@ -69,7 +68,13 @@ public class MailSender {
 		
 		body = body.replace("</td>", "</td>\n").replace("</tr>", "</tr>\n");
 		
-		MailManager.sendMail(title, maillist.split(";"), body);
+		String[] toUsers = maillist.split(";");
+		if (ConfigManager.getProjectInvolved()) {
+			//走项目管理邮件发送流程
+			ProjectInvolveManager.getInstance().sendMail(fr_name,title, toUsers, body);
+		}else{
+			MailManager.sendMail(fr_name,title, toUsers, body);
+		}
 	}
 	
 	public String getUid() {

@@ -279,7 +279,7 @@ var divId;
 				'.jstree-rtl li { margin-left:0; margin-right:18px; } ' + 
 				'.jstree > ul > li { margin-left:0px; } ' + 
 				'.jstree-rtl > ul > li { margin-right:0px; } ' + 
-				'.jstree ins { display:inline-block; text-decoration:none; width:18px; height:18px; margin:0 0 0 0; padding:0; } ' + 
+				'.jstree ins { display:inline-block; text-decoration:none; width:11px; height:18px; margin:0 0 0 0; padding:0; } ' + 
 				'.jstree a { display:inline-block; line-height:16px; height:16px; color:black; white-space:nowrap; text-decoration:none; padding:1px 2px; margin:0; } ' + 
 				'.jstree a:focus { outline: none; } ' + 
 				'.jstree a > ins { height:16px; width:16px; } ' + 
@@ -3148,9 +3148,6 @@ var divId;
 		if(typeof window.DOMParser !== "undefined" && typeof window.XMLHttpRequest !== "undefined" && typeof window.XSLTProcessor === "undefined") {
 			xml = new DOMParser().parseFromString(xml, "text/xml");
 			xsl = new DOMParser().parseFromString(xsl, "text/xml");
-			// alert(xml.transformNode());
-			// callback.call(null, new XMLSerializer().serializeToString(rs));
-			
 		}
 		if(typeof window.DOMParser !== "undefined" && typeof window.XMLHttpRequest !== "undefined" && typeof window.XSLTProcessor !== "undefined") {
 			processor = new XSLTProcessor();
@@ -3673,7 +3670,6 @@ var divId;
 
 			h = $.vakata.context.cnt.height();
 			w = $.vakata.context.cnt.width();
-			//alert(w);
 			if(x + w > $(document).width()) { 
 				x = $(document).width() - (w + 5); 
 				$.vakata.context.cnt.find("li > ul").addClass("right"); 
@@ -3682,7 +3678,6 @@ var divId;
 				y = y - (h + t[0].offsetHeight); 
 				$.vakata.context.cnt.find("li > ul").addClass("bottom"); 
 			}
-			//alert(x+":"+y);
 			$.vakata.context.cnt
 				.css({ "left" : x, "top" : y })
 				.find("li:has(ul)")
@@ -3754,8 +3749,8 @@ var divId;
 	};
 	$(function () {
 		var css_string = '' + 
-			'#vakata-contextmenu { display:block; visibility:hidden; left:0; top:-200px; position:absolute; margin:0; padding:0; min-width:180px; background:#ebebeb; border:1px solid silver; z-index:10000; *width:180px; } ' + 
-			'#vakata-contextmenu ul { min-width:180px; *width:180px; } ' + 
+			'#vakata-contextmenu { border-radius:5px;display:block; visibility:hidden; left:0; top:-200px; position:absolute; margin:0; padding:0; min-width:150px; background:#ebebeb; border:1px solid silver; z-index:10000; *width:180px; } ' + 
+			'#vakata-contextmenu ul { min-width:150px; *width:150px; } ' + 
 			'#vakata-contextmenu ul, #vakata-contextmenu li { margin:0; padding:0; list-style-type:none; display:block; } ' + 
 			'#vakata-contextmenu li { line-height:20px; min-height:20px; position:relative; padding:0px; } ' + 
 			'#vakata-contextmenu li a { padding:1px 6px; line-height:17px; display:block; text-decoration:none; margin:1px 1px 0 1px; } ' + 
@@ -4027,13 +4022,6 @@ var divId;
 					this.deselect_all();
 					this.select_node(obj, true);
 				}
-				/*alert(x+":"+y) modified by lyl
-				if(s.show_at_node || typeof x === "undefined" || typeof y === "undefined") {
-					o = a.offset();
-					x = o.left;
-					y = o.top + this.data.core.li_height;
-				}
-				alert(x+":"+y)*/
 				i = obj.data("jstree") && obj.data("jstree").contextmenu ? obj.data("jstree").contextmenu : s.items;
 				if($.isFunction(i)) { i = i.call(this, obj); }
 				this.data.contextmenu = true;

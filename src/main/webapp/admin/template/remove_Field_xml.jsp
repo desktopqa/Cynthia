@@ -46,7 +46,7 @@
 	}
 	
 	//备份template
-	template = (Template)template.clone();
+// 	template = (Template)template.clone();
 	
 	UUID fieldId = DataAccessFactory.getInstance().createUUID(request.getParameter("id"));
 	

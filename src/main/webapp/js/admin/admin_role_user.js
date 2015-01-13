@@ -282,12 +282,9 @@ function modifyRoleUser(){
 		
 		$.each($("#user-cfg-table").find("tr"),function(index,node){
 			var userRight = $(node).find("td:eq(1)").attr("value");
-			if($(node).find("td:eq(2)").find("input").attr("checked"))
-			{
+			if($(node).find("td:eq(2)").find("input").prop("checked")){
 				param += "&userRight=" + userRight + "|true";
-			}
-			else
-			{	
+			}else{	
 				param += "&userRight=" + userRight + "|false";
 			}
 		});

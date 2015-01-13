@@ -243,7 +243,7 @@ public class JSTreeAccessSessionMySQL {
 			pstm.execute();
 
 			String sql = "insert into tree (parent_id,position,title,user_name) values (?,?,?,?)";
-			pstm = conn.prepareStatement(sql);
+			pstm = conn.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
 			pstm.setInt(1, parentId);
 			pstm.setInt(2, position);
 			pstm.setString(3, title);

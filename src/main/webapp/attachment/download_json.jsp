@@ -57,6 +57,7 @@ Map<String,String> mimeMap = new HashMap<String,String>();
  mimeMap.put("ppt", "application/x-mspowerpoint");
  mimeMap.put("zip", "application/x-zip-compressed");
  mimeMap.put("pdf", "application/pdf");
+ mimeMap.put("apk", "application/vnd.android.package-archive");
 
 if ( "image".equalsIgnoreCase(type) )
 {

@@ -986,7 +986,7 @@ function executeUpdate(actionValue)
 			var productId = field.datas[0];
 			var actionId = actionValue.split('|')[0];
 			var action = getActionById(actionId);
-			if(action && action.isEndAction){
+			if(action && action.isEndAction == 'true'){
 				$('#select_taskAssignUser').attr("disabled","disabled");
 			}else{
 				$('#select_taskAssignUser').removeAttr("disabled");

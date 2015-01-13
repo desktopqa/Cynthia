@@ -52,7 +52,7 @@
 	}
 	
 	//备份template
-	template = (Template)template.clone();
+// 	template = (Template)template.clone();
 	String flag = request.getParameter("flag");
 	if("remove".equals(flag))
 	{

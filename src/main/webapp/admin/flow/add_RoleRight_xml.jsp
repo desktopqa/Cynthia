@@ -39,9 +39,6 @@
 		return;
 	}
 	
-	//备份flow
-	flow = (Flow)flow.clone();
-	
 	Role role = flow.addRole();
 	if(role == null)
 	{

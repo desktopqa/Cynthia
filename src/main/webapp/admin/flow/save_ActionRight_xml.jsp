@@ -40,7 +40,7 @@
 	}
 	
 	//备份flow
-	flow = (Flow)flow.clone();
+// 	flow = (Flow)flow.clone();
 	
 	UUID roleId = DataAccessFactory.getInstance().createUUID(request.getParameter("roleId"));
 	

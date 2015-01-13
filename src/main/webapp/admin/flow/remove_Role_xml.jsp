@@ -39,7 +39,7 @@
 	}
 	
 	//备份flow
-	flow = (Flow)flow.clone();
+// 	flow = (Flow)flow.clone();
 	
 	UUID id = DataAccessFactory.getInstance().createUUID(request.getParameter("id"));
 	flow.removeRole(id);

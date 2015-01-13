@@ -399,6 +399,7 @@ public final class FieldImpl implements Field
 				Set<Option> allOptions = new HashSet<Option>();
 				if (this.getName().equals("对应产品")) {
 					Map<String, String> allProductsMap = ProjectInvolveManager.getInstance().getProductMap(template.getCreateUser());
+					System.out.println("find projects length:" + allProductsMap.keySet().size());
 					for (String productId : allProductsMap.keySet()) {
 						allOptions.add(new OptionImpl(DataAccessFactory.getInstance().createUUID(productId), this.id, allProductsMap.get(productId)));
 					}

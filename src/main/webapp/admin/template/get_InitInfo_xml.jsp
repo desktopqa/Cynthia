@@ -51,13 +51,18 @@
 	Map<String, Template> templateMap = new LinkedHashMap<String, Template>();
 	
 	Template[] templateArray = null;
-	templateArray = DataManager.getInstance().queryUserTemplates(key.getUsername());
+	
+	if(ConfigManager.getProjectInvolved()){
+		templateArray = DataManager.getInstance().queryUserTemplates(key.getUsername());
+	}else{
+		templateArray = das.queryAllTemplates();
+	}
 	
 	if(templateArray != null)
 	{
 		for(Template template : templateArray)
 		{
-			if (null == template.getName()){
+			if (null == template.getName() || ( template.isProTemplate() && !ConfigManager.getProjectInvolved() )){
 				continue;
 			}
 			templateMap.put(template.getId().getValue(), template);

@@ -1,5 +1,6 @@
 package com.sogou.qadev.service.cynthia.service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -22,16 +23,20 @@ import javax.mail.internet.MimeUtility;
 
 import bsh.This;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.sogou.qadev.service.cynthia.bean.Action;
 import com.sogou.qadev.service.cynthia.bean.Attachment;
 import com.sogou.qadev.service.cynthia.bean.ChangeLog;
 import com.sogou.qadev.service.cynthia.bean.Data;
 import com.sogou.qadev.service.cynthia.bean.Field;
 import com.sogou.qadev.service.cynthia.bean.Field.Type;
+import com.sogou.qadev.service.cynthia.bean.impl.RoleImpl;
 import com.sogou.qadev.service.cynthia.bean.Flow;
 import com.sogou.qadev.service.cynthia.bean.Option;
 import com.sogou.qadev.service.cynthia.bean.Pair;
 import com.sogou.qadev.service.cynthia.bean.Right;
+import com.sogou.qadev.service.cynthia.bean.Role;
 import com.sogou.qadev.service.cynthia.bean.Stat;
 import com.sogou.qadev.service.cynthia.bean.Template;
 import com.sogou.qadev.service.cynthia.bean.UUID;
@@ -39,6 +44,7 @@ import com.sogou.qadev.service.cynthia.bean.UserInfo;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
 import com.sogou.qadev.service.cynthia.util.ConfigUtil;
 import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
+import com.sogou.qadev.service.cynthia.util.URLUtil;
 import com.sogou.qadev.service.cynthia.util.XMLUtil;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
@@ -52,6 +58,9 @@ import edu.emory.mathcs.backport.java.util.Arrays;
  */
 public class MailManager {
 	
+	private static String downLoadUrl = ConfigUtil.getCynthiaWebRoot()+ "attachment/download.jsp?method=download&id=";
+	private static String referUrl = ConfigUtil.getCynthiaWebRoot()+"taskManagement.html?operation=read&taskid=";
+	
 	/**
 	 * @description:send mail
 	 * @date:2014-5-6 下午12:11:34
@@ -61,8 +70,7 @@ public class MailManager {
 	 * @param content:mail content
 	 * @return:if mail send success
 	 */
-	public static boolean sendMail(String subject,String[] recievers,String content){
-		
+	public static boolean sendMail(String fromUser, String subject,String[] recievers,String content){
         try{
             Properties props = ConfigManager.getEmailProperties();
             
@@ -77,7 +85,7 @@ public class MailManager {
             Message msg = new MimeMessage(mailConnection);
                                 
             //设置发送人和接受人
-            Address sender = new InternetAddress(props.getProperty("mail.user"));
+            Address sender = new InternetAddress(fromUser != null ? fromUser : props.getProperty("mail.user"));
             //单个接收人
             //Address receiver = new InternetAddress("xxx@163.com");
             //多个接收人
@@ -212,9 +220,6 @@ public class MailManager {
 			return;
 		}
 		
-		String downLoadUrl = ConfigUtil.getCynthiaWebRoot()+ "attachment/download.jsp?method=download&id=";
-		String referUrl = ConfigUtil.getCynthiaWebRoot()+"taskManagement.html?operation=read&taskid=";
-
 		Stat stat = flow.getStat(data.getStatusId());
 		if(stat == null)
 			return;
@@ -364,10 +369,13 @@ public class MailManager {
 					after.append(flow.getStat(DataAccessFactory.getInstance().createUUID(pair.getSecond().toString())).getName());	
 				}
 			}
+			
+			String beforeStr = before.toString().replace("attachment/download.jsp", ConfigUtil.getCynthiaWebRoot() + "attachment/download.jsp").replace("attachment/download_json.jsp", ConfigUtil.getCynthiaWebRoot() + "attachment/download_json.jsp");
+			String afterStr = after.toString().replace("attachment/download.jsp", ConfigUtil.getCynthiaWebRoot() + "attachment/download.jsp").replace("attachment/download_json.jsp", ConfigUtil.getCynthiaWebRoot() + "attachment/download_json.jsp");
 			if (isNewTask) 
-				html.append("<tr><td class=\"tdcolor\">").append(fieldName).append("</td><td>").append(after.toString()).append("</td></tr>");
+				html.append("<tr><td class=\"tdcolor\">").append(fieldName).append("</td><td>").append(afterStr).append("</td></tr>");
 			else 
-				html.append("<tr><td class=\"tdcolor\">").append(fieldName).append("</td><td>").append(after.toString()).append("</td><td>").append(before.toString()).append("</td></tr>");
+				html.append("<tr><td class=\"tdcolor\">").append(fieldName).append("</td><td>").append(afterStr).append("</td><td>").append(beforeStr).append("</td></tr>");
 		}
 	
 	
@@ -491,7 +499,8 @@ public class MailManager {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.out.println(sendMail("测试邮件", new String[]{"liming@sogou-inc.com"}, "这是一封测试邮件"));
+		
+		System.out.println(sendMail("liming@sogou-inc.com","测试邮件", new String[]{"liming@sogou-inc.com"}, "这是一封测试邮件"));
 
 	}
 }

@@ -335,7 +335,6 @@ function setHomeFilter()
 		url:"frame/get_UpdateHomeFilters_xml.jsp",
 		type:'POST',
 		dataType:'text',
-		async:false,
 		data :{'filterId' : curFilterId},
 		success : function(data){
 			showInfoWin("success",data);

@@ -53,7 +53,7 @@
 	}
 	
 	//备份template
-	template = (Template)template.clone();
+// 	template = (Template)template.clone();
 	
 	Type type = Type.valueOf(request.getParameter("type"));
 	

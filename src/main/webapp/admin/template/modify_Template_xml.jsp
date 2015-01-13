@@ -39,7 +39,7 @@
 	}
 	
 	//备份template
-	template = (Template)template.clone();
+// 	template = (Template)template.clone();
 	template.setName(request.getParameter("name"));
 	template.setDescription(request.getParameter("description"));
 	template.setFlowId(DataAccessFactory.getInstance().createUUID(request.getParameter("flowId")));

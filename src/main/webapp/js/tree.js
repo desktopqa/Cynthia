@@ -99,7 +99,6 @@ $(function(){
 					//initFilterMenu('folder');
 				}else{
 					$.jstree.rollback(data.rlbk);
-					alert(r.msg);
 				}
 				
 			}
