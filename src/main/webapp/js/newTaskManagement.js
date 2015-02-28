@@ -11,6 +11,7 @@ var actions = new Array();
 var needAssignUser = false;
 var allDefaultValueMap = new Map();
 var selectedTemplate = null;
+var mailHeader = "";
 var gridIndex = -1;
 var url = null;
 var editor = null;
@@ -4019,6 +4020,27 @@ function showSendMail()
 	$("#send_mail_win").modal('show');
 }
 
+function returnMailHeader()
+{
+	if(mailHeader) return mailHeader;
+	var htmlStr = "";
+	htmlStr += "<html>";
+	htmlStr += "<head>";
+	htmlStr += "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=GBK\"/>";
+	htmlStr += "<style type=\"text/css\">";
+	htmlStr += "table{border-collapse: collapse; border: 1px solid #CCCCCC; font-size: 100%;margin-top: 0em; margin-left: 5px; margin-bottom: 0em;width: 800px;table-layout:fixed;}";
+	htmlStr += "th{border-right: 1px solid #CCCCCC;text-align: center;	white-space:nowrap;	background: #4EA9E4; margin: .25em;vertical-align: center;}";
+	htmlStr += "tr{vertical-align: center;  background: #eeeeff;}";
+	htmlStr += "td{border-right: 1px solid #CCCCCC; margin: .25em;vertical-align: center;  border-bottom: 1px solid #CCCCCC; word-wrap: break-word;word-break:break-all;max-width: 120px;display : table-cell;}";
+	htmlStr += "body{margin: 0;padding: 0;background: #f6f6f6;}";
+	htmlStr += "body,div,p,span{margin-top:0px; margin-bottom:0px; color: #333;font-size: 12px;line-height: 150%;font-family: Verdana, Arial, Helvetica, sans-serif;}";
+	htmlStr += "</style>";
+	htmlStr += "</head>";
+	htmlStr += "<body>";
+	mailHeader = htmlStr;
+	return mailHeader;
+}
+
 function sendMailSubmit()
 {
 	var sendMailReceivers = $("#sendMailReceivers").val();
@@ -4043,16 +4065,16 @@ function sendMailSubmit()
 		return;
 	}
 	
-	var sendMailContent = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=GBK\"/>";
-	sendMailContent += "<style type=\"text/css\">table{border:1px #E1E1E1 solid;}td{border:1px #E1E1E1 solid;padding:10px;}</style></head>";
-	sendMailContent += "<body><table>";
-	sendMailContent += "<tr><td>邮件正文 </td><td>" + replaceAll(getXMLStr($("#sendMailContent").val()), "\n", "<br>") + "</td>";
-	sendMailContent += "<tr><td>问题编号</td><td><a href=\"" + getWebRootDir() + "taskManagement.html?operation=read&taskid="+taskId+"\">"+taskId+"</a></td>";
-	sendMailContent += "<tr><td>问题描述</td><td>" + replaceAll($("#input_taskDescription").val(),"../attachment/download_json.jsp", getWebRootDir() + "attachment/download_json.jsp") +"</td>";
-	sendMailContent += "</table></body></html>";
+	var sendMailContent = returnMailHeader();
+	sendMailContent += "<table>";
+	sendMailContent += "<tr><td>邮件正文</td><td>" + replaceAll(getXMLStr($("#sendMailContent").val()), "\n", "<br>") + "</td></tr>";
+	sendMailContent += "<tr><td>问题编号</td><td><a href=\"" + getWebRootDir() + "taskManagement.html?operation=read&taskid="+taskId+"\">"+taskId+"</a></td></tr>";
+	sendMailContent += "<tr><td>问题描述</td><td>" + replaceAll($("#input_taskDescription").val(),"../attachment/download_json.jsp", getWebRootDir() + "attachment/download_json.jsp") +"</td></tr>";
+	sendMailContent += "</table>";
+	sendMailContent += "</body><html>";
 
 	var params = "sendMailReceivers=" + getSafeParam(sendMailReceivers);
-	params += "&sendMailSubject=" + getSafeParam("[Cynthia]有数据需要您的处理意见，请关注并处理");
+	params += "&sendMailSubject=" + getSafeParam("[Cynthia][" + taskId + "]有数据需要您的处理意见，请关注并处理");
 	params += "&sendMailContent=" + getSafeParam(sendMailContent);
 
 	$("#mail_send_ok").disabled = true;
