@@ -66,7 +66,7 @@ public class ExportDataManager {
 		header.append("table{border-collapse: collapse; border: 1px solid #CCCCCC; font-size: 100%;margin-top: 0em; margin-left: 5px; margin-bottom: 0em;width: 800px;table-layout:fixed;}");
 		header.append("th{border-right: 1px solid #CCCCCC;text-align: center;	white-space:nowrap;	background: #4EA9E4; margin: .25em;vertical-align: center;}");
 		header.append("tr{vertical-align: center;  background: #eeeeff;}");
-		header.append("td{border-right: 1px solid #CCCCCC; margin: .25em;vertical-align: center;  border-bottom: 1px solid #CCCCCC; word-wrap: break-word;word-break:break-all;max-width: 120px;display : block;}");
+		header.append("td{border-right: 1px solid #CCCCCC; margin: .25em;vertical-align: center;  border-bottom: 1px solid #CCCCCC; word-wrap: break-word;word-break:break-all;max-width: 120px;display : table-cell;}");
 		header.append("body{margin: 0;padding: 0;background: #f6f6f6;}");
 		header.append("body,div,p,span{margin-top:0px; margin-bottom:0px; color: #333;font-size: 12px;line-height: 150%;font-family: Verdana, Arial, Helvetica, sans-serif;}");
 		header.append("</style>");

@@ -39,7 +39,6 @@ function getDefaultHeader()
 	$.ajax({
 		url: 'filter/getDefaultHeader.do',
 		type:'POST',
-		async: true,
 		data:params,
 		success: function(data){
 			defaultHeader = eval('(' + data + ')');

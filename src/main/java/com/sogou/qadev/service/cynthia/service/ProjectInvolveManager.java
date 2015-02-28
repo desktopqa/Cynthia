@@ -127,12 +127,13 @@ public class ProjectInvolveManager {
 	 */
 	public String getProjectNameById(String projectId){
 		String projectName = proNameMap.get(projectId);
+		String result = "";
 		if (proNameMap.get(projectName) == null) {
 			if (isProjectInvolved()) {
 				String cookie = getUserSign("", "1");  // 1为管理员用户
 				try {
 					String getUrl = String.format(properties.getProperty("project_name_get_url"), projectId);
-					String result = URLUtil.sendGet(getUrl, "",cookie);
+					result = URLUtil.sendGet(getUrl, "",cookie);
 					JSONObject jsonObject = JSONArray.parseObject(result);
 					if (jsonObject != null) {
 						projectName = jsonObject.getString("name");
@@ -141,8 +142,7 @@ public class ProjectInvolveManager {
 						}
 					}
 				} catch (Exception e) {
-					System.out.println("getProjectNameById error! projectId:" + projectId);
-					e.printStackTrace();
+					System.out.println("getProjectNameById error! projectId:" + projectId + " and result is : " + result);
 				}
 			}
 		}
@@ -278,6 +278,7 @@ public class ProjectInvolveManager {
 			}
 			
 			String result = URLUtil.sendGet(getUrl, "","");
+			System.out.println("getUserSign:" + result);
 			JSONObject jsonObject = JSONArray.parseObject(result);
 			if (jsonObject.getString("success") == "true") {
 				sign = jsonObject.getString("id");
@@ -356,6 +357,7 @@ public class ProjectInvolveManager {
 				userInfo.setNickName(jsonObject.getString("name"));
 				userInfo.setCreateTime(Timestamp.valueOf(jsonObject.getString("updateTime").replace("T", " ").replace("Z", "")));
 				userInfo.setUserRole(priviledgeQuery(userId, "cynthia_entryConfig") ? UserRole.admin : UserRole.normal);
+				userInfo.setPicUrl("http://www.effevo.com/anonymous/resource/user/logo/" + userInfo.getId()+ "/large");
 				userNameMap.put(userInfo.getUserName(), userInfo.getNickName());
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -611,7 +613,7 @@ public class ProjectInvolveManager {
 	}
 	
 	public static void main(String[] args){
-		System.out.println(new ProjectInvolveManager().getProductMap("liming@sogou-inc.com"));
+		System.out.println(new ProjectInvolveManager().getUserInfoById("679"));
 //		new ProjectInvolveManager().sendMail("liming@sogou-inc.com","测试邮件", new String[]{"liming@sogou-inc.com"}, "这是一封测试邮件");
 	}
 	

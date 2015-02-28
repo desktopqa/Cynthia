@@ -32,7 +32,6 @@ function initMyTag()
 	$.ajax({
 		url: 'tag/getAllTag.do',
 		type:'POST',
-		async: true,
 		data:params,
 		success: function(data){
 			var tagData = eval('(' + data + ')');
@@ -83,7 +82,6 @@ function tagIdMoveOut(){
 	$.ajax({
 		url: 'tag/deleteTagData.do',
 		type:'POST',
-		async: true,
 		data:{'dataIds': dataIds, 'tagId' : tagId},
 		success: function(data){
 			if(data != "" && data != "false")
@@ -108,7 +106,6 @@ function myTagClick()
 	$.ajax({
 		url: 'tag/addTagData.do',
 		type:'POST',
-		async: true,
 		data:{'dataIds': dataIds,  'toTagId' : toTagId},
 		success: function(data){
 			if(data != "" && data != "false")
@@ -145,7 +142,6 @@ function tagDataMoveOut()
 	$.ajax({
 		url: 'tag/deleteTagData.do',
 		type:'POST',
-		async: true,
 		data:{'dataIds': dataIds},
 		success: function(data){
 			if(data != "" && data != "false")
@@ -171,7 +167,6 @@ function tagDatasMoveOut(datas,tagId)
 	$.ajax({
 		url: 'tag/deleteTagData.do',
 		type:'POST',
-		async: true,
 		data:{'dataIds': datas, 'tagId' : tagId},
 		success: function(data){
 			if(data != "" && data != "false")
@@ -206,7 +201,6 @@ function addOrModifyClassify()
 		$.ajax({
 			url: 'tag/addTag.do',
 			type:'POST',
-			async: false,
 			data:params,
 			success: function(data){
 				if(data == "" || data == "0"){
@@ -214,9 +208,10 @@ function addOrModifyClassify()
 				}else{
 					initMyTag();
 				}
+				$("#tagName").val("");
 			}
 		});
-		$("#tagName").val("");
+		
 		$("#cfgNewTagDiv").modal('hide');
 		return true;
 	}
@@ -229,7 +224,6 @@ function addOrModifyClassify()
 		$.ajax({
 			url: 'tag/modifyTag.do',
 			type:'POST',
-			async: false,
 			data:params,
 			success: function(data){
 				if(data == "" || data == "false"){
@@ -237,9 +231,10 @@ function addOrModifyClassify()
 				}else{
 					initMyTag();
 				}
+				$("#tagName").val("");
 			}
 		});
-		$("#tagName").val("");
+		
 		$("#cfgNewTagDiv").modal('hide');
 		return true;
 	}
@@ -291,7 +286,6 @@ function deleteTagById(tagId)
 	$.ajax({
 		url: 'tag/removeTag.do',
 		type:'POST',
-		async: false,
 		data:params,
 		success: function(data){
 			if(data == "" || data == "false")
@@ -370,16 +364,15 @@ function initTagData(tagId,page,sortField,sortType,reDrawHead)
 	$.ajax({
 		url: 'tag/getTagDatas.do',
 		type:'POST',
-		async: false,
 		data:{'tagId' : tagId},
 		success: function(dataArray){
 			var searchType = "id";
 			if(dataArray == null || dataArray.length == 0){
 				showInfoWin("warning","该标签没有任何数据!");
 				showFilterData(null, null, defaultHeader, '', reDrawHead);
-			}
-			else
+			}else{
 				queryData("", page,sortField,sortType,reDrawHead,searchType,dataArray);
+			}
 		},
 		error: function(data){
 			showInfoWin("error","服务器异常!");

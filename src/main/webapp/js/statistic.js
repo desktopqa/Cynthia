@@ -1,6 +1,5 @@
 
-function setTypeDiv()
-{
+function setTypeDiv(callback){
 	var type = $("#stat_type").val();
 	$.each($("#stat_all .stat"),function(index,node){
 		if($(node).hasClass("by_" + type)){
@@ -12,17 +11,16 @@ function setTypeDiv()
 	
 	if(type === "task"){
 		$("#chartType").val('area');
-		
 	}else{
 		$("#chartType").val('pie');
 	}
 	
 	enableSelectSearch();
 	changeTips();
-	initTemplate();
+	initTemplate(callback);
 }
 
-function initTemplate()
+function initTemplate(callback)
 {
 	$("#stat_info_body").empty();
 	clearConditionTable();
@@ -37,59 +35,51 @@ function initTemplate()
 		type:'POST',
 		dataType:'json',
 		data:param,
-		async:false,
-		success:onInitTemplate,
-		error:function(data){
-			alert('server error!');
+		success:function(data){
+			$("#templates").empty();
+			$("#templates").append("<option value=>--请选择--</option>");
+			for(var key in data){
+				$("#templates").append("<option value=" + key + ">" + data[key] + "</option>");
+			}
+			$("#templates").val('');
+			$("#stat_options").empty();
+			enableSelectSearch();
+			if(callback){
+				callback();
+			}
 		}
 	});
-}
-
-function onInitTemplate(data)
-{
-	$("#templates").empty();
-	$("#templates").append("<option value=>--请选择--</option>");
-	for(var key in data){
-		$("#templates").append("<option value=" + key + ">" + data[key] + "</option>");
-	}
-	$("#templates").val('');
-	$("#stat_options").empty();
-	enableSelectSearch();
 }
 
 function initAllTemplateTask(templateId)
 {
 	var data;
+	var afterInit = function(data){
+		$("#stat_task").empty();
+		$("#stat_task").append("<option value=>--请选择--</option>");
+		for(var key in data){
+			$("#stat_task").append("<option value=" + key + "> " + data[key] + "</option>");
+		}
+		$("#stat_task").val('');
+		enableSelectSearch();
+	};
+	
 	$.ajax({
 		url:base_url + 'template/getTmpDataIdTitle.do',
 		type:'POST',
 		dataType:'json',
-		async:false,
 		data:{'templateId':templateId},
-		success: function(response){
-			data = response;
-		},
-		error:function(response){
-			data = eval('(' + response.responseText + ')');
-		}
+		success: afterInit(response),
+		error:afterInit(eval('(' + response.responseText + ')'))
 	});
-	
-	$("#stat_task").empty();
-	$("#stat_task").append("<option value=>--请选择--</option>");
-	for(var key in data){
-		$("#stat_task").append("<option value=" + key + "> " + data[key] + "</option>");
-	}
-	$("#stat_task").val('');
-	enableSelectSearch();
 }
 
-function initTemplateBugField(templateId)
+function initTemplateBugField(templateId,callback)
 {
 	$.ajax({
 		url:base_url + 'template/getTemplateAllBugField.do',
 		type:'POST',
 		dataType:'json',
-		async:false,
 		data:{'templateId':templateId},
 		success: function(data){
 			$("#stat_task_bug_field").empty();
@@ -105,9 +95,8 @@ function initTemplateBugField(templateId)
 			enableSelectSearch();
 			//选择表单下所有任务
 			initAllTemplateTask(templateId);
-		},
-		error:function(data){
-			alert("error");
+			if(callback)
+				callback();
 		}
 	});
 }
@@ -121,7 +110,6 @@ function setTaskBugStatus()
 		url:base_url + 'bugstatistic/getTaskBugStatus.do',
 		type:'POST',
 		dataType:'json',
-		async:false,
 		data:{'templateId':templateId,'taskBugField':taskBugField},
 		success: function(data){
 			$("#stat_options").empty();
@@ -155,7 +143,6 @@ function initStatFieldOptions(fieldId)
 		url:base_url + 'bugstatistic/getFieldOption.do',
 		type:'POST',
 		dataType:'json',
-		async:false,
 		data:{'templateId':templateId,'fieldId':fieldId},
 		success: function(data){
 			$("#stat_options").empty();
@@ -174,7 +161,7 @@ function initStatFieldOptions(fieldId)
 }
 
 
-function initTemplateFields()
+function initTemplateFields(callback)
 {
 	var type = $("#stat_type").val();
 	if(!type)
@@ -185,23 +172,20 @@ function initTemplateFields()
 	
 	if( type === "task"){
 		//设置该任务bug字段
-		initTemplateBugField(templateId);
+		initTemplateBugField(templateId,function(){initFilterFields(callback);});
 	}else if(type === "model"){
-		initTemplateStatField(templateId);
+		initTemplateStatField(templateId,function(){initFilterFields(callback);});
 	}else if(type === "person"){
-		initTemplateRoles();
+		initTemplateRoles(function(){initFilterFields(callback);});
 	}
-	
-	initFilterFields();
 }
 
-function initTemplateStatField(templateId)
+function initTemplateStatField(templateId,callback)
 {
 	$.ajax({
 		url:base_url + 'bugstatistic/getStatisticField.do',
 		type:'POST',
 		dataType:'json',
-		async:false,
 		data:{'templateId':templateId},
 		success: function(data){
 			$("#stat_field").empty();
@@ -209,9 +193,9 @@ function initTemplateStatField(templateId)
 			for(var key in data){
 				$("#stat_field").append("<option value=" + data[key].fieldId + "> " + data[key].fieldName + "</option>");
 			}
-		},
-		error:function(data){
-			alert("error");
+			if(callback){
+				callback();
+			}
 		}
 	});
 }
@@ -298,13 +282,12 @@ function appendOption(appId,optId,optVal)
 
 
 ////////////按角色解决统计////////////////////////
-function initTemplateRoles()
+function initTemplateRoles(callback)
 {
 	var templateId = $("#templates").val();
 	$.ajax({
 		url:base_url + 'flow/getRoleByTemplate.do',
 		type:'POST',
-		async:false,
 		dataType:'json',
 		data:{'templateId':templateId},
 		success: function(data){
@@ -313,9 +296,9 @@ function initTemplateRoles()
 			for(var key in data){
 				$("#stat_role").append("<option value=" + data[key].fieldId + "> " + data[key].fieldName + "</option>");
 			}
-		},
-		error:function(data){
-			alert("error");
+			if(callback){
+				callback();
+			}
 		}
 	});
 }
@@ -328,7 +311,6 @@ function initRoleActions()
 		url:base_url + 'flow/getActionByRole.do',
 		type:'POST',
 		dataType:'json',
-		async:false,
 		data:{'templateId':templateId,'roleId':roleId},
 		success: function(data){
 			$("#stat_action").empty();
@@ -580,7 +562,6 @@ function initAllStats()
 		url:base_url + 'statistic/queryAllStatistics.do',
 		type:'POST',
 		dataType:'json',
-		async:false,
 		success:function(data){
 			setStatistic(data);
 		},
@@ -623,7 +604,6 @@ function deleteStat(statId)
 		url:base_url + 'statistic/deleteStatistic.do',
 		type:'POST',
 		dataType:'json',
-		async:false,
 		data:{'statId':statId},
 		success:function(data){
 			data = $.trim(data);
@@ -661,105 +641,102 @@ function initCreateDiv()
 
 function editStat(statId)
 {
-	var statParam = ""; 
 	$.ajax({
 		url:base_url + 'statistic/initStatisticParam.jsp',
-		async:false,
 		dataType:'xml',
 		data:{'statId':statId},
-		success:function(data){
-			statParam = data;
-		}
-	});
-	
-	$("#statdiv select").val('');
-	$("#statdiv input[type!=button][type!=radio]").val('');
-	$("#my_statistic_h").text('编辑统计项');
-	$("#stat_id").val(statId);
-	
-	var rootNode = $(statParam);
-	$("#stat_name").val($(rootNode).find("name").text());
-	$("#stat_type").val($(rootNode).find("type").text());
-	$("#stat_type").change();
-	$("#templates").val($(rootNode).find("templateId").text());
-	$("#templates").change();
-	$("#start_time").val($(rootNode).find("timeRange startTime").text());
-	$("#end_time").val($(rootNode).find("timeRange endTime").text());
-	$("#time_type").val($(rootNode).find("timeRange timeType").text());
-	
-	var statType = $(rootNode).find("type").text();
-	//任务
-	if(statType === "task"){
-		$("#stat_task").val($(rootNode).find("task taskId").text());
-		$("#stat_task_bug_field").val($(rootNode).find("task taskFieldId").text());
-	}else if(statType === "person"){
-		//人员
-		$("#stat_role").val($(rootNode).find("person roleId").text());
-		$("#stat_role").change();
-		var actionIds = $(rootNode).find("person roleActionIds").text();
-		if(actionIds && actionIds.length >0){
-			$.each(actionIds.split(","),function(index,action){
-				$("#stat_action option[value="+action+"]").attr("selected","selected");
+		success:function(statParam){
+			$("#statdiv select").val('');
+			$("#statdiv input[type!=button][type!=radio]").val('');
+			$("#my_statistic_h").text('编辑统计项');
+			$("#stat_id").val(statId);
+			var rootNode = $(statParam);
+			$("#stat_name").val($(rootNode).find("name").text());
+			$("#stat_type").val($(rootNode).find("type").text());
+			setTypeDiv(function(){
+				$("#templates").val($(rootNode).find("templateId").text());
+				initTemplateFields(function(){
+					$("#start_time").val($(rootNode).find("timeRange startTime").text());
+					$("#end_time").val($(rootNode).find("timeRange endTime").text());
+					$("#time_type").val($(rootNode).find("timeRange timeType").text());
+					
+					var statType = $(rootNode).find("type").text();
+					//任务
+					if(statType === "task"){
+						$("#stat_task").val($(rootNode).find("task taskId").text());
+						$("#stat_task_bug_field").val($(rootNode).find("task taskFieldId").text());
+					}else if(statType === "person"){
+						//人员
+						$("#stat_role").val($(rootNode).find("person roleId").text());
+						$("#stat_role").change();
+						var actionIds = $(rootNode).find("person roleActionIds").text();
+						if(actionIds && actionIds.length >0){
+							$.each(actionIds.split(","),function(index,action){
+								$("#stat_action option[value="+action+"]").attr("selected","selected");
+							});
+						};
+						$("input[type=radio][name=containCurAssign][value="+$(rootNode).find("person containCurAssign").text()+"]").attr("checked","checked");
+					}else if(statType === "model"){
+						//模块
+						$("#stat_field").val($(rootNode).find("model modelfieldId").text());
+						$("#stat_field").change();
+					}
+					
+					//设置统计项
+					var choosedOption = new Array();
+					$(rootNode).find("stats").find("stat").each(function(index,node){
+						var statId = node.getAttribute("statId");
+						var statValue = $(node).text();
+						var statOptions = node.getAttribute("statOptions");
+						var tmpArr = statValue.split("|");
+						choosedOption = choosedOption.concat(tmpArr.slice(1));
+						addToRight(statId,tmpArr[0],statOptions);
+						//统计项名
+					});
+
+					$.each(choosedOption,function(index,value){
+						$("#stat_options option[value='"+value+"']").remove();
+					});
+					
+					$("#recievers").val($(rootNode).find("reciever").text());
+					$("#chartType").val($(rootNode).find("graph").text());
+
+					//设置过滤条件
+					clearConditionTable();
+					$(rootNode).find("conditions").find("field").each(function(index,node){
+						
+						var content = $(node).find("fieldContent").text();
+						if(content!=null&&content!="")
+						{
+							$("#conditions_table>tbody").append("<tr><td>"+content+"</td><td onclick='subCondition(this)'><span style=\"cursor:pointer;\"class=\"label label-important\">删除</span></td></tr>");
+						}
+					});
+					
+					//设置发信时间
+					var mailTimeNode = $(rootNode).find("mailTime");
+					var isSendMail = mailTimeNode.find("isSendMail").text();
+					setTimeValue('month',1,12,mailTimeNode.find("month").text().split(","));
+					setTimeValue('date',1,31,mailTimeNode.find("date").text().split(","));
+					setTimeValue('week',1,7,mailTimeNode.find("week").text().split(","));
+					setTimeValue('hour',0,23,mailTimeNode.find("hour").text().split(","));
+					setTimeValue('minute',0,59,mailTimeNode.find("minute").text().split(","));
+					
+					if(isSendMail === "true"){
+						$('#mail_cfg').show();
+						$("input[type=radio][name=sendMail][value=true]").attr("checked","checked")
+					}else{
+						$('#mail_cfg').hide();
+						$("input[type=radio][name=sendMail][value=false]").attr("checked","checked");
+					}
+					
+					$("#recievers").val($(rootNode).find("reciever").text());
+					
+					enableSelectSearch();	
+					$("#statdiv").modal('show');
+				});
 			});
-		};
-		$("input[type=radio][name=containCurAssign][value="+$(rootNode).find("person containCurAssign").text()+"]").attr("checked","checked");
-	}else if(statType === "model"){
-		//模块
-		$("#stat_field").val($(rootNode).find("model modelfieldId").text());
-		$("#stat_field").change();
-	}
-	
-	//设置统计项
-	var choosedOption = new Array();
-	$(rootNode).find("stats").find("stat").each(function(index,node){
-		var statId = node.getAttribute("statId");
-		var statValue = $(node).text();
-		var statOptions = node.getAttribute("statOptions");
-		var tmpArr = statValue.split("|");
-		choosedOption = choosedOption.concat(tmpArr.slice(1));
-		addToRight(statId,tmpArr[0],statOptions);
-		//统计项名
-	});
-
-	$.each(choosedOption,function(index,value){
-		$("#stat_options option[value='"+value+"']").remove();
-	});
-	
-	$("#recievers").val($(rootNode).find("reciever").text());
-	$("#chartType").val($(rootNode).find("graph").text());
-
-	//设置过滤条件
-	clearConditionTable();
-	$(rootNode).find("conditions").find("field").each(function(index,node){
-		
-		var content = $(node).find("fieldContent").text();
-		if(content!=null&&content!="")
-		{
-			$("#conditions_table>tbody").append("<tr><td>"+content+"</td><td onclick='subCondition(this)'><span style=\"cursor:pointer;\"class=\"label label-important\">删除</span></td></tr>");
 		}
 	});
-	
-	//设置发信时间
-	var mailTimeNode = $(rootNode).find("mailTime");
-	var isSendMail = mailTimeNode.find("isSendMail").text();
-	setTimeValue('month',1,12,mailTimeNode.find("month").text().split(","));
-	setTimeValue('date',1,31,mailTimeNode.find("date").text().split(","));
-	setTimeValue('week',1,7,mailTimeNode.find("week").text().split(","));
-	setTimeValue('hour',0,23,mailTimeNode.find("hour").text().split(","));
-	setTimeValue('minute',0,59,mailTimeNode.find("minute").text().split(","));
-	
-	if(isSendMail === "true"){
-		$('#mail_cfg').show();
-		$("input[type=radio][name=sendMail][value=true]").attr("checked","checked")
-	}else{
-		$('#mail_cfg').hide();
-		$("input[type=radio][name=sendMail][value=false]").attr("checked","checked");
-	}
-	
-	$("#recievers").val($(rootNode).find("reciever").text());
-	
-	enableSelectSearch();	
-	$("#statdiv").modal('show');
 }
 
 

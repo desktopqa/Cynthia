@@ -8,6 +8,7 @@ var templates = null;
 var roles = null;
 var allTemplateRight = new Array();
 var optionRightControl = false;
+var isProjectInvolved;
 
 function initTemplateList()
 {
@@ -15,23 +16,22 @@ function initTemplateList()
 		$.ajax({
 				url : base_url + 'backRight/initUserTemplateRight.do',
 				dataType:'json',
-				async:false,
 				success :function(data){
 					for(var templateId in data){
 						allTemplateRight.push(templateId);
 					}
+					initAllTemplate();
 				},
-				error:function(){
-				}
+				error:initAllTemplate
 		});
 	}
-	
+}
+
+function initAllTemplate(){
 	$.ajax({
 		url : 'template/get_InitInfo_xml.jsp',
 		type : 'POST',
-		success : onInitTemplateListAjax,
-		error : function(data){
-		}
+		success : onInitTemplateListAjax
 	});
 }
 
@@ -48,7 +48,10 @@ function onInitTemplateListAjax(rootNode)
 		templates[idx].id = $(node).children("id").text();
 		templates[idx].name = $(node).children("name").text();
 		templates[idx].flowId = $(node).children("flowId").text();
-		if(!optionRightControl  || userRole === "super_admin" || $.inArray(templates[idx].id, allTemplateRight) != -1)
+		templates[idx].isProTemplate = $(node).children("isProTemplate").text();
+		
+		if((!optionRightControl  || userRole === "super_admin" || $.inArray(templates[idx].id, allTemplateRight) != -1) &&
+				( !isProjectInvolved || (isProjectInvolved && !templates[idx].isProTemplate == 'true')))
 			gridHtml += "<option value=\"" + idx+"\">" + templates[idx].name + "</option>";
 	});
 	
@@ -71,7 +74,6 @@ function initFlowRoles()
 		url: base_url + 'flow/getActionRole.do',
 		type :'POST',
 		dataType:'json',
-		async : false,
 		data: {'flowId':flowId},
 		success: function(data){
 			var gridHtml = "";
@@ -323,16 +325,17 @@ function enableSearchSelect(){
 	});
 }
 
-function initSystem()
+function initSystem(callback)
 {
 	$.ajax({
 		url: base_url + 'backRight/getSystem.do',
 		type:'POST',
 		data:{'userMail':'system'},
 		dataType:'json',
-		async:false,
 		success:function(data){
+			isProjectInvolved = data.projectInvolved == 'true';
 			optionRightControl = (data.openRight == 'true' ? true : false);
+			if(callback) callback();
 		}
 	});
 }
@@ -370,7 +373,8 @@ function bindEvents()
 	});
 }
 $(function(){
-	initSystem();
 	bindEvents();
-	initTemplateList();
+	initSystem(function(){
+		initTemplateList();
+	});
 });

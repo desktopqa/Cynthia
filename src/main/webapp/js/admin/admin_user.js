@@ -7,6 +7,7 @@
 var users = null;
 var userRole = null;  //当前用户角色
 var userRoleMap = new Map();
+var optionRightControl = false;
 userRoleMap.put('normal','普通用户');
 userRoleMap.put('admin','管理员');
 userRoleMap.put('super_admin','系统管理员');
@@ -165,6 +166,28 @@ function setTemplateRight(userMail)
 	});
 }
 
+function initSystem(callback)
+{
+	$.ajax({
+		url: base_url + 'backRight/getSystem.do',
+		type:'POST',
+		data:{'userMail':'system'},
+		dataType:'json',
+		success:function(data){
+			if( data.projectInvolved == 'true'){
+				$('.project_involved_true').show();
+				$('.project_involved_false').hide();
+			}else{
+				$('.project_involved_true').hide();
+				$('.project_involved_false').show();
+			}
+			if(callback){
+				callback();
+			}
+		}
+	});
+}
+
 function onCompleteInitTemplateRight(data)
 {
 	var gridHtml = '';
@@ -211,7 +234,6 @@ function initAllTemplate()
 		url : base_url + 'backRight/getAllTemplate.do',
 		type : 'POST',
 		dataType:'json',
-		async:false,
 		success :function(data){
 			var gridHtml = '';
 			gridHtml += "<option value=''>选择权限表单</option>"; 
@@ -219,13 +241,13 @@ function initAllTemplate()
 				gridHtml += "<option value= "+templateId+">" + data[templateId] + "</option>"; 
 			}
 			$("#chooseTemplate").html(gridHtml);
+			enableSelectSearch();
 		},
 		error:function(){
 			alert('服务器内部错误');
 		}
 	});
 	
-	enableSelectSearch();
 	$("#initAllTemDiv").modal('show');
 }
 
@@ -241,19 +263,20 @@ function addUserTemplate()
 	$.ajax({
 		url : base_url + 'backRight/addUserTemplateRight.do',
 		type : 'POST',
-		async:false,
 		data:{'userMail':$("#userTemMail").val(),'templateIds':$("#chooseTemplate").val()},
 		success :function(data){
-			if(data == 'true')
+			if(data == 'true'){
 				setTemplateRight($("#userMail").val());
-			else
+			}else{
 				alert(data);
+			}
+			
+			$("#initAllTemDiv").modal('hide');
 		},
 		error:function(){
 			alert('服务器内部错误');
 		}
 	});
-	$("#initAllTemDiv").modal('hide');
 }
 
 function addUser()
@@ -467,5 +490,5 @@ $(function(){
 	        6:{sorter: false}
 		}
 	}); 
-	initUserList();
+	initSystem(initUserList);
 });

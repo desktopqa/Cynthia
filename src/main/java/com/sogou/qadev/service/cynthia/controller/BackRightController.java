@@ -25,6 +25,7 @@ import com.sogou.qadev.service.cynthia.bean.UserInfo;
 import com.sogou.qadev.service.cynthia.bean.impl.UserInfoImpl;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
 import com.sogou.qadev.service.cynthia.service.ProjectInvolveManager;
+import com.sogou.qadev.service.cynthia.util.ConfigUtil;
 
 /**
  * 后台权限操作管理类
@@ -326,6 +327,12 @@ public class BackRightController extends BaseController{
 		}else {
 			return "服务器内部错误,删除失败!";
 		}
+	}
+	
+	@ResponseBody
+	@RequestMapping("/getWebRootDir.do")
+	public String getWebRootDir(HttpServletRequest request,HttpSession httpSession) throws Exception {
+		return ConfigUtil.getCynthiaWebRoot();
 	}
 	
 	/**

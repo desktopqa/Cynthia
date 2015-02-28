@@ -179,9 +179,6 @@ public class FilterController extends BaseController{
 		List<String> showFieldId = new ArrayList<String>();
 		
 		Map<String, Object> returnMap = new HashMap<String, Object>();
-		returnMap.put("groupField", groupField);
-		returnMap.put("showFields", showList);
-		returnMap.put("backFields", backList);
 		
 		if(filter == null)
 			return "";
@@ -265,6 +262,11 @@ public class FilterController extends BaseController{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		returnMap.put("groupField", groupField);
+		returnMap.put("showFields", showList);
+		returnMap.put("backFields", backList);
+		
 		return JSONArray.toJSONString(returnMap);
 	}
 	

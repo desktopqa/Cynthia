@@ -286,7 +286,6 @@
 			url:'../statistic/getStatisticInfo.do',
 			data:{'statisticId':statisticId},
 			type:'POST',
-			async:false,
 			dataType:'json',
 			success:function(data){
 				var chart = $.initChart(divId,data);

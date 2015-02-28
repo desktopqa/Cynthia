@@ -1535,28 +1535,14 @@ function judgeNeedSearch()
 
 function getWebRootDir()
 {
-	return WEB_ROOT_URL;
-}
-
-function queryUserInfo()
-{
-	var user;
+	if(WEB_ROOT_URL) return WEB_ROOT_URL;
 	$.ajax({
-		url: base_url + 'user/getUserInfo.do',
-		type:'POST',
-		async:false,
-		dataType:'json',
-		data:{'userMail':readCookie("login_username"),'userId':readCookie("id")},
+		url: base_url + 'backRight/getWebRootDir.do',
 		success:function(data){
-			user = data;
-			userPicUrl = user.picUrl || base_url + "images/default_user.png";
-			if(data){
-				createCookie("login_nickname=" + encodeURIComponent(data.nickName));
-				createCookie("login_username=" + data.userName);
-			}
+			WEB_ROOT_URL = data;
 		}
 	});
-	return user;
+	return WEB_ROOT_URL;
 }
 
 function isEffevo(){
@@ -1565,19 +1551,28 @@ function isEffevo(){
 
 function checkLogin()
 {
-	var userInfo,userMail = readCookie("login_username");
-	//用户头像id
-	if(!userPicUrl || !userMail)
-		userInfo = queryUserInfo();
-	
-	if(!userInfo)  {
-		if(window.location.href.indexOf('/userInfo/login.jsp') == -1){
-			//cookie失效重新跳转到登录页
-			var url = base_url + 'user/logout.do?isReturn=false&targetUrl=' + encodeURIComponent( window.location.href );
-			window.parent ? window.parent.location.href = url : window.location.href = url;
+	addCnzzStatic(); 
+	var userMail = readCookie("login_username");
+	$.ajax({
+		url: base_url + 'user/getUserInfo.do',
+		type:'POST',
+		dataType:'json',
+		data:{'userMail':userMail,'userId':readCookie("id")},
+		success:function(user){
+			userPicUrl = user.picUrl || base_url + "images/default_user.png";
+			if(user){
+				createCookie("login_nickname=" + encodeURIComponent(user.nickName));
+				createCookie("login_username=" + user.userName);
+				addHeadHtml(user); //添加头部导航条
+			}else{
+				if(window.location.href.indexOf('/userInfo/login.jsp') == -1){
+					//cookie失效重新跳转到登录页
+					var url = base_url + 'user/logout.do?isReturn=false&targetUrl=' + encodeURIComponent( window.location.href );
+					window.parent ? window.parent.location.href = url : window.location.href = url;
+				}
+			}
 		}
-	}
-	return userInfo;
+	});
 }
 
 function addHeadHtml(userInfo)
@@ -1666,9 +1661,6 @@ function addHeadHtml(userInfo)
 }
 
 $(function(){
-	var userInfo = checkLogin();
-	if(userInfo)
-		addHeadHtml(userInfo); //添加头部导航条
-	addCnzzStatic(); 
+	checkLogin();
 });
 	

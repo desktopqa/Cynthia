@@ -85,7 +85,6 @@ function sendFilterResult()
 	$.ajax({
 		url: 'frame/get_SendFilterResult_xml.jsp',
 		type :'post',
-		async : true,
 		data:params,
 		success: function(msg){
 			showInfoWin("success","过滤器结果发送成功！");
@@ -129,7 +128,6 @@ function initModifyData()
 	$.ajax({
 		url: 'batchModify/getModifyActionAndUser.do',
 		type :'GET',
-		async : false,
 		dataType : 'json',
 		data: {'dataIds': dataIds, 'filterId': $("#filterId").val()},
 		success: function(data){
@@ -159,7 +157,6 @@ function initCloseData()
 	$.ajax({
 		url: 'batchModify/getCloseActionAndUser.do',
 		type :'POST',
-		async : false,
 		dataType : 'json',
 		data: {'dataIds': dataIds, 'filterId': $("#filterId").val()},
 		success: function(data){
@@ -289,7 +286,6 @@ function modifyFilterData()
 	$.ajax({
 		url: 'frame/get_ModifyDatas_xml.jsp',
 		type :'POST',
-		async : false,
 		data: param,
 		success: function(data){
 			$("#modify-content").empty();
@@ -443,15 +439,15 @@ function saveDisplayFieldModifyResult()
 	$.ajax({
 		url:"filterManage/filterShowCfg_update.jsp",
 		type:'POST',
-		async:false,
 		data :{'showFields' : showFields, 'filterId' :$("#filterId").val()},
 		success : function(responseXML){
+			grid.refreshGrid();
 		},
 		error:function(responseXML){
+			grid.refreshGrid();
 		}
 	});
-
-	grid.refreshGrid();
+	
 	$("#cfgDisplayDiv").modal('hide');
 }
 /*配置显示字段相关结束*/
@@ -555,7 +551,6 @@ function initMyTag()
 	$.ajax({
 		url: 'tag/getAllTag.do',
 		type:'POST',
-		async: false,
 		data:params,
 		success: function(data){
 			var tagData = eval('(' + data + ')');
@@ -626,7 +621,6 @@ function tagDatasMoveOut(datas,tagId,refresh)
 	$.ajax({
 		url: 'tag/deleteTagData.do',
 		type:'POST',
-		async: true,
 		data:{'dataIds': datas, 'tagId' : tagId},
 		success: function(data){
 			if(data != "" && data != "false")
@@ -661,7 +655,6 @@ function myTagClick()
 	$.ajax({
 		url: 'tag/addTagData.do',
 		type:'POST',
-		async: true,
 		data:{'dataIds': dataIds,  'toTagId' : toTagId},
 		success: function(data){
 			if(data != "" && data != "false")
@@ -693,7 +686,6 @@ function tagDataMoveOut()
 	$.ajax({
 		url: 'tag/deleteTagData.do',
 		type:'POST',
-		async: true,
 		data:{'dataIds': dataIds, 'tagId' : curTagId},
 		success: function(data){
 			if(data != "" && data != "false")
@@ -723,7 +715,6 @@ function addOrModifyClassify()
 		$.ajax({
 			url: 'tag/addTag.do',
 			type:'POST',
-			async: false,
 			data:params,
 			success: function(data){
 				if(data == "" || data == "0"){
@@ -731,9 +722,9 @@ function addOrModifyClassify()
 				}else{
 					initMyTag();
 				}
+				$("#tagName").val("");
 			}
 		});
-		$("#tagName").val("");
 		$("#cfgNewTagDiv").modal('hide');
 		return true;
 	}
@@ -746,7 +737,6 @@ function addOrModifyClassify()
 		$.ajax({
 			url: 'tag/modifyTag.do',
 			type:'POST',
-			async: false,
 			data:params,
 			success: function(data){
 				if(data == "" || data == "false"){
@@ -754,9 +744,9 @@ function addOrModifyClassify()
 				}else{
 					initMyTag();
 				}
+				$("#tagName").val("");
 			}
 		});
-		$("#tagName").val("");
 		$("#cfgNewTagDiv").modal('hide');
 		return true;
 	}
@@ -808,7 +798,6 @@ function deleteTagById(tagId)
 	$.ajax({
 		url: 'tag/removeTag.do',
 		type:'POST',
-		async: false,
 		data:params,
 		success: function(data){
 			if(data == "" || data == "false")
@@ -965,7 +954,6 @@ function queryData(filterId,page,sortField,sortType,reDrawHead,searchType, keywo
 				$.ajax({
 					url: "filter/getFilterShowInfo.do",
 					type:'POST',
-					async: false,
 					dataType:'json',
 					data:params,
 					success: function(filterField){
@@ -1441,14 +1429,15 @@ function bindEvents()
 function initFilterMenuData()
 {
 	//得到系统默认过滤器
-	getHomeFilter();
-	initCreateBugMenu(); //初始菜单
+	getHomeFilter(function(){
+		initCreateBugMenu(); //初始菜单
 
-	loadMenuAndData();
-	window.setInterval(loadMenuAndData,600000);  //十分钟加载一次
+		loadMenuAndData();
+		window.setInterval(loadMenuAndData,600000);  //十分钟加载一次
 
-	getDefaultHeader();
-	setDefaultSearchType();
+		getDefaultHeader();
+		setDefaultSearchType();
+	});
 }
 
 function loadMenuAndData()
@@ -1486,7 +1475,6 @@ function getDefaultHeader()
 	$.ajax({
 		url: 'filter/getDefaultHeader.do',
 		type:'POST',
-		async: true,
 		data:params,
 		success: function(data){
 			defaultHeader = eval('(' + data + ')');
@@ -1494,7 +1482,7 @@ function getDefaultHeader()
 	});
 }
 
-function getHomeFilter()
+function getHomeFilter(callback)
 {
 	var filterIdHash = window.location.hash;
 	var filterId = "";
@@ -1504,26 +1492,27 @@ function getHomeFilter()
 			if(isNumber(filterIdStr)){
 				filterId = filterIdStr;
 			}
-		}catch(e){
-		}
+		}catch(e){}
 	}
+	
+	filterId = filterId || request("filterId");
 	if(filterId == ""){
-		filterId = request("filterId");
-		if(filterId == "")
-		{
-			var params={};
-			$.ajax({
-				url: 'filter/getHomeFilter.do',
-				type:'POST',
-				async: false,
-				data:params,
-				success: function(data){
-					filterId = data;
+		$.ajax({
+			url: 'filter/getHomeFilter.do',
+			type:'POST',
+			success: function(filterId){
+				$("#filterId").val(trim(filterId || "" ));
+				if(callback) {
+					callback();
 				}
-			});
+			}
+		});
+	}else{
+		$("#filterId").val(trim(filterId));
+		if(callback) {
+			callback();
 		}
 	}
-	$("#filterId").val(trim(filterId || "" ));
 }
 
 function initFilterData(filterId,page,sortField,sortType,reDrawHead)
@@ -1851,7 +1840,7 @@ function initFilterMenu(type , filterId)
 	},'xml');
 }
 
-function updateFavFilters()
+function updateFavFilters(callback)
 {
 	var childrenIds = "";
 	$("#favorate_menu").find(".filter").each(function(idx,item){
@@ -1861,7 +1850,6 @@ function updateFavFilters()
 	});
 
 	$.ajax({
-		async:false,
 		type:'POST',
 		url : 'tree/jsTree.jsp',
 		data : {
@@ -1870,9 +1858,7 @@ function updateFavFilters()
 			'position':1,
 			'childrenIds':childrenIds
 		},
-		success : function(r)
-		{
-		}
+		success : callback
 	});
 }
 
@@ -2039,16 +2025,13 @@ function openFilterInNewWindow(filterId)
 
 function removeFavFilter(filterId)
 {
-	if(!window.confirm("是否要移出常用过滤器呢?"))
-	{
+	if(!window.confirm("是否要移出常用过滤器呢?")){
 		return;
 	}
-	if(filterId && filterId != "")
-	{
+	if(filterId && filterId != ""){
 		$("#favorate_menu").find("li[id='"+filterId+"']").remove();
-		updateFavFilters();
+		updateFavFilters(initFilterMenu);
 	}
-	initFilterMenu();  //重新刷新过滤器
 }
 
 /**
@@ -2165,18 +2148,16 @@ function openDefaultTemplate(e){
 	var defaultTemplateTypeId = null;
 	$.ajax({
 		url:'filterManage/initUserDefaultTemplate.jsp',
-		async:false,
 		success:function(data){
 			defaultTemplateId = $(data).find("templateId").text();
 			defaultTemplateTypeId = $(data).find("templateTypeId").text();
+			if(defaultTemplateId != null && $.trim(defaultTemplateId) != ''){
+				window.open('taskManagement.html?operation=create&templateId=' +defaultTemplateId + '&templateTypeId=' + defaultTemplateTypeId);
+			}else{
+				$(this).parent().toggleClass("open");
+			}
 		}
 	});
-
-	if(defaultTemplateId != null && $.trim(defaultTemplateId) != ''){
-		window.open('taskManagement.html?operation=create&templateId=' +defaultTemplateId + '&templateTypeId=' + defaultTemplateTypeId);
-	}else{
-		$(this).parent().toggleClass("open");
-	}
 	return false;
 }
 /*************菜单处理结束****************/

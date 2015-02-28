@@ -1100,6 +1100,7 @@ public class DataAccessSessionMySQL {
 		{
 			conn = DbPoolConnection.getInstance().getReadConnection();
 			stat = conn.createStatement();
+			System.out.println("query sql:" + sql);
 			rs = stat.executeQuery(sql);
 			if (templateId != null) {
 				setTemplateFieldNameCache (templateId);

@@ -308,6 +308,7 @@
 							to_node = null;
 							return;
 						}
+						
 						hideStatDiv(true);
 						showEditActionDiv();
 					}
@@ -1535,6 +1536,8 @@
 				}
 			}
 			stat = new a.rect($.extend(true,{},a.config.tools.states[type], properties),rap,'start');
+			global_node[stat.getId()] = stat;
+			saveSvgCode();
 		}
 		else{
 			if(statId == null || statId == undefined){
@@ -1544,17 +1547,22 @@
 					return;
 				}
 				//获取状态id
-				statId = addStat(statName);
-				if(statId == "" || statId == undefined){
-					showInfoWin("error","服务器原因,新建失败!");
-					return null;
-				}
+				addStat(statName,function(statId){
+					if(statId == "" || statId == undefined){
+						showInfoWin("error","服务器原因,新建失败!");
+						return null;
+					}else{
+						stat = new a.rect($.extend(true,{},a.config.tools.states[type], properties),rap,statId);
+					}
+					global_node[stat.getId()]=stat;
+					saveSvgCode();	
+				});
+			}else{
+				stat = new a.rect($.extend(true,{},a.config.tools.states[type], properties),rap,statId);
+				global_node[stat.getId()]=stat;
+				saveSvgCode();	
 			}
-			stat = new a.rect($.extend(true,{},a.config.tools.states[type], properties),rap,statId);
 		}
-		
-		global_node[stat.getId()]=stat;
-		saveSvgCode();	
 	};
 	
 	//添加动作
@@ -1573,23 +1581,31 @@
 				return;
 			}
 			
+			var fromStatId = from_node.getId().split("_")[1],
+				toStatId = to_node.getId().split("_")[1];
+			
 			if(from_node.getType() == "start"){
-				actionId = addAction("",to_node.getId().split("_")[1],actionName);
-			}else{
-				actionId = addAction(from_node.getId().split("_")[1],to_node.getId().split("_")[1],actionName);
+				fromStatId = "";
 			}
+			
+			addAction(fromStatId,toStatId,actionName,function(actionId,from_node,to_node){
+				var action = new a.path({},rap,from_node,to_node,actionName,actionId);
+				global_path[action.getId()] = action;
+				adjustAction(from_node,to_node);
+			},from_node,to_node);
 		}else{
 			//转化生成
 			from_node = global_node["rect_" + fromStatId];
 			to_node = global_node["rect_" + toStatId];
+			var action = new a.path({},rap,from_node,to_node,actionName,actionId);
+			global_path[action.getId()] = action;
+			adjustAction(from_node,to_node);
 		}
-		
-		var action = new a.path({},rap,from_node,to_node,actionName,actionId);
-		global_path[action.getId()] = action;
-		
+	};
+	
+	function adjustAction(from_node,to_node){
 		//判断两点间是否存在两种动作,如果存在则调整动作路径 使之分离
 		var actionBtw = checkStatActionNum(from_node,to_node);
-
 		if(actionBtw.length == 2){
 			var moveDx = getMoveDx(actionBtw[0].fromDot(),actionBtw[0].toDot());
 			actionBtw[0].midDot().drag(moveDx.x,moveDx.y);
@@ -1606,7 +1622,7 @@
 			to_node=null;
 		}
 		saveSvgCode();	
-	};
+	}
 	
 	function getMoveDx(fromDot,toDot){
 		

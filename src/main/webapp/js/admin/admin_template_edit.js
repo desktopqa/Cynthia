@@ -1415,7 +1415,6 @@ function moveField(fieldId)
 	$.ajax({
 		url : 'template/add_Or_Update_Field_xml.jsp',
 		type : 'POST',
-		async : false,
 		dataType : 'xml',
 		data : params,
 		success : function(response){
@@ -1558,7 +1557,6 @@ function saveOrUpdateFieldOptions()
     	url : 'template/add_Or_Update_Option_xml.jsp',
     	dataType : 'xml',
     	type : 'POST',
-    	async : false,
     	data : parm,
     	success : function(jsonResponse)
     	{
@@ -1570,15 +1568,13 @@ function saveOrUpdateFieldOptions()
     		{
     			showInfoWin("error","服务器错误,请稍后重试!");
     		}
-    	},
-    	error: function(jsonResponse)
-    	{
+    		$("#editFieldId").val("");
+    		$("#editOptionsTable").children("tbody").empty();
+    		$("#editFieldOptionsDiv").modal('hide');
     	}
     });
     
-    $("#editFieldId").val("");
-    $("#editOptionsTable").children("tbody").empty();
-    $("#editFieldOptionsDiv").modal('hide');
+   
 }
 
 function cancelEditFieldOptions()

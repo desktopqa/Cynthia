@@ -85,7 +85,7 @@ public class MailManager {
             Message msg = new MimeMessage(mailConnection);
                                 
             //设置发送人和接受人
-            Address sender = new InternetAddress(fromUser != null ? fromUser : props.getProperty("mail.user"));
+            Address sender = new InternetAddress(props.getProperty("mail.user"));
             //单个接收人
             //Address receiver = new InternetAddress("xxx@163.com");
             //多个接收人

@@ -10,10 +10,9 @@
 			resizeType : 0
 	};
 	
-	function initAllGuide(){
+	function initAllGuide(callback){
 		$.ajax({
 			url: base_url + 'guide/getAllGuide.do',
-			async:false,
 			dataType:'json',
 			success:function(data){
 				var $allguide = $('#all_guide');
@@ -22,6 +21,9 @@
 				var template = '<li><font>{0}</font>&nbsp;<a href="#" id={1}>{2}</a></li>';
 				for(var i = 0,length = data.length; i < length; i++){
 					$allguide.append(String.format(template,i+1 , data[i].guideId,data[i].guideName));
+				}
+				if(callback){
+					callback();
 				}
 			}
 		});
@@ -66,7 +68,6 @@
 		if(guideId){
 			$.ajax({
 				url:base_url + 'guide/getGuideHtml.do',
-				async:false,
 				dataType:'text',
 				data:{guideId:guideId},
 				success:function(data){
@@ -87,13 +88,13 @@
 	$(function(){
 		var guideId = request('guideId');
 		bindEvents();
-		initAllGuide();
-		
-		if(KindEditor)
-			guideEditor = KindEditor.create('textarea[id="guide_editor"]', editorOptions);
-		
-		if(guideId){
-			$("#all_guide a[id=" + guideId + "]").click();
-		}
+		initAllGuide(function(){
+			if(KindEditor)
+				guideEditor = KindEditor.create('textarea[id="guide_editor"]', editorOptions);
+			
+			if(guideId){
+				$("#all_guide a[id=" + guideId + "]").click();
+			}
+		});
 	});
 })(jQuery);

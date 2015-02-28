@@ -36,7 +36,6 @@
 		        fileElementId:"excel_file",
 		        dataType:"json",
 		        type:'POST',
-		        async:false,
 		        data:{sheetName:$("#excel_sheet_name").val(),templateIdStr:$("#allTemplate").val()},
 		        success:function (data , status) {
 		        	isImport(data.successNum,data.failNum);
@@ -56,18 +55,17 @@
 			$.ajax({
 				url: base_url + 'template/getAllTemplates.do',
 				dataType:'json',
-				async:false,
 				success:function(data){
 					for(var id in data){
 						gridHtml += "<option value=" + id + ">" + data[id] + "</option>";
 					}
+					$("#allTemplate").html(gridHtml);
+					enableSelectSearch();
 				},
 				error:function(data){
 					alert("server error!");
 				}
 			});
-			$("#allTemplate").html(gridHtml);
-			enableSelectSearch();
 		}
 		
 		function isImport(successNum,failNum)

@@ -17,52 +17,46 @@ function executeAddStat()
 	$('#myflow').drawStat($("#mouse_x").val(),$("#mouse_y").val(),statName,'state');
 }
 
-function addStat(statName){
+function addStat(statName,callback){
 	var param = "name=" + getSafeParam(statName);
 	param += "&flowId=" + $("#flowId").val();
-	var return_id = "";
 	$.ajax({
 		url: 'flow/add_Stat_xml.jsp',
 		type :'POST',
-		async : false,
 		data: param,
 		success: function(request){
 			eval("var isError   = " + $(request).find("isError").text());
 			var id = $(request).find("id").text();
-			if(!isError && id != undefined)
-			{
-				return_id = id;
-				initFlowActionStat();
-				initActionStatSelection();
+			if(!isError && id != undefined){
+				initFlowActionStat(function(){
+					initActionStatSelection();
+					if(callback){
+						callback(id);
+					}
+				});
 			}
-		},
-		error:function(msg){
 		}
 	});
-	return return_id;
 }
 
 function removeStat(statId)
 {
-	var result = false;
+	var result = true;
 	$.ajax({
 		url: 'flow/remove_Stat_xml.jsp',
 		type :'POST',
 		dataType:'xml',
-		async : false,
 		data: {'id':getSafeParam(statId),'flowId':$("#flowId").val()},
 		success: function(request){
 			eval("var isError   = " + $(request).find("isError").text());
 			result = !isError;
-		},
-		error:function(msg){
+			if(result)
+				initFlowActionStat();
 		}
 	});
-	if(result)
-		initFlowActionStat();
+	
 	return result;
 }
-
 
 function addOrModifyStat(){
 	$("#cfgStateDiv").modal('hide');
@@ -90,7 +84,6 @@ function executeModifyStats()
 		url: 'flow/modify_Stat_xml.jsp',
 		type :'POST',
 		dataType:'xml',
-		async : false,
 		data: param,
 		success: function(request){
 			eval("var isError   = " + $(request).find("isError").text());
@@ -102,8 +95,6 @@ function executeModifyStats()
 				alert("修改失败!");
 				return;
 			}
-		},
-		error:function(msg){
 		}
 	});
 }
@@ -122,8 +113,7 @@ function executeAddAction()
 	$("#cfgActionDiv").modal('hide');
 }
 
-function addAction(fromStatId,toStatId,actionName){
-	var return_id = "";
+function addAction(fromStatId,toStatId,actionName,callback,from_node,to_node){
 	var param = "name=" + getSafeParam(actionName);
 	param += "&flowId=" + $("#flowId").val();
 	param += "&endStatId=" + getSafeParam(toStatId);
@@ -144,43 +134,37 @@ function addAction(fromStatId,toStatId,actionName){
 		url: 'flow/add_Action_xml.jsp',
 		type :'POST',
 		dataType:'xml',
-		async : false,
 		data: param,
 		success: function(request){
 			eval("var isError   = " + $(request).find("isError").text());
 			var id = $(request).find("id").text();
-			if(!isError && id != undefined)
-			{
-				return_id = id;
-				initFlowActionStat();
+			if(!isError && id != undefined){
+				initFlowActionStat(function(){
+					if(callback){
+						callback(id,from_node,to_node);
+					}
+				});
 			}
-		},
-		error:function(msg){
 		}
 	});
-	return return_id;
 }
-
 
 function removeAction(actionId)
 {
-	var result = false;
-	
+	var result = true;
 	$.ajax({
 		url: 'flow/remove_Action_xml.jsp',
 		type :'POST',
 		dataType:'xml',
-		async : false,
 		data: {'id':getSafeParam(actionId),'flowId':$("#flowId").val()},
 		success: function(request){
 			eval("var isError   = " + $(request).find("isError").text());
 			result = !isError;
-		},
-		error:function(msg){
+			if(result)
+				initFlowActionStat();
 		}
 	});
-	if(result)
-		initFlowActionStat();
+	
 	return result;
 }
 
@@ -240,7 +224,6 @@ function executeModifyAction()
 		url: 'flow/save_RoleRight_xml.jsp',
 		type :'POST',
 		dataType:'xml',
-		async : false,
 		data: param,
 		success: function(request){
 			eval("var isError   = " + $(request).find("isError").text());
@@ -252,8 +235,6 @@ function executeModifyAction()
 				if(actionId != '48' && actionId != '47' && actionId != '51')
 					$('#myflow').changeAction(actionId,actionName,beginStatId,endStatId);
 			}
-		},
-		error:function(msg){
 		}
 	});
 	$("#cfgActionDiv").modal('hide');
@@ -266,7 +247,6 @@ function initActionRole(actionId)
 		url: base_url + 'flow/getActionRole.do',
 		type :'POST',
 		dataType:'json',
-		async : false,
 		data: {'flowId':$("#flowId").val(),'actionId':actionId},
 		success: function(data){
 			$("#actionRoleDiv").html("");
@@ -339,7 +319,6 @@ function addRole(){
 
 //根据flow xml绘制svg图
 function convertXmlToSvg(flowXml){
-	
 	//绘制开始节点
 	$('#myflow').drawStat(center_x,center_y,'开始','start','start');
 	
@@ -365,47 +344,45 @@ function convertXmlToSvg(flowXml){
 	});
 }
 
-function getFlowXml(){
-	var flowXml = '';
+function getFlowXml(callback){
 	$.ajax({
 		url: base_url + 'flow/getFlowXml.do',
 		type :'POST',
 		dataType:'xml',
-		async : false,
 		data: {'flowId':$("#flowId").val()},
 		success: function(data){
-			flowXml = data;
-		},
-		error:function(msg){
+			if(callback){
+				callback(data);
+			}
 		}
 	});
-	return flowXml;
 }
 
-function getFlowSvg(){
-	var flowSvg = "";
+function getFlowSvg(callback){
 	$.ajax({
 		url:  base_url + 'flow/initFlowSvg.do',
 		type :'POST',
 		dataType:'text',
-		async : false,
 		data: {'flowId':$("#flowId").val()},
 		success: function(data){
-			flowSvg = data;
+			if(callback){
+				callback(data);
+			}
 		},
 		error:function(msg){
 			alert("新建失败！");
 		}
 	});
-	return flowSvg;
 }
 
-function initFlowSvg()
+function initFlowSvg(callback)
 {
-	setSvg(getFlowSvg());
+	getFlowSvg(function(flowSvg){
+		setSvg(flowSvg,callback);
+	});
 }
 
-function setSvg(data){
+function setSvg(data,callback){
 	var edit = request("edit") ? request("edit") === "true" : true;
 	//新建流程
 	if(data == ""){
@@ -414,7 +391,12 @@ function setSvg(data){
 			basePath : "",
 			edit:edit
 		});
-		convertXmlToSvg(getFlowXml());
+		getFlowXml(function(flowXml){
+			convertXmlToSvg(flowXml);
+			if(callback){
+				callback();
+			}
+		});
 	}else{
 		var svgCode = '(' + data + ')';
 		$('#myflow').myflow(
@@ -423,6 +405,9 @@ function setSvg(data){
 			edit:edit,
 			restore : eval(svgCode)
 		});
+		if(callback){
+			callback();
+		}
 	}
 }
 
@@ -445,63 +430,64 @@ function saveFlowSvg(svgCode){
 	return success;
 }
 
-function initFlowActionStat(){
-	var flowXml = getFlowXml();
-	stats = new Array();
-	isProFlow = $(flowXml).find('flow').find('isProFlow').text();
-	
-	if(isProFlow){
-		$('.pro_involved_false').hide();  //项目相关则隐藏新建角色
-	}else{
-		$('.pro_involved_false').show();
-	}
-	
-	$(flowXml).find("flow").find("stats").children("stat").each(function(idx,node){
-		var statId = $(node).find("id").text();
-		var statName = $(node).find("name").text();
-		stats[statId] = new Object();
-		stats[statId].id = statId;
-		stats[statId].name = statName;
-	});
-	
-	actions = new Array();
-	var gridHtml = "";
-	gridHtml += "<tr><td>0</td><td>-</td><td><a href=\"#\" onClick=\"showEditActionDiv('48','编辑')\">编辑</a></td><td>-</td><td>-</td><tr>";
-	gridHtml += "<tr><td>1</td><td>-</td><td><a href=\"#\" onClick=\"showEditActionDiv('47','查看')\">查看</a></td><td>-</td><td>-</td><tr>";
-	gridHtml += "<tr><td>2</td><td>-</td><td><a href=\"#\" onClick=\"showEditActionDiv('51','删除')\">删除</a></td><td>-</td><td>-</td><tr>";
-	
-	try{
-		$(flowXml).find("flow").find("actions").children("action").each(function(idx,node){
-			var actionId = $(node).find("id").text();
-			var actionName = $(node).find("name").text();
-			var fromStatId = $(node).find("startStatId").text();
-			var assignToMore = $(node).find("assignToMore").text();
-			if(fromStatId == undefined || fromStatId == null || fromStatId == ""){
-				fromStatId = "start"; //开始状态
-			}
-			var toStatId = $(node).find("endStatId").text();
-			actions[actionId] = new Object();
-			actions[actionId].id = actionId;
-			actions[actionId].name = actionName;
-			actions[actionId].fromStatId = fromStatId;
-			actions[actionId].toStatId = toStatId;
-			actions[actionId].assignToMore = assignToMore;
-
-			gridHtml += "<tr>";
-			gridHtml += "<td>" + (idx+3) +"</td>";
-			if(fromStatId == "start")
-				gridHtml += "<td><font style=\"color:red\">开始</font></td>";
-			else
-				gridHtml += "<td><a href=\"#\" onClick=\"showEditStatDiv('" + fromStatId + "','" + stats[fromStatId].name + "')\">"+ stats[fromStatId].name +"</a></td>";
-			gridHtml += "<td><a href=\"#\" onClick=\"showEditActionDiv('" + actionId + "','"+actions[actionId].name+"')\">"+ actions[actionId].name +"</a></td>";
-			gridHtml += "<td><a href=\"#\" onClick=\"showEditStatDiv('" + toStatId + "','" +stats[toStatId].name+ "')\">"+ stats[toStatId].name +"</a></td>";
-			gridHtml += "<td><a href=\"#\" onClick=\"removeWordAction('" + actionId + "')\">删除</a></td>";
-			gridHtml += "</tr>";
+function initFlowActionStat(callback){
+	getFlowXml(function(flowXml){
+		stats = new Array();
+		isProFlow=$(flowXml).find('flow').find('isProFlow').text() == 'true';
+		if(isProFlow){
+			$('.pro_involved_false').hide();  //项目相关则隐藏新建角色
+		}else{
+			$('.pro_involved_false').show();
+		}
+		
+		$(flowXml).find("flow").find("stats").children("stat").each(function(idx,node){
+			var statId = $(node).find("id").text();
+			var statName = $(node).find("name").text();
+			stats[statId] = new Object();
+			stats[statId].id = statId;
+			stats[statId].name = statName;
 		});
-	}catch(e){
-		alert("数据初始化有错,请联系管理员.");
-	}
-	$("#wordActionTable").html(gridHtml);
+		
+		actions = new Array();
+		var gridHtml = "";
+		gridHtml += "<tr><td>0</td><td>-</td><td><a href=\"#\" onClick=\"showEditActionDiv('48','编辑')\">编辑</a></td><td>-</td><td>-</td><tr>";
+		gridHtml += "<tr><td>1</td><td>-</td><td><a href=\"#\" onClick=\"showEditActionDiv('47','查看')\">查看</a></td><td>-</td><td>-</td><tr>";
+		gridHtml += "<tr><td>2</td><td>-</td><td><a href=\"#\" onClick=\"showEditActionDiv('51','删除')\">删除</a></td><td>-</td><td>-</td><tr>";
+		
+		try{
+			$(flowXml).find("flow").find("actions").children("action").each(function(idx,node){
+				var actionId = $(node).find("id").text();
+				var actionName = $(node).find("name").text();
+				var fromStatId = $(node).find("startStatId").text();
+				var assignToMore = $(node).find("assignToMore").text();
+				if(fromStatId == undefined || fromStatId == null || fromStatId == ""){
+					fromStatId = "start"; //开始状态
+				}
+				var toStatId = $(node).find("endStatId").text();
+				actions[actionId] = new Object();
+				actions[actionId].id = actionId;
+				actions[actionId].name = actionName;
+				actions[actionId].fromStatId = fromStatId;
+				actions[actionId].toStatId = toStatId;
+				actions[actionId].assignToMore = assignToMore;
+
+				gridHtml += "<tr>";
+				gridHtml += "<td>" + (idx+3) +"</td>";
+				if(fromStatId == "start")
+					gridHtml += "<td><font style=\"color:red\">开始</font></td>";
+				else
+					gridHtml += "<td><a href=\"#\" onClick=\"showEditStatDiv('" + fromStatId + "','" + stats[fromStatId].name + "')\">"+ stats[fromStatId].name +"</a></td>";
+				gridHtml += "<td><a href=\"#\" onClick=\"showEditActionDiv('" + actionId + "','"+actions[actionId].name+"')\">"+ actions[actionId].name +"</a></td>";
+				gridHtml += "<td><a href=\"#\" onClick=\"showEditStatDiv('" + toStatId + "','" +stats[toStatId].name+ "')\">"+ stats[toStatId].name +"</a></td>";
+				gridHtml += "<td><a href=\"#\" onClick=\"removeWordAction('" + actionId + "')\">删除</a></td>";
+				gridHtml += "</tr>";
+			});
+		}catch(e){
+			alert("数据初始化有错,请联系管理员.");
+		}
+		$("#wordActionTable").html(gridHtml);
+		if(callback) callback();
+	});
 }
 
 
@@ -662,7 +648,6 @@ function addWordAction(){
 			url: 'flow/add_Action_xml.jsp',
 			type :'POST',
 			dataType:'xml',
-			async : false,
 			data: param,
 			success: function(request){
 				eval("var isError   = " + $(request).find("isError").text());
@@ -687,7 +672,6 @@ function initWordActionRole(actionId)
 		url: base_url + 'flow/getActionRole.do',
 		type :'POST',
 		dataType:'json',
-		async : false,
 		data: {'flowId':$("#flowId").val(),'actionId':actionId},
 		success: function(data){
 			$("#wordActionRoleDiv").html("");
@@ -704,8 +688,6 @@ function initWordActionRole(actionId)
 			if(!isProFlow)
 				$("#wordActionRoleDiv").append("<div class='addMoreRole' data-toggle='modal' data-target='#addRoleDiv'><a href='javascript:;' class='addComp' onclick=''><i class='icon-plus'></i><span>添加角色</span></a></div>");
 			
-		},
-		error:function(msg){
 		}
 	});
 }
@@ -790,9 +772,7 @@ $(function(){
 	bindKeyEvents();
 	enableSelectSearch();
 	//默认打开图型版
- 	initFlowSvg();
- 	initFlowActionStat();
- 	
+ 	initFlowSvg(initFlowActionStat);
 	$('#addRoleDiv').on('shown',function(e){
 		$('#role_name').val('');
 	});

@@ -14,23 +14,25 @@ var actionUsers = null;
 
 function initTemplateList()
 {
+	showLoading(true);
 	if(optionRightControl){
 		allTemplateRight = new Array();
 		$.ajax({
 				url : base_url + 'backRight/initUserTemplateRight.do',
 				dataType:'json',
-				async:false,
 				success :function(data){
 					for(var templateId in data){
 						if($.inArray(templateId,allTemplateRight) == -1)
 							allTemplateRight.push(templateId);
 					}
+					initAllTemplates();
 				},
-				error:function(){
-				}
+				error:initAllTemplates
 		});
 	}
-	showLoading(true);
+}
+
+function initAllTemplates(){
 	$.ajax({
 		url : 'template/get_InitInfo_xml.jsp',
 		type : 'POST',
@@ -115,7 +117,6 @@ function initTemplateUsers(templateId)
 		url : base_url + 'backRight/getTemplateRightUser.do',
 		type : 'GET',
 		dataType:'json',
-		async:false,
 		data:{'templateId':templateId},
 		success : function(data){
 			var gridHtml = "";
@@ -351,7 +352,6 @@ function displayModifyDiv(templateId)
 function displayMailCfgDiv(templateId,templateName){
 	$('#template_id_mail').val(templateId);
 	initTemplateMail(templateId,templateName);
-	$("#templateMailCfgDiv").modal('show');
 }
 
 /**
@@ -362,7 +362,6 @@ function initTemplateMail(templateId,templateName){
 		url : base_url + 'template/getTemplateMailConfig.do',
 		data : {templateId:templateId},
 		dataType:'json',
-		async:false,
 		type:'POST',
 		success : function(data){
 			//已配置的动作
@@ -392,7 +391,7 @@ function initTemplateMail(templateId,templateName){
 			for(var user in data.users){
 				$mailUsers.append("<option value=" + user + "> " + data.users[user] + "</option>");
 			}
-			
+			$("#templateMailCfgDiv").modal('show');
 		}
 	});
 }
@@ -550,14 +549,13 @@ function getFlow(flowId)
 	}
 }
 
-function initSystem()
+function initSystem(callback)
 {
 	$.ajax({
 		url: base_url + 'backRight/getSystem.do',
 		type:'POST',
 		data:{'userMail':'system'},
 		dataType:'json',
-		async:false,
 		success:function(data){
 			optionRightControl = (data.openRight == 'true' ? true : false);
 			if(data.projectInvolved == 'true'){
@@ -567,6 +565,7 @@ function initSystem()
 				$('.project_involved_true').hide();
 				$('.project_involved_false').show();
 			}
+			callback();
 		}
 	});
 }
@@ -641,7 +640,6 @@ function onInitUserListAjax(rootNode)
 $(function(){
 	enableSelectSearch();
 	bindEvents();
-	initSystem();
 	//初始化表单列表
 	$("#templateListGrid").tablesorter({
 		headers: 
@@ -651,5 +649,5 @@ $(function(){
 	        7:{sorter: false} 
 		}
 	}); 
-	initTemplateList();
+	initSystem(initTemplateList);
 });

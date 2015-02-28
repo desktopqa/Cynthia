@@ -25,16 +25,18 @@ function setUserRightAjax(rootNode)
 	
 }
 
-function initSystem()
+function initSystem(callback)
 {
 	$.ajax({
 		url: base_url + 'backRight/getSystem.do',
 		type:'POST',
 		data:{'userMail':'system'},
 		dataType:'json',
-		async:false,
 		success:function(data){
 			$('#openRight').val(data.openRight);
+			callback();
+		},error:function(data){
+			callback();
 		}
 	});
 }
@@ -42,15 +44,17 @@ function initSystem()
 $(function(){
 	onWindowResize();
 	$(window).resize(onWindowResize);
-	initSystem();
-	//设置权限
-	$.ajax({
-		url : 'user/get_user_right.jsp',
-		type : 'POST',
-		success : setUserRightAjax,
-		data:{},
-		error : function(){
-			alert("Server Error!");
-		}
+	initSystem(function(){
+		//设置权限
+		$.ajax({
+			url : 'user/get_user_right.jsp',
+			type : 'POST',
+			success : setUserRightAjax,
+			data:{},
+			error : function(){
+				alert("对不起，你没有访问该页面的权限,确定后将跳转至首页!");
+				window.location.href = base_url + "index.html";
+			}
+		});
 	});
 });

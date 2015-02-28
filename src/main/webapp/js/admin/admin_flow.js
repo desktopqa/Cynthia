@@ -10,23 +10,29 @@ var optionRightControl = false;
 
 function initFlowList()
 {
+	showLoading(true);
 	if(optionRightControl){
 		$.ajax({
 				url : base_url + 'backRight/initUserFlowRight.do',
 				dataType:'json',
-				async:false,
 				success :function(data){
 					for(var key in data){
 						allFlowRight.push(data[key]);
 					}
+					initAllFlow();
 				},
 				error:function(){
+					initAllFlow();
 				}
 		});
+	}else{
+		initAllFlow();
 	}
 	
-	showLoading(true);
-	
+}
+
+function initAllFlow()
+{
 	$.ajax({
 		url : 'flow/get_Admin_xml.jsp',
 		type : 'POST',
@@ -205,14 +211,13 @@ function onCompleteRemoveFlow(request)
 	}
 }
 
-function initSystem()
+function initSystem(callback)
 {
 	$.ajax({
 		url: base_url + 'backRight/getSystem.do',
 		type:'POST',
 		data:{'userMail':'system'},
 		dataType:'json',
-		async:false,
 		success:function(data){
 			optionRightControl = (data.openRight == 'true' ? true : false);
 			if(data.projectInvolved == 'true'){
@@ -222,6 +227,9 @@ function initSystem()
 				$('.project_involved_true').hide();
 				$('.project_involved_false').show();
 			}
+			callback();
+		},error:function(data){
+			callback();
 		}
 	});
 }
@@ -253,7 +261,6 @@ function bindEvents()
 
 $(function(){
 	bindEvents();
-	initSystem();
 	//初始化表单列表
 	$("#flowListGrid").tablesorter({
 		headers: 
@@ -263,5 +270,5 @@ $(function(){
 	        4:{sorter: false} 
 		}
 	}); 
-	initFlowList();
+	initSystem(initFlowList);
 });

@@ -1,5 +1,5 @@
 
-function initFilterFields()
+function initFilterFields(callback)
 {	
 	var templateId = $("#templates").val();
 	if(templateId!="")
@@ -7,10 +7,24 @@ function initFilterFields()
 		var params = {templateId : templateId};
 		$.ajax({
 			url: base_url + 'filterManage/initFields.jsp',
-			async:false,
 			data:params,
 			dataType:'xml',
-			success:onCompleteInitFields
+			success:function(data){
+				eval("var error="+$(data).find("root").find("isError").text());
+				if(error){
+					alert("服务器内部错误,请稍后再试");
+				}else{
+					clearFields();
+					clearConditionTable();
+					$("#fields").append("<option value=''>---请选择---</option>");
+					$(data).find("fields").find("field").each(function(index,node){
+						var fieldId = $(node).find("id").text();
+						var fieldName = $(node).find("name").text();
+						$("#fields").append("<option value='"+fieldId+"'>"+fieldName+"</option>");
+					});
+				}
+				if(callback) callback();
+			}
 		});
 	}
 }
@@ -24,25 +38,6 @@ function subCondition(row)
 	fieldId = $(parent).find("td:eq(0) div:eq(0)").attr("fieldid");
 	fieldName = $(parent).find("td:eq(0) div:eq(0)").attr("fieldname");
 	$("#fields").append("<option value=" + fieldId + "> " + fieldName + "</option>");
-}
-
-function onCompleteInitFields(data,textStatus)
-{
-	eval("var error="+$(data).find("root").find("isError").text());
-	if(error)
-	{
-		alert("服务器内部错误,请稍后再试");
-	}else
-	{
-		clearFields();
-		clearConditionTable();
-		$("#fields").append("<option value=''>---请选择---</option>");
-		$(data).find("fields").find("field").each(function(index,node){
-			var fieldId = $(node).find("id").text();
-			var fieldName = $(node).find("name").text();
-			$("#fields").append("<option value='"+fieldId+"'>"+fieldName+"</option>");
-		});
-	}
 }
 
 function addCondition()
@@ -163,9 +158,7 @@ function cleanNewData(dataId, filterId)
 
 function setNotifyValue(url, params, async)
 {
-	if(async == undefined)
-		async = 'true';
-	
+	async = async || 'true';
 	$.ajax({
 		url: url,
 		type: 'post',

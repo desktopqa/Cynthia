@@ -93,6 +93,16 @@ static DataAccessFactory daf = DataAccessFactory.getInstance();
 		userSet.addAll(Arrays.asList(userArray));
 	}
 	
+	if(data != null){
+ 		// everyone可新建的表单 默认加上创建人员
+ 		for(Action action : flow.queryBeginActions()){
+ 			if(flow.isActionEveryoneRole(action.getId())){
+ 				userSet.add(data.getCreateUsername());
+ 				break;
+ 			}
+ 		}
+ 	}
+	
 	if(userSet.size() == 0){
 		xmlb.append("<users/>");
 	}

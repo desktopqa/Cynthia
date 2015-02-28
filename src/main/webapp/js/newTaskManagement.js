@@ -44,29 +44,6 @@ function isExisted(arr,value)
 	return false;
 }
 
-/**
- * editor编辑器图片base64替换
- * @param html
- * @returns {String}
- */
-function getEditorHtml(html)
-{
-	if(html == "")
-		return html;
-	var afterHtml = "";
-	var params = "imageStr=" + getSafeParam(html);
-	$.ajax({
-		url: "task/uploadImg.jsp",
-		type:'POST',
-		async: false,
-		data:params,
-		success: function(request){
-			afterHtml = request;
-		}
-	});
-	return afterHtml;
-}
-
 function getAllDefaultValues(templateId)
 {
 	if(templateId && templateId != ''){
@@ -547,7 +524,6 @@ function onCompleteInitTaskManagement(request,type)
 function setTitleAndTag(){
 	$.ajax({
 		url:'tag/getDataTags.do',
-		async:false,
 		data:{'dataId':task.id},
 		dataType:'json',
 		success:function(tags){
@@ -556,8 +532,6 @@ function setTitleAndTag(){
 					dataTagArray.push(tags[i].id);
 			}
 			changeTitleAndTag();
-		},
-		error:function(data){
 		}
 	});
 }
@@ -677,7 +651,6 @@ function saveLog(tagA)
 	$.ajax({
 		url:'data/updateLog.do',
 		type:'POST',
-		async:false,
 		data:{'dataId':taskId,'logIndex':logIndex,'logComment':curLogText},
 		success:function(data){
 			if(data == 'true'){
@@ -1105,7 +1078,6 @@ function displayQueryTaskPage(fieldId)
 	
 	$.ajax({
 		url: '/template/getAllTemplates.do',
-		async : false,
 		dataType:'json',
 		success: function(data){
 			var $templateId = $('#searchTemplateId');
@@ -1113,35 +1085,24 @@ function displayQueryTaskPage(fieldId)
 			for(var id in data){
 				$templateId.append('<option value=' + id +  (id == selectedTemplate ? ' selected' : '' ) + '>' + data[id] + '</option>');
 			}
+			
+			if(filterId){
+				$.ajax({
+					url: '/filter/getFilterXml.do',
+					type :'POST',
+					data: {'filterId':filterId},
+					success: function(filterXml){
+						filterXml = encodeAllUrl(filterXml);
+						queryFilterData(filterXml,true);
+						$("#cfgRefQueryDiv").modal('show');
+					}
+				});
+			}else{
+				queryFilterData('',true);
+				$("#cfgRefQueryDiv").modal('show');
+			}
 		}
 	});
-	
-	if(filterId){
-		$.ajax({
-			url: '/filter/getFilterXml.do',
-			type :'POST',
-			async : false,
-			data: {'filterId':filterId},
-			success: function(filterXml){
-				filterXml = encodeAllUrl(filterXml);
-				queryFilterData(filterXml,true);
-				$("#cfgRefQueryDiv").modal('show');
-			},
-			error:function(msg){
-			}
-		});
-	}else{
-		queryFilterData('',true);
-		$("#cfgRefQueryDiv").modal('show');
-	}
-	
-	
-//	if(field.defaultValues.length == 0){
-//		window.open(base_url + "search/filterPageForAddReference.jsp?filterId=626813&fieldId=" + getSafeParam(fieldId) + "&dataType="  + field.dataType + "&alreadyIds=" + alreadyIds);
-//	}else{
-//		user = $("#select_taskAssignUser").val();
-//		window.open(base_url + "previewFilterResultForReference.jsp?fieldId=" + getSafeParam(fieldId) + "&dataType=" + field.dataType + "&defaultValue=" + getSafeParam(field.defaultValues[0]) + "&alreadyIds=" + alreadyIds + (user ? "&user=" + user : ""));
-//	}
 }
 
 function executeAddReference(rev, objId)
@@ -1848,17 +1809,14 @@ function onCompleteAddTask(request)
 
 function refreshFilter(){
 	//刷新过滤器
-	try
-	{
+	try{
 		if(window.opener&&window.opener.grid){
 			//同步
-			window.opener.setNotifyValue('/frame/get_NotifyValue_xml.jsp', {dataId: taskId},'false');
+			window.opener.setNotifyValue(base_url + 'frame/get_NotifyValue_xml.jsp', {dataId: taskId});
 			window.opener.grid.refreshGrid();
 			window.opener.initFilterMenu();
 		}
-	}catch(e)
-	{
-	}
+	}catch(e){}
 	setSubmitDivDisable(false);
 }
 function onCompleteModifyTaskClose(request)
@@ -2545,7 +2503,6 @@ function updateDefaultValue()
 		t_template_id = $("#select_template").val();
 	$.ajax({
 		url:'defaultValue/setdefaultValues.do',
-		async:true,
 		type:'POST',
 		data:{'templateId':t_template_id, 'defaultValueJson' : allDefaultValueMap.toJson()},
 		success:function(data){
@@ -2587,7 +2544,6 @@ function getSelectionValue(fieldId)
 		return selectedIds;
 	}
 }
-
 
 function setSelectionDefaultValues(fieldId)
 {
@@ -2770,7 +2726,6 @@ function isFieldDisplay(field)
 
 	return false;
 }
-
 
 function drawSelectionField(field)
 {
@@ -3029,7 +2984,6 @@ function drawReferenceField(field)
 	return fieldHtml;
 }
 
-
 function setInputValue(selectId)
 {
 	var inputSelectValue = $("#" +selectId).val();
@@ -3043,7 +2997,6 @@ function setInputValue(selectId)
 		field.datas[0] = inputSelectValue;
 	}
 }
-
 
 function drawInputField(field)
 {
@@ -3082,7 +3035,7 @@ function drawInputField(field)
 			var timeFormat = field.timestampFormat || 'yyyy-MM-dd HH:mm:ss';
 			fieldHtml += "<input class='Wdate span10 singleLine' type='text'  id='field" +  field.id + "'  onfocus=\"WdatePicker({dateFmt:'" + timeFormat + "'})\" value='";
 			var defaultDateValue = fieldInitValues.length > 0 ? getXMLStr(fieldInitValues[0]) : '';
-			if(!defaultDateValue && field.dateCurTime){
+			if(!defaultDateValue && field.dateCurTime == 'true'){
 				defaultDateValue = cynthia.date.format(timeFormat);
 			}
 			fieldHtml += defaultDateValue;
@@ -3354,7 +3307,6 @@ function setCurrentTime(fieldId)
 	$("#span_field" + fieldId + "hour").show();
 	$("#span_field" + fieldId + "minute").show();
 }
-
 
 function clearFieldsTables()
 {
@@ -3885,7 +3837,6 @@ function setUserDefaultTemplate()
 	});
 }
 
-
 function displayExtFieldArea(extFieldAreaId)
 {
 	if(document.getElementById("extFieldArea" + extFieldAreaId).style.display == "none")
@@ -4006,26 +3957,6 @@ function bindHover()
 		$(this).removeClass('tag-hover');
 	});
 }
-
-//function bindFieldTip()
-//{
-//	$("#layoutContent").delegate('input, textarea,select','focus',function(e){
-//		var fieldId = $(this).attr("id");
-//		if(fieldId != null&&fieldId !="")
-//		{
-//			fieldId = fieldId.substring(5);//去掉field前缀
-//			var field = getFieldById(fieldId);
-//			if(field && field.fieldTip && field.fieldTip != "")
-//			{
-//				$("#defaultValueTip").text("("+field.fieldTip+")");
-//			}
-//		}
-//	});
-//	
-//	$("#layoutContent").delegate('input, textarea,select','blur',function(e){
-//		$("#defaultValueTip").text("");
-//	});
-//}
 
 //目前label被点击后会自动触发右侧的编辑功能取消这种绑定
 function bindLabelClick()

@@ -153,7 +153,8 @@ public class LoginFilter implements Filter {
 				if(!CynthiaUtil.isNull(requestURI)){
 					requestURI = requestURI.substring(1);
 				}
-				String targetUrl = ConfigUtil.getCynthiaWebRoot() + requestURI + (httpRequest.getQueryString() != null ? "?" + httpRequest.getQueryString() : "" );
+				
+				String targetUrl = "http://" + ConfigManager.deployUrl + "/" + requestURI + (httpRequest.getQueryString() != null ? "?" + httpRequest.getQueryString() : "" );
 				String redirectUrl = ConfigUtil.getLoginUrl() + ( ConfigUtil.getLoginUrl().indexOf("?") != -1 ? "&" : "?" ) +  "targetUrl=" + URLEncoder.encode(targetUrl,"UTF-8");
 				System.out.println("loginfilter sendredirect:" + redirectUrl);
 				httpResponse.sendRedirect(redirectUrl);

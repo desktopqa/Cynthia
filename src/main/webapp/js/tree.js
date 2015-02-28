@@ -110,7 +110,6 @@ $(function(){
 		if(bool)
 		{ 
 			$.ajax({
-				async : false,
 				type : 'POST',
 				url : 'tree/jsTree.jsp',
 				data : {
@@ -217,7 +216,6 @@ $(function(){
 					}
 				});
 				$.ajax({
-					async:false,
 					type:'POST',
 					url : 'tree/jsTree.jsp',
 					data : {
@@ -225,10 +223,6 @@ $(function(){
 						'id':id.replace("filter_",""),
 						'position':position,
 						'childrenIds':childrenIds
-					},
-					success : function(r)
-					{
-						//initFilterMenu();
 					}
 				});
 				
@@ -242,7 +236,6 @@ $(function(){
 				});
 				
 				$.ajax({
-					async:false,
 					type:'POST',
 					url : 'tree/jsTree.jsp',
 					data : {
@@ -290,7 +283,6 @@ $(function(){
 					}
 				});
 				$.ajax({
-				async : false,
 				type : 'POST',
 				url : 'tree/jsTree.jsp',
 				data : {
