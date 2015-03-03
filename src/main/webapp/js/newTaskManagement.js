@@ -862,7 +862,7 @@ function getBaseFieldFormHtml(task)
 //查看流程
 function showInFlow(flowId,statusId)
 {
-	var url = base_url + 'admin/admin_flow_edit.html?flowId=' + flowId + '&statusId=' + statusId + '&editable=false';
+	var url = base_url + 'admin/admin_flow_edit.html?flowId=' + flowId + '&statusId=' + statusId + '&editable=false&type=previewFlow';
 	$('#flowIframe').attr('src',url);
 	$('#flowReadDiv').modal('show');
 }
@@ -1464,8 +1464,12 @@ function executeSubmit(closeWindow)
 			for(var k = 0; k < columnFields.length; k++)
 			{
 				var tempField = columnFields[k];
-				if(tempField.id == null || $("#field" + tempField.id).length == 0)
+				if(tempField.id == null || $("#field" + tempField.id).length == 0){
+					if(tempField.controlFieldId != ""){
+						params += "&field" + getSafeParam(tempField.id) + "=";
+					}
 					continue;
+				}
 
 				params += "&field" + getSafeParam(tempField.id) + "=";
 

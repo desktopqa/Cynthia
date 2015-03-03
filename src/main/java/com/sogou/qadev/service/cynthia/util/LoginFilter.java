@@ -174,7 +174,7 @@ public class LoginFilter implements Filter {
 			session.setAttribute("kid", kid);
 		}
 		
-		if (!authUserRole(dataAndEventId, userName)) {
+		if (!authUserRole(dataAndEventId, userName) && httpRequest.getQueryString().indexOf("previewFlow") == -1) {
 			httpResponse.sendRedirect(ConfigUtil.getCynthiaWebRoot() + "error.html");
 			return;
 		}

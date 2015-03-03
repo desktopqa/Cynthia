@@ -47,7 +47,7 @@ public class TemplateImpl implements Template
 	private static final long serialVersionUID = -1L;
 	private TemplateMailOption tmo = new TemplateMailOption();
 	private boolean isProTemplate = false;  //是否项目管理相关表单  
-
+	
 	public boolean isProTemplate() {
 		return isProTemplate;
 	}
