@@ -48,6 +48,7 @@ import com.sogou.qadev.service.cynthia.service.DataAccessSession;
 import com.sogou.qadev.service.cynthia.service.DataAccessSession.ErrorCode;
 import com.sogou.qadev.service.cynthia.service.MailSender;
 import com.sogou.qadev.service.cynthia.service.StreamCloserManager;
+import com.sogou.qadev.service.cynthia.util.ConfigUtil;
 import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
 import com.sogou.qadev.service.cynthia.util.Date;
 import com.sogou.qadev.service.cynthia.util.XMLUtil;
@@ -376,7 +377,7 @@ public class ExcelImportControllerNew extends BaseController {
 	 * @param user
 	 * @return
 	 */
-	private Set<Field> GetAllNeedField(Set<Field> allFields , Template template , Flow flow, Action action, String user){
+	public Set<Field> GetAllNeedField(Set<Field> allFields , Template template , Flow flow, Action action, String user){
 		Set<Field> allNeedFields = new HashSet<Field>();
 
 		for (Field field : allFields) {
@@ -395,7 +396,7 @@ public class ExcelImportControllerNew extends BaseController {
 	 * @param template
 	 * @return
 	 */
-	private Set<Field> GetAllFields(Template template) {
+	public Set<Field> GetAllFields(Template template) {
 		Set<Field> allFields = template.getFields();
 		Iterator<Field> iter = allFields.iterator();
 		while(iter.hasNext()){
@@ -768,6 +769,120 @@ public class ExcelImportControllerNew extends BaseController {
 		resultMap.put("successNum", sucCount);
 		resultMap.put("failNum", failCount);
 		return JSONArray.toJSONString(resultMap);
+	}
+	
+	/**
+	 * @Title: saveSingleData
+	 * @Description: 保存单条数据 并返回是否错误信息
+	 * @param template
+	 * @param flow
+	 * @param allNeedFields
+	 * @param mapData
+	 * @param addUser
+	 * @return
+	 * @return: Pair<String,String>
+	 */
+	public Pair<String, String> saveSingleData(Template template, Flow flow, Set<Field> allNeedFields , Map<String, String> mapData){
+		Map<String, Pair<Object, Object>> baseValueMap = new LinkedHashMap<String, Pair<Object, Object>>();
+		Map<UUID, Pair<Object, Object>> extValueMap = new LinkedHashMap<UUID, Pair<Object, Object>>();
+		DataAccessSession das = DataAccessFactory.getInstance().createDataAccessSession(ConfigUtil.sysEmail, ConfigUtil.magic);
+		Data data = das.addData(template.getId());
+		
+		if (data == null) {
+			return new Pair<String, String>(mapData.get("title"),"数据库操作失误");
+		}
+		
+		Set<Field> allFields = GetAllFields(template);//表单所有字段,除出废弃字段
+		
+		for (Field field : allFields) {
+			if (mapData.containsKey(field.getName())) {
+				String fieldName = field.getName();
+				String fieldValue = mapData.get(fieldName);
+				if (mapData.get(fieldName) == null) {
+					//判断该字段是否为必填
+					if (allNeedFields.contains(fieldName)) {
+						return new Pair<String, String>(mapData.get("title"),"必填字段为空");
+					}
+				}
+
+				if (field.getDataType() == DataType.dt_timestamp) { //处理日期类型
+					Date timeDate =  Date.valueOf(fieldValue);
+					if (timeDate == null && allNeedFields.contains(fieldName)) {
+						return new Pair<String, String>(mapData.get("title"),"日期类型错误");
+					}else {
+						if (timeDate != null) {
+							data.setDate(field.getId(), timeDate);
+							extValueMap.put(field.getId(), new Pair<Object, Object>(null, timeDate));
+						}
+					}
+				}else if (field.getType()==Type.t_selection) {  //处理单选类型
+					Option option = field.getOption(fieldValue);
+					data.setSingleSelection(field.getId(), option.getId());
+					extValueMap.put(field.getId(), new Pair<Object, Object>(null,option.getId()));
+				}else {  
+					data.setString(field.getId(), fieldValue);
+					extValueMap.put(field.getId(), new Pair<Object, Object>(null, fieldValue));
+				}
+			}
+		}
+
+		//设置标题
+		String title = mapData.get("title");
+		data.setTitle(title);
+		baseValueMap.put("title", new Pair<Object, Object>(null,title));
+
+		//添加人
+		String createUser = mapData.get("createUser");
+		if (CynthiaUtil.isNull(createUser)) {
+			createUser = DataAccessFactory.sysUser;
+		}
+		
+		baseValueMap.put("createUser", new Pair<Object, Object>(null,createUser));
+		data.setCreateUser(createUser);
+		data.setObject("logCreateUser", createUser);  
+		
+		//正文
+		String description = mapData.get("description");
+		if (description !=null ) {
+			data.setDescription(description);
+			baseValueMap.put("description", new Pair<Object, Object>(null, description));
+		}
+		
+		//状态
+		UUID actionId = null;
+		UUID statId = DataAccessFactory.getInstance().createUUID(mapData.get("statusId"));  //状态
+		if (statId == null) {
+			Set<Action> allStartActions = flow.getStartActions();
+			try {
+				Action startAction = allStartActions.toArray(new Action[0])[0];
+				actionId = startAction.getId();
+				statId = startAction.getEndStatId();
+			} catch (Exception e) {
+				return new Pair<String, String>(mapData.get("title"),"flow is wrong!");
+			}
+		}
+	    
+		//指派人
+	    String assignUser = mapData.get("assignUser");
+		data.setAssignUsername(assignUser);
+		baseValueMap.put("assignUser", new Pair<Object, Object>(null, assignUser));
+		
+		data.setObject("logActionId", actionId);
+		data.setStatusId(statId);
+		baseValueMap.put("statusId", new Pair<Object, Object>(null, statId));
+
+		data.setObject("logBaseValueMap", baseValueMap);
+		data.setObject("logExtValueMap", extValueMap);
+		
+		Pair<ErrorCode, String> pair = das.modifyData(data);
+		if (pair.getFirst().equals(ErrorCode.success)) {
+			das.commitTranscation();
+			das.updateCache(DataAccessAction.delete, data.getId().getValue(), data);
+			return null;
+		}else {
+			das.rollbackTranscation();
+			return new Pair<String, String>(mapData.get("title"),"data base error!");
+		}
 	}
 	
 

@@ -1,5 +1,8 @@
 package com.sogou.qadev.service.cynthia.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sogou.qadev.service.cynthia.bean.UUID;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
 
@@ -33,6 +36,19 @@ public class ArrayUtil {
 		
 		return strb.toString();
 	}
+	
+    public static String[] splitArray(String[] srcArr , int start, int end){
+    	List<Object> result = new ArrayList<Object>();
+    	if (start < 0) {
+			throw new ArrayIndexOutOfBoundsException();
+		}
+    	end = end > srcArr.length ? srcArr.length : end;
+    	for (int i = start; i < end ; i ++ ) {
+			result.add(srcArr[i]);
+		}
+    	
+    	return result.toArray(new String[0]);
+    }
 	
 	public static String strArray2String(String[] idArray){
 		if(idArray == null || idArray.length == 0)

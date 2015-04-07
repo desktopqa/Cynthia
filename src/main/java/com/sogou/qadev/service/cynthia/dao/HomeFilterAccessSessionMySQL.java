@@ -30,17 +30,18 @@ public class HomeFilterAccessSessionMySQL {
 		PreparedStatement pstm = null;
 		Connection conn = null;
 		ResultSet rs = null;
+		String filterIdStr = "119695";  //默认为待处理
+		
 		try
 		{
 			conn = DbPoolConnection.getInstance().getReadConnection();
-			String sql = "select * from home_filter where user_name=?";
+			String sql = "select filter_id from home_filter as A JOIN filter as B on A.filter_id = B.id where A.user_name= ? and B.is_valid = 1";
 			pstm = conn.prepareStatement(sql);
 			pstm.setString(1, userName);
 			rs = pstm.executeQuery();
 			if(rs.next())
 			{
-				String filterIdStr = rs.getString("filter_id");
-				return filterIdStr;
+				filterIdStr = rs.getString("filter_id");
 			}
 
 		}catch(Exception e)
@@ -49,8 +50,8 @@ public class HomeFilterAccessSessionMySQL {
 		}finally
 		{
 			DbPoolConnection.getInstance().closeAll(rs, pstm, conn);
+			return filterIdStr;
 		}
-		return null;
 	}
 
 	/**

@@ -105,6 +105,8 @@ public class LoginFilter implements Filter {
 		if (ConfigManager.deployUrl == null || (!ConfigManager.getProjectInvolved() && CookieManager.getCookieByName(httpRequest, "webRootDir") == null)) {
 			ConfigManager.deployPath = httpRequest.getContextPath();
 			ConfigManager.deployUrl = httpRequest.getHeader("Origin");
+			ConfigManager.deployScheme = httpRequest.getScheme();
+			
 			if(CynthiaUtil.isNull(ConfigManager.deployUrl)){
 				ConfigManager.deployUrl = httpRequest.getHeader("Host");
 			}
@@ -154,10 +156,26 @@ public class LoginFilter implements Filter {
 					requestURI = requestURI.substring(1);
 				}
 				
-				String targetUrl = "http://" + ConfigManager.deployUrl + "/" + requestURI + (httpRequest.getQueryString() != null ? "?" + httpRequest.getQueryString() : "" );
-				String redirectUrl = ConfigUtil.getLoginUrl() + ( ConfigUtil.getLoginUrl().indexOf("?") != -1 ? "&" : "?" ) +  "targetUrl=" + URLEncoder.encode(targetUrl,"UTF-8");
-				System.out.println("loginfilter sendredirect:" + redirectUrl);
-				httpResponse.sendRedirect(redirectUrl);
+				String redirectUrl = null;
+				String targetUrl = null;
+				
+				// *用户登录以后需手动添加session  
+			    if("XMLHttpRequest".equals(httpRequest.getHeader("X-Requested-With"))){  
+			    	//ajax请求跳转到首页
+			    	targetUrl = ConfigUtil.getCynthiaWebRoot();
+			    	redirectUrl = ConfigUtil.getLoginUrl() + ( ConfigUtil.getLoginUrl().indexOf("?") != -1 ? "&" : "?" ) +  "targetUrl=" + targetUrl;
+			    	httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			    	httpResponse.addHeader("Vary", "Origin");
+			    	httpResponse.addHeader("Access-Control-Allow-Origin", httpRequest.getHeader("Origin"));
+			    	httpResponse.addHeader("Access-Control-Allow-Credentials", "true");
+			    	httpResponse.addHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+			    	httpResponse.addHeader("Access-Control-Allow-Headers", "host, user-agent, accept, content-type, x-real-ip, x-forwarded-ip, x-forwarded-for, x-xsrf-token, x-requested-with");
+			    	httpResponse.getWriter().println(redirectUrl);
+			    } else {  
+			    	targetUrl = ConfigUtil.getTargetUrl(httpRequest);
+					redirectUrl = ConfigUtil.getLoginUrl() + ( ConfigUtil.getLoginUrl().indexOf("?") != -1 ? "&" : "?" ) +  "targetUrl=" + targetUrl;
+			    	httpResponse.sendRedirect(redirectUrl);  
+			    } 
 				return;
 			}else {
 				Key tempKey = new Key();

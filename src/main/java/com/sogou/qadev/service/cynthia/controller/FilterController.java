@@ -208,23 +208,28 @@ public class FilterController extends BaseController{
 			}else {
 				Node templateNode = XMLUtil.getSingleNode(filterXmlDoc, "query/template");
 				UUID templateId = DataAccessFactory.getInstance().createUUID(XMLUtil.getAttribute(templateNode,"id"));
+				Template template = das.queryTemplate(templateId);
 				
 				List<Node> displayFieldNodes = XMLUtil.getNodes(templateNode, "display/field");
+
 				for (Node node : displayFieldNodes) {
 					String fieldId = XMLUtil.getAttribute(node,"id");
 					if(fieldId == null)
 						continue;
 					showFieldId.add(fieldId);
+					
 					if (CommonUtil.isPosNum(fieldId)) {
 						//判断该字段目前存在
-						if (FieldNameCache.getInstance().getFieldName(fieldId, templateId.getValue()) != null) {
+						Field field = template.getField(DataAccessFactory.getInstance().createUUID(fieldId));
+						if (field != null && FieldNameCache.getInstance().getFieldName(fieldId, templateId.getValue()) != null) {
 							fieldId = "FIEL-" + fieldId;
+							showList.add(new FilterField(fieldId, field.getName(),XMLUtil.getAttribute(node,"width")));
 						}else {
 							continue;
 						}
+					}else{
+						showList.add(new FilterField(fieldId, XMLUtil.getAttribute(node,"name"),XMLUtil.getAttribute(node,"width")));
 					}
-					
-					showList.add(new FilterField(fieldId, XMLUtil.getAttribute(node,"name"),XMLUtil.getAttribute(node,"width")));
 				}
 				
 				for (String fieldId : baseFieldNameMap.keySet()) {
@@ -233,7 +238,6 @@ public class FilterController extends BaseController{
 					}
 				}
 				
-				Template template = das.queryTemplate(templateId);
 				Set<Field> templateFields = template.getFields();
 				
 				for(Field field : templateFields){

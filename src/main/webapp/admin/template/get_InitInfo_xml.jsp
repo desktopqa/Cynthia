@@ -62,7 +62,7 @@
 	{
 		for(Template template : templateArray)
 		{
-			if (null == template.getName() || ( template.isProTemplate() && !ConfigManager.getProjectInvolved() )){
+			if (null == template.getName() || ( template.getTemplateConfig().isProjectInvolve() && !ConfigManager.getProjectInvolved() )){
 				continue;
 			}
 			templateMap.put(template.getId().getValue(), template);
@@ -82,7 +82,7 @@
 			xmlb.append("<name>").append(XMLUtil.toSafeXMLString(template.getName())).append("</name>");
 			xmlb.append("<templateTypeId>").append(template.getTemplateTypeId()).append("</templateTypeId>");
 			xmlb.append("<flowId>").append(template.getFlowId()).append("</flowId>");
-			xmlb.append("<isProTemplate>").append(String.valueOf(template.isProTemplate())).append("</isProTemplate>");
+			xmlb.append("<isProTemplate>").append(String.valueOf(template.getTemplateConfig().isProjectInvolve())).append("</isProTemplate>");
 			xmlb.append("<isFocused>").append("true").append("</isFocused>");
 			xmlb.append("<isNew>").append("true").append("</isNew>");
 			

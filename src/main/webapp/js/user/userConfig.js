@@ -238,9 +238,10 @@ function bindEvents()
 $(function(){
 	bindEvents();
 	$('.nav-tabs a:first').tab('show');
-	var user = queryUserInfo();
-	$("#user_name_p").text(user.userName);
-	$("#user_name_t").text(user.nickName);
-	$("#user_name_modify").val(user.nickName);
-	$("#userImg").attr("src",userPicUrl);
+	queryUserInfo(function(user){
+		$("#user_name_p").text(user.userName);
+		$("#user_name_t").text(user.nickName);
+		$("#user_name_modify").val(user.nickName);
+		$("#userImg").attr("src",userPicUrl);
+	});
 });

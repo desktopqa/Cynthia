@@ -20,6 +20,7 @@ public class ConfigManager {
 	
 	public static String deployUrl = null;
 	public static String deployPath = null;
+	public static String deployScheme = null;
 	
 	static{
 		properties = loadPropertyFile("config.properties");

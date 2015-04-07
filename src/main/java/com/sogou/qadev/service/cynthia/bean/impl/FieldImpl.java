@@ -395,9 +395,9 @@ public final class FieldImpl implements Field
 	{
 		if (ConfigManager.getProjectInvolved()) {
 			Template template = DataAccessFactory.getInstance().getSysDas().queryTemplate(this.templateId);
-			if (template.isProTemplate()) {
+			if (template.getTemplateConfig().isProjectInvolve()) {
 				Set<Option> allOptions = new HashSet<Option>();
-				if (this.getName().equals("对应产品")) {
+				if (this.getId().getValue().equals(template.getTemplateConfig().getProductInvolveId())) {
 					Map<String, String> allProductsMap = ProjectInvolveManager.getInstance().getProductMap(template.getCreateUser());
 					System.out.println("find projects length:" + allProductsMap.keySet().size());
 					for (String productId : allProductsMap.keySet()) {
@@ -405,7 +405,7 @@ public final class FieldImpl implements Field
 					}
 					return allOptions;
 				}
-				else if(this.getName().equals("对应项目")){
+				else if(this.getId().getValue().equals(template.getTemplateConfig().getProjectInvolveId())){
 					Map<String, String> allProjectsMap = ProjectInvolveManager.getInstance().getProjectMap(template.getCreateUser(),"");
 					for (String projectId : allProjectsMap.keySet()) {
 						allOptions.add(new OptionImpl(DataAccessFactory.getInstance().createUUID(projectId), this.id, allProjectsMap.get(projectId)));
@@ -553,11 +553,11 @@ public final class FieldImpl implements Field
 			if (ConfigManager.getEnableSso()) {
 				DataAccessSession das = DataAccessFactory.getInstance().getSysDas();
 				Template template = das.queryTemplate(this.templateId);
-				if (template.isProTemplate()) {
+				if (template.getTemplateConfig().isProjectInvolve()) {
 					String name = null;
-					if (this.getName().equals("对应项目")) {
+					if (this.getId().getValue().equals(template.getTemplateConfig().getProductInvolveId())) {
 						name = ProjectInvolveManager.getInstance().getProjectNameById(id.getValue());
-					}else if (this.getName().equals("对应产品")) {
+					}else if (this.getId().getValue().equals(template.getTemplateConfig().getProjectInvolveId())) {
 						name = ProjectInvolveManager.getInstance().getProductNameById(id.getValue());
 					}
 					if (name != null) {

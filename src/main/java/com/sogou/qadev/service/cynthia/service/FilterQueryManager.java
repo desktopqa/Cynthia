@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.sogou.qadev.cache.impl.FieldNameCache;
 import com.sogou.qadev.cache.impl.TemplateCache;
 import com.sogou.qadev.service.cynthia.bean.Action;
 import com.sogou.qadev.service.cynthia.bean.Data;
@@ -885,5 +887,44 @@ public class FilterQueryManager {
 			}
 		}
 		return fieldValueMap;
+	}
+	
+	/**
+	 * 查询跟项目管理相关的Bug数量
+	 * @Title: queryProjectDataIds
+	 * @Description: TODO
+	 * @param projectIds
+	 * @return
+	 * @return: Map<String,Set<String>>
+	 */
+	public static Map<String, Set<String>> queryProjectDataIds(List<String> projectIds){
+		
+		Map<String, Set<String>> returnMap = new HashMap<String, Set<String>>();
+		if (projectIds == null || projectIds.size() == 0 ) {
+			return returnMap;
+		}
+		
+		DataAccessSession das = DataAccessFactory.getInstance().getSysDas();
+		Template[] allTemplates = das.queryAllTemplates();
+		for (Template template : allTemplates) {
+			if (template.getTemplateConfig().isProjectInvolve() && template.getTemplateConfig().getProjectInvolveId() != null) {
+				String projectInvolvedId = template.getTemplateConfig().getProjectInvolveId();
+				String fieldColName = FieldNameCache.getInstance().getFieldName(projectInvolvedId, template.getId().getValue());
+				
+				Map<String, String> idAndProjectIdMap = new DataAccessSessionMySQL().queryIdAndFieldOfTemplate(template.getId().getValue(), fieldColName);
+				for (String dataId : idAndProjectIdMap.keySet()) {
+					String projectId = idAndProjectIdMap.get(dataId);
+					if (projectIds.contains(projectId)) {
+						if (returnMap.get(projectId) == null) {
+							returnMap.put(projectId, new HashSet<String>());
+						}
+
+						returnMap.get(projectId).add(dataId);
+					}
+				}
+			}
+		}
+		
+		return returnMap;
 	}
 }

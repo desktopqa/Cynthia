@@ -72,7 +72,7 @@ public class TemplateController extends BaseController{
 		Template[] allTemplates = DataManager.getInstance().queryUserTemplates(queryUser);
 		Map<String, String> allTemplateMap = new HashMap<String, String>();
 		for (Template template : allTemplates) {
-			if (!CynthiaUtil.isNull(isProTemplate) && isProTemplate.equals("true") && !template.isProTemplate()) 
+			if (!CynthiaUtil.isNull(isProTemplate) && isProTemplate.equals("true") && !template.getTemplateConfig().isProjectInvolve()) 
 				continue;
 			allTemplateMap.put(template.getId().getValue(), template.getName());
 		}
@@ -239,7 +239,7 @@ public class TemplateController extends BaseController{
 		returnMap.put("templateMailOptions", template.getTemplateMailOption());
 		Map<String, String> usersMap = new HashMap<String, String>();
 		
-		if (template.isProTemplate()) {
+		if (template.getTemplateConfig().isProjectInvolve()) {
 			List<UserInfo> allUsers = ProjectInvolveManager.getInstance().getCompanyUsersByMail(key.getUsername());
 			for (UserInfo userInfo : allUsers) {
 				usersMap.put(userInfo.getUserName(),userInfo.getNickName());

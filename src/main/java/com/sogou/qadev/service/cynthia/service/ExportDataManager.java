@@ -430,7 +430,11 @@ public class ExportDataManager {
 							continue;
 						
 						if (CommonUtil.isPosNum(cellValue) || (cellValue != null && cellValue.equals("0"))) {  //设置为数字格式
-							displayCell.setCellValue(Integer.parseInt(cellValue));
+							try{
+								displayCell.setCellValue(Integer.parseInt(cellValue));
+							}catch(Exception e){
+								displayCell.setCellValue(cellValue);
+							}
 						}else {
 							displayCell.setCellValue(cellValue);
 						}

@@ -21,20 +21,12 @@ public interface Template extends BaseType{
 	public void setId(UUID id);
 	
 	/**
-	 * @Title: setProTemplate
-	 * @Description: set is project involve template
-	 * @param isProTemplate
-	 * @return: void
-	 */
-	public void setProTemplate(boolean isProTemplate);
-	
-	/**
-	 * @Title: getIsProTemplate
-	 * @Description: get is project involve template
+	 * @Title: getTemplateConfig
+	 * @Description: TODO
 	 * @return
-	 * @return: boolean
+	 * @return: TemplateConfig
 	 */
-	public boolean isProTemplate();
+	public TemplateConfig getTemplateConfig();
 	
 	/**
 	 * @description:get template templatetype id

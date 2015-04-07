@@ -33,6 +33,7 @@ import com.sogou.qadev.service.cynthia.bean.impl.DataImpl;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
 import com.sogou.qadev.service.cynthia.service.DbPoolConnection;
 import com.sogou.qadev.service.cynthia.service.TableRuleManager;
+import com.sogou.qadev.service.cynthia.util.CommonUtil;
 import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
 import com.sogou.qadev.service.cynthia.util.Date;
 
@@ -1534,5 +1535,24 @@ public class DataAccessSessionMySQL {
 		} finally{
 			DbPoolConnection.getInstance().closeAll(pstm, conn);
 		}
+	}
+	
+	public List<Data> queryDataByDataIds(String[] dataId,boolean needLog,UUID templateId){
+		Set<String> tableSet = new HashSet<String>();
+		if (templateId != null) {
+			tableSet.add(TableRuleManager.getInstance().getDataTableName(templateId));
+		}else {
+			tableSet.addAll(TableRuleManager.getInstance().getAllDataTables());
+		}
+		
+		String dataIds = CommonUtil.arrayToStr(dataId);
+		
+		StringBuffer sqlBuffer = new StringBuffer();
+		for (String dataTable : tableSet) {
+			sqlBuffer.append(sqlBuffer.length() > 0 ? " union " : "");
+			sqlBuffer.append(" select id , templateId, createUser,templateTypeId,title,createTime,lastModifyTime,assignUser,statusId from " + dataTable + " where is_valid = 1 and id in (" + dataIds + ") ");
+		}
+		
+		return queryDatas(sqlBuffer.toString(), needLog, templateId);
 	}
 }

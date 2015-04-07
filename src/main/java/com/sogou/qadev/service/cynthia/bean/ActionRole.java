@@ -7,6 +7,8 @@ package com.sogou.qadev.service.cynthia.bean;
 
 import java.io.Serializable;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @description:actionRole interface
  * @author:liming
@@ -26,7 +28,7 @@ public class ActionRole implements Serializable{
 
 	public UUID actionId = null;
 	public UUID roleId = null;
-
+	
 	/**
 	 * <h1> Title:</h1>
 	 * <p> Description:init action role</p>

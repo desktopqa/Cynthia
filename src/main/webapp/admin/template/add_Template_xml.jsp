@@ -84,10 +84,9 @@
 	template.setName(name);
 	template.setFlowId(flowId);
 	template.setCreateUser(key.getUsername());
-	template.setProTemplate(request.getParameter("projectInvolved") != null && request.getParameter("projectInvolved").equals("true"));
+	template.getTemplateConfig().setIsProjectInvolve(request.getParameter("projectInvolved") != null && request.getParameter("projectInvolved").equals("true"));
 	
-	if(template.isProTemplate()){
-		ErrorCode errorCode = das.updateTemplate(template);
+	if(template.getTemplateConfig().isProjectInvolve()){
 		//项目表单初始化 三列
 		template.addFieldRow(0, 3);
 		//添加字段 对应产品 对应项目
@@ -96,12 +95,14 @@
 		field.setName("对应产品");
 		String fieldColName = FieldNameMapMySQL.getInstance().getOneFieldName(field, template.getId().getValue());
 		das.addFieldColName(template.getId().getValue(), fieldColName, field.getId().getValue(),  FieldNameMapMySQL.getInstance().getFieldColNameType(field));
-				
+		template.getTemplateConfig().setProductInvolveId(field.getId().getValue());
+		
 		Field field2 = template.addField(Field.Type.t_selection, Field.DataType.dt_single);
 		template.addField(field2, 0, 1, 0);
 		field2.setName("对应项目");
 		String fieldColName2 = FieldNameMapMySQL.getInstance().getOneFieldName(field2, template.getId().getValue());
 		das.addFieldColName(template.getId().getValue(), fieldColName2, field2.getId().getValue(),  FieldNameMapMySQL.getInstance().getFieldColNameType(field2));
+		template.getTemplateConfig().setProjectInvolveId(field2.getId().getValue());
 	}
 	
 	if(copyTemplateId != null)
@@ -141,84 +142,84 @@
 		
 		template.setFlowId(copyTemplate.getFlowId());
 		
-			List<FieldRow> fieldRowList = copyTemplate.getFieldRowList();
-			List<FieldRow> newFieldRowList = new ArrayList<FieldRow>();
-			
-			for(int i = 0; i < fieldRowList.size(); i++)
+		List<FieldRow> fieldRowList = copyTemplate.getFieldRowList();
+		List<FieldRow> newFieldRowList = new ArrayList<FieldRow>();
+		
+		for(int i = 0; i < fieldRowList.size(); i++)
+		{
+			FieldRow fieldRow = new FieldRow();
+			List<FieldColumn> fieldColumnList = fieldRowList.get(i).getFieldColumns();
+			for(int j = 0; j < fieldColumnList.size(); j++)
 			{
-				FieldRow fieldRow = new FieldRow();
-				List<FieldColumn> fieldColumnList = fieldRowList.get(i).getFieldColumns();
-				for(int j = 0; j < fieldColumnList.size(); j++)
+				List<Field> fieldList = fieldColumnList.get(j).getFields();
+				FieldColumn fieldColumn = new FieldColumn();
+				
+				for(int k = 0; k < fieldList.size(); k++)
 				{
-					List<Field> fieldList = fieldColumnList.get(j).getFields();
-					FieldColumn fieldColumn = new FieldColumn();
+					Field copyField = fieldList.get(k);
+					Field field = template.addField(copyField.getType(), copyField.getDataType());
 					
-					for(int k = 0; k < fieldList.size(); k++)
+					field.setName(copyField.getName());
+					field.setDescription(copyField.getDescription());
+				
+					Set<Option> allOptions = copyField.getOptions();
+					if(allOptions != null)
 					{
-						Field copyField = fieldList.get(k);
-						Field field = template.addField(copyField.getType(), copyField.getDataType());
-						
-						field.setName(copyField.getName());
-						field.setDescription(copyField.getDescription());
+						for(Option copyOption : allOptions)
+						{
+							Option option = field.addOption();
+							option.setName(copyOption.getName());
+							option.setDescription(copyOption.getDescription());
+							option.setForbidden(copyOption.getForbidden());
+							option.setIndexOrder(copyOption.getIndexOrder());
+						}
+					}
 					
-						Set<Option> allOptions = copyField.getOptions();
-						if(allOptions != null)
-						{
-							for(Option copyOption : allOptions)
-							{
-								Option option = field.addOption();
-								option.setName(copyOption.getName());
-								option.setDescription(copyOption.getDescription());
-								option.setForbidden(copyOption.getForbidden());
-								option.setIndexOrder(copyOption.getIndexOrder());
-							}
-						}
-						
-						field.setActionIds(copyField.getActionIds());
-						field.setControlActionIds(copyField.getControlActionIds());
-						field.setControlRoleIds(copyField.getControlRoleIds());
-						
-						fieldColumn.addField(field);
-						
-						//复制控制字段
-						if(copyField.getControlFieldId() != null){
-							Field beforeControlField = copyTemplate.getField(copyField.getControlFieldId());
-							if(beforeControlField != null){
-								
-								Field newControlField = template.getField(beforeControlField.getName());
-								field.setControlFieldId(newControlField.getId());
-								
-								for(Option newOption:field.getOptions()){
-									try{
-										Option beforeControlOption = beforeControlField.getOption(copyField.getOption(newOption.getName()).getControlOptionId());
-										newOption.setControlOptionId(newControlField.getOption(beforeControlOption.getName()).getId());
-									}catch(Exception e){}
-								}
-							}
-						}
-						
-						String fieldColName = FieldNameMapMySQL.getInstance().getOneFieldName(field, template.getId().getValue());
-						if(fieldColName == null || fieldColName.length() == 0 )
-						{
-							isSuccess = false;
-							out.println(ErrorManager.getErrorXml(ErrorType.fieldcolName_error));
-							return;
-						}
-						else{
-							if(new FieldNameAccessSessionMySQL().addFieldColName(template.getId().getValue(), fieldColName, field.getId().getValue(),  FieldNameMapMySQL.getInstance().getFieldColNameType(field))){
-								FieldNameCache.getInstance().set(field.getId().getValue(), fieldColName);
-							}else{
-								isSuccess = false;
-								out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));
-								return;
+					field.setActionIds(copyField.getActionIds());
+					field.setControlActionIds(copyField.getControlActionIds());
+					field.setControlRoleIds(copyField.getControlRoleIds());
+					
+					fieldColumn.addField(field);
+					
+					//复制控制字段
+					if(copyField.getControlFieldId() != null){
+						Field beforeControlField = copyTemplate.getField(copyField.getControlFieldId());
+						if(beforeControlField != null){
+							
+							Field newControlField = template.getField(beforeControlField.getName());
+							field.setControlFieldId(newControlField.getId());
+							
+							for(Option newOption:field.getOptions()){
+								try{
+									Option beforeControlOption = beforeControlField.getOption(copyField.getOption(newOption.getName()).getControlOptionId());
+									newOption.setControlOptionId(newControlField.getOption(beforeControlOption.getName()).getId());
+								}catch(Exception e){}
 							}
 						}
 					}
-					fieldRow.addColumn(fieldColumn);
+					
+					String fieldColName = FieldNameMapMySQL.getInstance().getOneFieldName(field, template.getId().getValue());
+					if(fieldColName == null || fieldColName.length() == 0 )
+					{
+						isSuccess = false;
+						out.println(ErrorManager.getErrorXml(ErrorType.fieldcolName_error));
+						return;
+					}
+					else{
+						if(new FieldNameAccessSessionMySQL().addFieldColName(template.getId().getValue(), fieldColName, field.getId().getValue(),  FieldNameMapMySQL.getInstance().getFieldColNameType(field))){
+							FieldNameCache.getInstance().set(field.getId().getValue(), fieldColName);
+						}else{
+							isSuccess = false;
+							out.println(ErrorManager.getErrorXml(ErrorType.database_update_error));
+							return;
+						}
+					}
 				}
-				newFieldRowList.add(fieldRow);
+				fieldRow.addColumn(fieldColumn);
 			}
-			template.setFieldRowList(newFieldRowList);
+			newFieldRowList.add(fieldRow);
+		}
+		template.setFieldRowList(newFieldRowList);
 	}
 	
 	ErrorCode errorCode = das.updateTemplate(template);

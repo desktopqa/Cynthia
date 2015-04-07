@@ -1,3 +1,4 @@
+<%@page import="com.sogou.qadev.service.cynthia.util.ArrayUtil"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.StatisticerManager"%>
 <%@page import="com.sogou.qadev.service.cynthia.util.QueryUtil"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.FilterQueryManager"%>
@@ -73,35 +74,45 @@ if(templateIdStr != null && templateIdStr.length() > 0)
 
 DataAccessSession das = DataAccessFactory.getInstance().createDataAccessSession(key.getUsername(), keyId);
 List<Data> dataList = new ArrayList<Data>();
+int totalCount = 0;
 Set<String> notNewTaskIdSet = new HashSet<String>();
 
 Map<String,List<String>> allRequestPair = QueryUtil.getRequestParams(request);
 
-String sql = "";
-
-if(allRequestPair.get("statisticId") != null && allRequestPair.get("statisticVal") != null){
-	//通过统计器查询 一般为统计页面的链接
-	String statisticId = allRequestPair.get("statisticId").get(0);
-	String statisticVal = allRequestPair.get("statisticVal").get(0);
-	sql = StatisticerManager.getSqlOfStat(statisticId,statisticVal,key.getUsername());
-	allRequestPair.remove("statisticId");
-	allRequestPair.remove("statisticVal");
-	//其它条件查询如标题 描述等
-	List<QueryCondition> queryConditionList = QueryUtil.getQueryCondition(allRequestPair,templateId);
-	for(QueryCondition queryCondition : queryConditionList){
-		sql += " and " + queryCondition.getQueryField() + " " + queryCondition.getQueryMethod() + " " + queryCondition.getQueryValue() + " ";
-	}
+if(allRequestPair.get("projectId") != null){
+	//项目管理查询
+	String projectId = allRequestPair.get("projectId").get(0);
+	Map<String,Set<String>> projectDataMap = FilterQueryManager.queryProjectDataIds(allRequestPair.get("projectId"));
+	Set<String> allDataId = projectDataMap.get(projectId);
+	totalCount = allDataId.size();
+	String[] allDataIdStrs = allDataId.toArray(new String[0]);
+	allDataIdStrs = ArrayUtil.splitArray(allDataIdStrs,start,start+limit);
+	
+	dataList = new DataAccessSessionMySQL().queryDataByDataIds(allDataIdStrs, false, null);
 }else{
-	//其它条件查询
-	List<QueryCondition> queryConditionList = QueryUtil.getQueryCondition(allRequestPair,templateId);
-	sql = QueryUtil.getQuerySql(templateId, queryConditionList);
-	System.out.println(sql);
+	String sql = "";
+	if(allRequestPair.get("statisticId") != null && allRequestPair.get("statisticVal") != null){
+		//通过统计器查询 一般为统计页面的链接
+		String statisticId = allRequestPair.get("statisticId").get(0);
+		String statisticVal = allRequestPair.get("statisticVal").get(0);
+		sql = StatisticerManager.getSqlOfStat(statisticId,statisticVal,key.getUsername());
+		allRequestPair.remove("statisticId");
+		allRequestPair.remove("statisticVal");
+		//其它条件查询如标题 描述等
+		List<QueryCondition> queryConditionList = QueryUtil.getQueryCondition(allRequestPair,templateId);
+		for(QueryCondition queryCondition : queryConditionList){
+			sql += " and " + queryCondition.getQueryField() + " " + queryCondition.getQueryMethod() + " " + queryCondition.getQueryValue() + " ";
+		}
+	}else{
+		//其它条件查询
+		List<QueryCondition> queryConditionList = QueryUtil.getQueryCondition(allRequestPair,templateId);
+		sql = QueryUtil.getQuerySql(templateId, queryConditionList);
+	}
+
+	totalCount = DbPoolConnection.getInstance().getSearchResultCount(sql);
+	sql = DataFilterMemory.getQuerySql(sql, pagenum,count,sort,dir,templateId == null ? null : templateId.getValue());
+	dataList = new DataAccessSessionMySQL().queryDatas(sql, false, templateId);
 }
-
-int totalCount = DbPoolConnection.getInstance().getSearchResultCount(sql);
-
-sql = DataFilterMemory.getQuerySql(sql, pagenum,count,sort,dir,templateId == null ? null : templateId.getValue());
-dataList = new DataAccessSessionMySQL().queryDatas(sql, false, templateId);
 
 Set<String> displayFieldsName = new HashSet(Arrays.asList(new String[]{"标题","描述","创建时间","指派人","状态","修改时间","创建人"}));
 

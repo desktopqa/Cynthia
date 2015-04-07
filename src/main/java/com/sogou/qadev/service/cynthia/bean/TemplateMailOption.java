@@ -112,9 +112,9 @@ public class TemplateMailOption implements Serializable {
 						//角色
 						UUID roleId = DataAccessFactory.getInstance().createUUID(user.replace("role_", ""));
 						
-						if (template.isProTemplate()) {
+						if (template.getTemplateConfig().isProjectInvolve()) {
 							//根据data 中项目Id查询用户
-							Field field = template.getField("对应项目");
+							Field field = template.getField(DataAccessFactory.getInstance().createUUID(template.getTemplateConfig().getProjectInvolveId()));
 							if (field != null) {
 								UUID productId = data.getSingleSelection(field.getId());
 								if (productId != null) {

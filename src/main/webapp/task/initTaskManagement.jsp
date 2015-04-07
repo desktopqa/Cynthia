@@ -57,6 +57,7 @@
 		response.sendRedirect(ConfigUtil.getCynthiaWebRoot());
 		return;
 	}
+	
 	DataAccessSession das = daf.createDataAccessSession(key.getUsername(), keyId);
 	
 	String xml = null;
@@ -198,7 +199,17 @@
 		//isProTemplate
 		Node isProTemplateNode = doc.createElement("isProTemplate");
 		rootNode.appendChild(isProTemplateNode);
-		isProTemplateNode.setTextContent(String.valueOf(template.isProTemplate()));
+		isProTemplateNode.setTextContent(String.valueOf(template.getTemplateConfig().isProjectInvolve()));
+		
+		//productInvolvedId
+		Node productInvolvedIdNode = doc.createElement("productInvolvedId");
+		rootNode.appendChild(productInvolvedIdNode);
+		productInvolvedIdNode.setTextContent(String.valueOf(template.getTemplateConfig().getProductInvolveId()));
+		
+		//projectInvolvedId
+		Node projectInvolvedIdNode = doc.createElement("projectInvolvedId");
+		rootNode.appendChild(projectInvolvedIdNode);
+		projectInvolvedIdNode.setTextContent(String.valueOf(template.getTemplateConfig().getProjectInvolveId()));
 		
 		//statusName
 		Node statusNameNode = doc.createElement("statusName");
@@ -606,9 +617,9 @@
 	}
 	
 	///////////////////////////////////设置对应项目////////////////////////////////////////////////////////////////////
-	if(template.isProTemplate() && XMLUtil.getSingleNodeTextContent(fieldNode, "name").equals("对应项目")){
+	if(template.getTemplateConfig().isProjectInvolve() && XMLUtil.getSingleNodeTextContent(fieldNode, "id").equals(template.getTemplateConfig().getProjectInvolveId())){
 		XMLUtil.removeAll(XMLUtil.getSingleNode(fieldNode, "options"));
-		Field productField = template.getField("对应产品");
+		Field productField = template.getField(DataAccessFactory.getInstance().createUUID(template.getTemplateConfig().getProductInvolveId()));
 		if(productField != null){
 			UUID optionId = task.getSingleSelection(productField.getId());
 			if(optionId != null){
@@ -644,7 +655,6 @@
 	}
 	///////////////////////////////////设置对应项目结束////////////////////////////////////////////////////////////////
 		
-
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	StringBuffer controlHiddenFields = new StringBuffer();

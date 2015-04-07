@@ -438,8 +438,8 @@ public class DataManager
 			if(template == null)
 				continue;
 			
-			if (template.isProTemplate()) {
-				Field field = template.getField("对应项目");
+			if (template.getTemplateConfig().isProjectInvolve()) {
+				Field field = template.getField(DataAccessFactory.getInstance().createUUID(template.getTemplateConfig().getProjectInvolveId()));
 				if (field != null) {
 					UUID projectId = data.getSingleSelection(field.getId());
 					if (projectId != null) {
@@ -729,7 +729,7 @@ public class DataManager
 					templateSet.add(template);
 				}
 			}else {
-				if (template.isProTemplate()) {
+				if (template.getTemplateConfig().isProjectInvolve()) {
 					continue;
 				}
 				

@@ -84,7 +84,9 @@
 	xmlb.append("<root>");
 	
 	xmlb.append("<isError>false</isError>");
-	xmlb.append("<isProTemplate>").append(String.valueOf(template.isProTemplate())).append("</isProTemplate>");
+	xmlb.append("<isProTemplate>").append(String.valueOf(template.getTemplateConfig().isProjectInvolve())).append("</isProTemplate>");
+	xmlb.append("<productInvolvedId>").append(String.valueOf(template.getTemplateConfig().getProductInvolveId())).append("</productInvolvedId>");
+	xmlb.append("<projectInvolvedId>").append(String.valueOf(template.getTemplateConfig().getProjectInvolveId())).append("</projectInvolvedId>");
 	
 	xmlb.append(templateXml.substring(templateXml.indexOf("<template>")));
 	

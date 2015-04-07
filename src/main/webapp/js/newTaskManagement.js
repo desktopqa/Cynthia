@@ -17,6 +17,8 @@ var url = null;
 var editor = null;
 var lastActionRoles = null;  //下一步的角色id
 var isProTemplate = false;  //是否为项目管理表单
+var productInvolvedId = null; //项目管理关联产品字段id
+var projectInvolvedId = null; //项目管理关联项目字段id
 var dataTagArray = new Array();
 var base_url = getRootDir();
 
@@ -162,6 +164,8 @@ function onCompleteInitTaskManagement(request,type)
 
 	eval("var isError = " + $(rootNode).children("isError").text());
 	isProTemplate = $(rootNode).children("isProTemplate").text() == 'true';
+	productInvolvedId = $(rootNode).children("productInvolvedId").text();
+	projectInvolvedId = $(rootNode).children("projectInvolvedId").text();
 	lastActionRoles = $(rootNode).children("lastActionRoles").text();
 
 	if(isError)
@@ -284,6 +288,10 @@ function onCompleteInitTaskManagement(request,type)
 		actionForm += 	"<label class='control-label span2' for='select_action'>动作名称:</label>";
 		actionForm +=   "<div class='controls'>";
 		actionForm +=   	"<select id='select_action'>";
+		
+		if(!isEdit){  //创建人自身有编辑权限
+			isEdit =  $(taskNode).children("createUser").text() == readCookie('login_username');
+		}
 		
 		if(isEdit)
 		{
@@ -955,7 +963,7 @@ function executeUpdate(actionValue)
 	
 	if(isProTemplate)
 	{
-		var field = getFieldByName('对应项目');
+		var field = getFieldById(projectInvolvedId);
 		if(field){
 			var productId = field.datas[0];
 			var actionId = actionValue.split('|')[0];
@@ -1682,7 +1690,7 @@ function getFieldMust(field)
 	}
 
 	//项目管理表单 对应产品 与对应项目是必填项！！
-	if(isProTemplate && ( field.name == '对应产品' || field.name == '对应项目' )){
+	if(isProTemplate && ( field.id == productInvolvedId || field.id == projectInvolvedId )){
 		return true;
 	}
 	
@@ -1915,7 +1923,7 @@ function onCompleteInitBizAssignUsers(request)
  * @param data 
  */
 function setProducts(data){
-	var field = getFieldByName('对应项目');
+	var field = getFieldById(projectInvolvedId);
 	field.options = [];
 	if(field){
 		var $field = $("#field" + field.id);
@@ -1944,7 +1952,7 @@ function setProducts(data){
  * @param projectId
  */
 function setProjects(productId){
-	var field = getFieldByName('对应产品');
+	var field = getFieldById(productInvolvedId);
 	if(field){
 		$('#field' + field.id).val(productId);
 		//更新对应项目
@@ -1996,11 +2004,11 @@ function checkSingleSelect(fieldId)
 	}
 	else
 	{
-		if(isProTemplate && field.name == '对应产品'){
+		if(isProTemplate && field.id == productInvolvedId){
 			setProjects(optionId);
 		}
 		
-		if(isProTemplate && field.name == '对应项目'){
+		if(isProTemplate && field.id == projectInvolvedId){
 			//更新对应指派人
 			var actionId = $('#select_action').val().split('|')[0];
 			setAssignUserByProjectIdAndRoles(optionId,actionId);
@@ -2368,11 +2376,11 @@ function drawFieldsArea(node)
 
 	/***项目管理默认值设置时特殊处理************/
 	if(isProTemplate && operation != 'read'){
-		var fieldProduct = getFieldByName('对应产品');
+		var fieldProduct = getFieldById(productInvolvedId);
 		if(fieldProduct){
 			setProjects($('#field' + fieldProduct.id).val());
 		}
-		var fieldProject = getFieldByName('对应项目');
+		var fieldProject = getFieldById(projectInvolvedId);
 		var actionId = $('#select_action').val().split('|')[0];
 		setAssignUserByProjectIdAndRoles($('#field' + fieldProject.id).val(),actionId,false);
 	}
@@ -3368,6 +3376,8 @@ function onCompleteInitStartActions(request)
 
 	var defaultAction = readCookie("action" + templateId);
 	isProTemplate = $(rootNode).children("isProTemplate").text() == 'true';
+	productInvolvedId = $(rootNode).children("productInvolvedId").text();
+	projectInvolvedId = $(rootNode).children("projectInvolvedId").text();
 
 	var actionNodes = $(rootNode).children("actions").children("action");
 	

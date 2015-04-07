@@ -17,6 +17,7 @@ import com.sogou.qadev.service.cynthia.bean.Field.Type;
 import com.sogou.qadev.service.cynthia.bean.FieldColumn;
 import com.sogou.qadev.service.cynthia.bean.FieldRow;
 import com.sogou.qadev.service.cynthia.bean.Option;
+import com.sogou.qadev.service.cynthia.bean.TemplateConfig;
 import com.sogou.qadev.service.cynthia.bean.TemplateMailOption;
 import com.sogou.qadev.service.cynthia.bean.Option.Forbidden;
 import com.sogou.qadev.service.cynthia.bean.Template;
@@ -46,16 +47,13 @@ public class TemplateImpl implements Template
 	private String description = null;
 	private static final long serialVersionUID = -1L;
 	private TemplateMailOption tmo = new TemplateMailOption();
-	private boolean isProTemplate = false;  //是否项目管理相关表单  
+	private TemplateConfig templateConfig = new TemplateConfig();
 	
-	public boolean isProTemplate() {
-		return isProTemplate;
+	public TemplateConfig getTemplateConfig()
+	{
+		return this.templateConfig;
 	}
-
-	public void setProTemplate(boolean isProTemplate) {
-		this.isProTemplate = isProTemplate;
-	}
-
+	
 	/**
 	 * (non-Javadoc)
 	 * <p> Title:getCreateUser</p>
@@ -319,7 +317,6 @@ public class TemplateImpl implements Template
 			this.templateTypeId = templateTypeId;
 			this.name = name;
 			this.description = XMLUtil.getSingleNodeTextContent(templateNode, "description");
-			this.isProTemplate = Boolean.parseBoolean(XMLUtil.getSingleNodeTextContent(templateNode, "isProTemplate"));
 
 			String flowIdStr = XMLUtil.getSingleNode(templateNode, "flowId").getTextContent();
 			this.flowId = DataAccessFactory.getInstance().createUUID(flowIdStr);
@@ -359,6 +356,15 @@ public class TemplateImpl implements Template
 					this.tmo.setActionUser(XMLUtil.getAttribute(actionMailNode, "id"), actionMailNode.getTextContent());
 				}
 			}
+			
+			//初始化表单配置
+			Node templateConfigNode = XMLUtil.getSingleNode(templateNode, "config");
+			if (templateConfigNode != null) {
+				this.templateConfig.setIsProjectInvolve(XMLUtil.getSingleNodeTextContent(templateConfigNode, "isProjectInvolve").equals("true"));
+				this.templateConfig.setProductInvolveId(XMLUtil.getSingleNodeTextContent(templateConfigNode, "productInvolveId"));
+				this.templateConfig.setProjectInvolveId(XMLUtil.getSingleNodeTextContent(templateConfigNode, "projectInvolveId"));
+			}
+			
 		}catch(Exception e)
 		{
 			e.printStackTrace();
@@ -409,7 +415,6 @@ public class TemplateImpl implements Template
 		templateImpl.flowId = this.flowId;
 		templateImpl.name = this.name;
 		templateImpl.description = this.description;
-		templateImpl.isProTemplate = this.isProTemplate;
 		templateImpl.createUser = this.createUser;
 
 		templateImpl.fieldRowList = new ArrayList<FieldRow>();
@@ -432,6 +437,7 @@ public class TemplateImpl implements Template
 
 		TemplateMailOption tmo = this.tmo.clone();
 		templateImpl.setTemplateMailOption(tmo);
+		templateImpl.templateConfig = this.templateConfig;
 		return templateImpl;
 	}
 
@@ -726,7 +732,6 @@ public class TemplateImpl implements Template
 		xmlb.append("<templateTypeId>").append(this.getTemplateTypeId()).append("</templateTypeId>");
 		xmlb.append("<name>").append(XMLUtil.toSafeXMLString(this.getName())).append("</name>");
 		xmlb.append("<description>").append(XMLUtil.toSafeXMLString(this.getDescription())).append("</description>");
-		xmlb.append("<isProTemplate>").append(XMLUtil.toSafeXMLString(String.valueOf(this.isProTemplate))).append("</isProTemplate>");
 		xmlb.append("<flowId>").append(this.getFlowId()).append("</flowId>");
 		if(this.fieldRowList.size() == 0)
 		{
@@ -762,6 +767,13 @@ public class TemplateImpl implements Template
 		}
 		xmlb.append("</actions>");
 		xmlb.append("</mail>");
+		
+		xmlb.append("<config>");
+		xmlb.append("<isProjectInvolve>").append(this.templateConfig.isProjectInvolve()).append("</isProjectInvolve>");
+		xmlb.append("<productInvolveId>").append(this.templateConfig.getProductInvolveId()).append("</productInvolveId>");
+		xmlb.append("<projectInvolveId>").append(this.templateConfig.getProjectInvolveId()).append("</projectInvolveId>");
+		xmlb.append("</config>");
+		
 		xmlb.append("</template>");
 		return xmlb.toString();
 

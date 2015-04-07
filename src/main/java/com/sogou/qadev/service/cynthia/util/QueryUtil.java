@@ -108,12 +108,12 @@ public class QueryUtil {
 					String value = requestPair.get(key).get(0);
 					if (ConfigManager.getProjectInvolved()) {
 						if (key.equals("productId")) {
-							Field productField = template.getField("对应项目");
+							Field productField = template.getField(DataAccessFactory.getInstance().createUUID(template.getTemplateConfig().getProductInvolveId()));
 							if (productField != null) {
 								key = productField.getId().getValue();
 							}
 						}else if (key.equals("projectId")) {
-							Field projectField = template.getField("对应产品");
+							Field projectField = template.getField(DataAccessFactory.getInstance().createUUID(template.getTemplateConfig().getProjectInvolveId()));
 							if (projectField != null) {
 								key = projectField.getId().getValue();
 							}

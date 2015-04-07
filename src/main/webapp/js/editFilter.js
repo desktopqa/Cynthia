@@ -728,7 +728,7 @@ function showOrderArea(show)
 	if(show){
 		$("#orderFieldDiv").modal('show');
 	}else{
-		saveFilterConditions();
+//		saveFilterConditions();
 		$("#orderFieldDiv").modal("hide");
 	}
 }
@@ -738,7 +738,7 @@ function showDefaultUser(show)
 	if(show){
 		$("#defaultUserDiv").modal('show');
 	}else{
-		saveFilterConditions();
+//		saveFilterConditions();
 		$("#defaultUserDiv").modal("hide");
 	}
 }
@@ -768,7 +768,7 @@ function showFilterTimer(show)
 		$("#filterTimerDiv").modal('show');
 	}else
 	{
-		saveFilterConditions();
+//		saveFilterConditions();
 		$("#filterTimerDiv").modal("hide");
 	}
 }

@@ -83,7 +83,7 @@
 		</init-param>
 		<init-param>
 			<param-name>magicUrls</param-name>
-			<param-value>attachment;getCrashTasks.jsp;client.jsp;login;cleanSession.do;register;executeFilter.jsp;getCrashTasks.jsp;login.jsp;register.jsp;logout.do;logout.jsp</param-value>
+			<param-value>attachment;getCrashTasks.jsp;webservice;client.jsp;login;cleanSession.do;register;executeFilter.jsp;getCrashTasks.jsp;login.jsp;register.jsp;logout.do;logout.jsp</param-value>
 		</init-param>
 		<init-param>
 			<param-name>noIEUrls</param-name>

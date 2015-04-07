@@ -25,6 +25,22 @@ var noAddHeadUrl = new Array();
 noAddHeadUrl.push('login.jsp');
 noAddHeadUrl.push('register.jsp');
 
+//全局的AJAX访问，处理AJAX清求时SESSION超时  
+$.ajaxSetup({  
+	crossDomain : true,
+    xhrFields: {
+        withCredentials: true
+    },
+	statusCode: {
+		401: function (data) {
+			if(window.location.href.indexOf("login.jsp") == -1){
+				window.location.href = data.responseText; 
+			}
+        }
+    }
+});  
+
+
 window.cynthia = {
 		version : '1.0' //# cynthia 版本号
 		, noop  : function() { //#空函数
@@ -1546,7 +1562,24 @@ function getWebRootDir()
 }
 
 function isEffevo(){
-	return ( window.location.href.indexOf('www.effevo.com') != -1 || window.location.href.indexOf('server2.weibo.shouji.sogou.com') != -1 );
+	return ( window.location.href.indexOf('www.effevo.com') != -1 || window.location.href.indexOf('effevo.mt.sogou.com') != -1 );
+}
+
+function queryUserInfo(callback)
+{
+	var userMail = readCookie("login_username");
+	$.ajax({
+		url: base_url + 'user/getUserInfo.do',
+		type:'POST',
+		dataType:'json',
+		data:{'userMail':userMail,'userId':readCookie("id")},
+		success:function(user){
+			userPicUrl = user.picUrl || base_url + "images/default_user.png";
+			if(callback){
+				callback(user);
+			}
+		}
+	});
 }
 
 function checkLogin()
@@ -1557,7 +1590,7 @@ function checkLogin()
 		url: base_url + 'user/getUserInfo.do',
 		type:'POST',
 		dataType:'json',
-		data:{'userMail':userMail,'userId':readCookie("id")},
+		data:{userId:readCookie("id"),userMail:readCookie('login_username')},
 		success:function(user){
 			userPicUrl = user.picUrl || base_url + "images/default_user.png";
 			if(user){

@@ -101,7 +101,7 @@ public class ProjectInvolveManager {
 		String cookie = getUserSign(userMail,"");
 		if (isProjectInvolved()) {
 			try {
-				String getUrl = properties.getProperty("role_get_url");
+				String getUrl = properties.getProperty("base_url") + properties.getProperty("role_get_url");
 				String result = URLUtil.sendGet(getUrl, "",cookie);
 				
 				JSONArray jsonArray = JSONArray.parseArray(result);
@@ -132,7 +132,7 @@ public class ProjectInvolveManager {
 			if (isProjectInvolved()) {
 				String cookie = getUserSign("", "1");  // 1为管理员用户
 				try {
-					String getUrl = String.format(properties.getProperty("project_name_get_url"), projectId);
+					String getUrl = String.format(properties.getProperty("base_url") + properties.getProperty("project_name_get_url"), projectId);
 					result = URLUtil.sendGet(getUrl, "",cookie);
 					JSONObject jsonObject = JSONArray.parseObject(result);
 					if (jsonObject != null) {
@@ -162,7 +162,7 @@ public class ProjectInvolveManager {
 			if (isProjectInvolved()) {
 				String cookie = getUserSign("", "1");
 				try {
-					String getUrl = String.format(properties.getProperty("product_name_get_url"), productId);
+					String getUrl = String.format(properties.getProperty("base_url") + properties.getProperty("product_name_get_url"), productId);
 					String result = URLUtil.sendGet(getUrl, "",cookie);
 					
 					JSONObject jsonObject = JSONArray.parseObject(result);
@@ -212,7 +212,7 @@ public class ProjectInvolveManager {
 		String cookie = getUserSign(userMail,"");
 		if (isProjectInvolved()) {
 			try {
-				String getUrl = ConfigManager.getProInvolvedProperties().getProperty("product_get_url");
+				String getUrl = properties.getProperty("base_url") + properties.getProperty("product_get_url");
 				String result = URLUtil.sendGet(getUrl, "", cookie);
 				
 				JSONArray jsonArray = JSONArray.parseArray(result);
@@ -240,7 +240,7 @@ public class ProjectInvolveManager {
 		Map<String, String> projectMap = new HashMap<String, String>();
 		if (isProjectInvolved()) {
 			try {
-				String getUrl = String.format(properties.getProperty("project_get_by_product_url"), productId);
+				String getUrl = String.format(properties.getProperty("base_url") + properties.getProperty("project_get_by_product_url"), productId);
 				String result = URLUtil.sendGet(getUrl, "", cookie);
 				
 				JSONArray jsonArray = JSONArray.parseArray(result);
@@ -272,7 +272,7 @@ public class ProjectInvolveManager {
 			jsonMap.put("id", userId);
 			String getUrl = "";
 			try {
-				getUrl = String.format(properties.getProperty("user_sign_get_url"), URLEncoder.encode(JSONArray.toJSONString(jsonMap),"UTF-8"));
+				getUrl = String.format(properties.getProperty("base_url") + properties.getProperty("user_sign_get_url"), URLEncoder.encode(JSONArray.toJSONString(jsonMap),"UTF-8"));
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
@@ -308,7 +308,7 @@ public class ProjectInvolveManager {
 		String[] allRoleIds = roleId.split(",");
 		if (isProjectInvolved()) {
 			try {
-				String getUrl = String.format(properties.getProperty("user_get_by_project_and_role"), JSONArray.toJSONString(allRoleIds),projectId);
+				String getUrl = String.format(properties.getProperty("base_url") + properties.getProperty("user_get_by_project_and_role"), JSONArray.toJSONString(allRoleIds),projectId);
 				String result = URLUtil.sendGet(getUrl, "",cookie);
 				JSONArray jsonArray = JSONArray.parseArray(result);
 				for (Object object : jsonArray) {
@@ -348,7 +348,7 @@ public class ProjectInvolveManager {
 		}
 		if (isProjectInvolved()) {
 			try {
-				String getUrl = String.format(properties.getProperty("user_get_by_id_url"), userId);
+				String getUrl = String.format(properties.getProperty("base_url") + properties.getProperty("user_get_by_id_url"), userId);
 				String result = URLUtil.sendGet(getUrl, "",cookie);
 				JSONObject jsonObject = JSONArray.parseObject(result);
 				userInfo = new UserInfoImpl();
@@ -380,7 +380,7 @@ public class ProjectInvolveManager {
 			return false;
 		}
 		if (isProjectInvolved()) {
-			String getUrl = String.format(properties.getProperty("user_right_query_url"),userId,queryStr);
+			String getUrl = String.format(properties.getProperty("base_url") + properties.getProperty("user_right_query_url"),userId,queryStr);
 			String result = URLUtil.sendGet(getUrl, "",cookie);
 			return Boolean.parseBoolean(result);
 		}
@@ -401,7 +401,7 @@ public class ProjectInvolveManager {
 		String cookie = getUserSign(userMail,"");
 		if (isProjectInvolved()) {
 			try {
-				String getUrl = String.format(properties.getProperty("user_get_by_mail_url"), userMail);
+				String getUrl = String.format(properties.getProperty("base_url") + properties.getProperty("user_get_by_mail_url"), userMail);
 				String result = URLUtil.sendGet(getUrl, "",cookie);
 				JSONObject jsonObject = JSONArray.parseObject(result);
 				userInfo = new UserInfoImpl();
@@ -467,7 +467,7 @@ public class ProjectInvolveManager {
 			try {
 				Set<String> allBackUsers = ProjectInvolveManager.getInstance().getAllBackUserMails(userMail);
 				
-				String getUrl = properties.getProperty("get_company_user_url");
+				String getUrl = properties.getProperty("base_url") + properties.getProperty("get_company_user_url");
 				String result = URLUtil.sendGet(getUrl, "",cookie);
 				
 				JSONArray jsonArray = JSONArray.parseArray(result);
@@ -542,7 +542,7 @@ public class ProjectInvolveManager {
 		String cookie = getUserSign(userMail,"");
 		if (isProjectInvolved()) {
 			try {
-				String getUrl = String.format(properties.getProperty("right_users_url"), "cynthia_entryConfig");
+				String getUrl = String.format(properties.getProperty("base_url") + properties.getProperty("right_users_url"), "cynthia_entryConfig");
 				String result = URLUtil.sendGet(getUrl, "",cookie);
 				JSONArray jsonArray = JSONArray.parseArray(result);
 				for (Object object : jsonArray) {
@@ -585,10 +585,10 @@ public class ProjectInvolveManager {
 		String cookie = getUserSign("","1");
 		if (ConfigManager.getProjectInvolved()) {
 			try {
-				String mailPostUrl = ConfigManager.getProInvolvedProperties().getProperty("mail_post_url");
+				String mailPostUrl = properties.getProperty("base_url") + properties.getProperty("mail_post_url");
 				Map<String, Object> mailParams = new HashMap<String, Object>();
 //				mailParams.put("userId", userId);
-				mailParams.put("appName", "缺陷管理");
+				mailParams.put("appName", "Bug管理");
 				mailParams.put("recommendConsumer", new String[]{"mail"});
 				
 				List<Map<String, String>> toMailList = new ArrayList<Map<String,String>>();
@@ -613,8 +613,7 @@ public class ProjectInvolveManager {
 	}
 	
 	public static void main(String[] args){
-		System.out.println(new ProjectInvolveManager().getUserInfoById("679"));
-//		new ProjectInvolveManager().sendMail("liming@sogou-inc.com","测试邮件", new String[]{"liming@sogou-inc.com"}, "这是一封测试邮件");
+		System.out.println(new ProjectInvolveManager().getProductMap("liming@sogou-inc.com"));
 	}
 	
 }

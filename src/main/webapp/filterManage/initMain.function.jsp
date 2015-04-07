@@ -165,7 +165,7 @@
 			
 			List<UserInfo> allAssignUserList = new ArrayList<UserInfo>();
 			
-			if (template.isProTemplate()) {
+			if (template.getTemplateConfig().isProjectInvolve()) {
 				allAssignUserList = ProjectInvolveManager.getInstance().getCompanyUsersByMail(das.getUsername());
 			}else{
 				Set<String> assignUserSet = new HashSet<String>();
