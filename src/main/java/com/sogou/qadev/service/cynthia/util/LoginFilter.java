@@ -102,7 +102,7 @@ public class LoginFilter implements Filter {
 	
 		String requestURI = httpRequest.getRequestURI();
 		
-		if (ConfigManager.deployUrl == null || (!ConfigManager.getProjectInvolved() && CookieManager.getCookieByName(httpRequest, "webRootDir") == null)) {
+//		if (ConfigManager.deployUrl == null || (!ConfigManager.getProjectInvolved() && CookieManager.getCookieByName(httpRequest, "webRootDir") == null)) {
 			ConfigManager.deployPath = httpRequest.getContextPath();
 			ConfigManager.deployUrl = httpRequest.getHeader("Origin");
 			ConfigManager.deployScheme = httpRequest.getScheme();
@@ -112,7 +112,7 @@ public class LoginFilter implements Filter {
 			}
 			ConfigManager.deployUrl = ConfigManager.deployUrl.replace("http://", "");
 			CookieManager.addCookie(httpResponse, "webRootDir", ConfigUtil.getCynthiaWebRoot(),  60 * 60 * 24 * 14 ,null);
-		}
+//		}
 		
 		for (String magicUrl : magicUrlSet) {
 			if (requestURI.contains(magicUrl)) {

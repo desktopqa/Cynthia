@@ -117,10 +117,13 @@ public class ConfigUtil {
 		taskProcessorJspMap.put("Task", "newTask.jsp");
 	}
 
+	private static String getHostUrl(){
+		return ConfigManager.deployScheme + "://" + ConfigManager.deployUrl;
+	}
+	
 	public static String getCynthiaWebRoot() {
 		StringBuffer webRootBuffer = new StringBuffer();
-		webRootBuffer.append(ConfigManager.deployScheme).append("://");
-		webRootBuffer.append(ConfigManager.deployUrl);
+		webRootBuffer.append(getHostUrl());
 		if (ConfigManager.deployPath != null && !ConfigManager.deployPath.equals("")) {
 			webRootBuffer.append(ConfigManager.deployPath + "/");
 		}else {
@@ -134,7 +137,8 @@ public class ConfigUtil {
 		if(!CynthiaUtil.isNull(requestURI)){
 			requestURI = requestURI.substring(1);
 		}
-		String targetUrl = ConfigUtil.getCynthiaWebRoot() + requestURI + (request.getQueryString() != null ? "?" + request.getQueryString() : "" );
+		
+		String targetUrl = getHostUrl() + "/" + requestURI + (request.getQueryString() != null ? "?" + request.getQueryString() : "" );
 		try {
 			return URLEncoder.encode(targetUrl,"UTF-8");
 		} catch (UnsupportedEncodingException e) {

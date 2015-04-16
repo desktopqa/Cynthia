@@ -335,7 +335,7 @@ public class UserController extends BaseController{
 	@RequestMapping("/setWebRootDir.do")
 	@ResponseBody
 	public String setWebRootDir(HttpServletRequest request, HttpServletResponse response ,HttpSession session) throws Exception {
-		CookieManager.addCookie(response, "webRootDir", ConfigUtil.getCynthiaWebRoot(),  60 * 60 * 24 * 14 ,ConfigManager.deployUrl);
+		CookieManager.addCookie(response, "webRootDir", ConfigUtil.getCynthiaWebRoot(),  60 * 60 * 24 * 14 , null);
 		return "true";
 	}
 	

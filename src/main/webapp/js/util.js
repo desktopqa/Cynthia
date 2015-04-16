@@ -25,20 +25,26 @@ var noAddHeadUrl = new Array();
 noAddHeadUrl.push('login.jsp');
 noAddHeadUrl.push('register.jsp');
 
-//全局的AJAX访问，处理AJAX清求时SESSION超时  
-$.ajaxSetup({  
-	crossDomain : true,
-    xhrFields: {
-        withCredentials: true
-    },
-	statusCode: {
-		401: function (data) {
-			if(window.location.href.indexOf("login.jsp") == -1){
-				window.location.href = data.responseText; 
-			}
-        }
-    }
-});  
+//全局的AJAX访问，处理AJAX请求时SESSION超时  
+if ($.ajaxSetup) {
+	$.ajaxSetup({  
+//		crossDomain : true,
+	    xhrFields: {
+	        withCredentials: true
+	    },
+	    beforeSend: function (xhr) {
+            var match = window.document.cookie.match(/(?:^|\s|;)XSRF-TOKEN\s*=\s*([^;]+)(?:;|$)/);
+            xhr.setRequestHeader("X-XSRF-TOKEN", match && match[1]);
+        },
+		statusCode: {
+			401: function (data) {
+				if(window.location.href.indexOf("login.jsp") == -1){
+					window.location.href = data.responseText; 
+				}
+	        }
+	    }
+	});  
+}
 
 
 window.cynthia = {
@@ -447,7 +453,7 @@ cynthia.util = {
 		{
 			if(isShow){
 				if($("#layout").length == 0){
-					var info="<div id=\"layout\" style=\"display: none;position: absolute;top:40%;left: 40%;width: 20%;height: 20%;z-index: 999999;\"><img src=\"/images/refresh.gif\"/></div>";
+					var info="<div id=\"layout\" style=\"display: none;position: absolute;top:40%;left: 40%;width: 20%;height: 20%;z-index: 999999;\"><img src=\"" + base_url + "images/refresh.gif\"/></div>";
 					$("body").append(info);
 				}
 				$('#layout').fadeIn("fast");
@@ -689,6 +695,15 @@ function searchItem(searchId, searchContent,value)
 			else
 				$(node).hide();
 		});
+	}
+}
+
+if (!Array.prototype.indexOf) {
+	Array.prototype.indexOf = function(obj, start) {
+	     for (var i = (start || 0), j = this.length; i < j; i++) {
+	         if (this[i] === obj) { return i; }
+	     }
+	     return -1;
 	}
 }
 

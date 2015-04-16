@@ -18,7 +18,6 @@ function initUserList(userStat,userName)
 	$.ajax({
 		url : 'user/get_user_admin_xml.jsp',
 		type : 'POST',
-		dataType:'text',
 		data:{'initUser':true,'userStat':userStat,'userName':userName},
 		success : onInitUserListAjax,
 		error : function(data){
@@ -31,9 +30,7 @@ function onInitUserListAjax(rootNode)
 {
 	userRole = $(rootNode).find("curUserRole").text();
 	users = new Array();
-	
 	var gridHtml = "";
-	
 	$(rootNode).find("users").children("user").each(function(idx,node){
 		var id = $(node).children("id").text();
 		users[id] = new Object();
@@ -121,7 +118,7 @@ function changeStat(user,changeToStat)
 					$.ajax({
 						url : base_url + 'mail/executeSendMail.jsp',
 						data : params,
-						type : 'POST',
+						type : 'POST'
 					});
 				}	
 				
@@ -330,7 +327,7 @@ function addUser()
 			$.ajax({
 				url : base_url + 'mail/executeSendMail.jsp',
 				data : params,
-				type : 'POST',
+				type : 'POST'
 			});
 			initUserList();
 		}

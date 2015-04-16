@@ -47,7 +47,7 @@ function onInitTemplateListAjax(rootNode)
 {
 	eval("var isError   = " + $(rootNode).find("isError").text());
 	var userRole = $(rootNode).find("userRole").text();
-
+	
 	templates = new Array();
 	templateTypes = new Array();
 	flows = new Array();
