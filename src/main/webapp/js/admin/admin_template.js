@@ -240,6 +240,7 @@ function displayCreateDiv(projectInvolve)
 	$("#select_copyTemplateId")[0].options[0] = new Option("请选择", "");
 	
 	$("#select_flowId").empty();
+	$("#select_flowId")[0].options[0] = new Option("请选择", "");
 	for(var i = 0; i < flows.length; i++){
 		if((projectInvolve && flows[i].isProFlow != 'true') || (!projectInvolve && flows[i].isProFlow == 'true'))
 			continue;

@@ -1092,7 +1092,7 @@ function bindClickEvents()
 	/*display all filters*/
 	$("#allFiltersIcon").click(allFiltersIconClick);
 	$("#ul-tag").delegate('.tag', 'click', myTagClick);
-	$("#searchBtn").click(onDataSearch);
+	$(document).delegate('#searchBtn','click',onDataSearch);
 	$("#my-tag-link").click(tagExpandIconClik);
 	$("#tagConfigIcon").click(tagConfigIconClick);
 	$("#openTemplate").click(openDefaultTemplate);
@@ -1342,7 +1342,7 @@ function bindHoverEvents()
 function bindKeyDown()
 {
 	//搜索
-	$("#searchWord").keydown(function(e){
+	$(document).on('keydown','#searchWord',function(e){
 		if(e.keyCode==13){
 		   onDataSearch(); //处理事件
 		}

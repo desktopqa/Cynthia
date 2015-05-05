@@ -68,7 +68,8 @@ public class DataController extends BaseController{
 		}
 		
 		response.addHeader( "Access-Control-Allow-Origin", "*" ); // open your api to any client 
-		response.addHeader( "Access-Control-Allow-Methods", "GET" ); // a allow post
+		response.addHeader( "Access-Control-Allow-Methods", "GET" ); // a allow get
+		response.addHeader( "Access-Control-Allow-Methods", "POST" ); // a allow post
 		response.addHeader( "Access-Control-Max-Age", "1000" ); // 
 		
 		return JSONArray.toJSONString(returnMap);

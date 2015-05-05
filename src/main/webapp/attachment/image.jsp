@@ -8,12 +8,13 @@
 	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
 	<meta http-equiv="description" content="This is my page">
   </head>
+	<script type="text/javascript" src='../lib/jquery/jquery-1.9.3.min.js'></script>
   <script type="text/javascript" src='../js/util.js'></script>
   
   <script type="text/javascript">
   	function displayImage(fileId)
   	{
-  		document.getElementById("image").src = base_url + "attachment/download.jsp?method=download&id="+fileId;
+  		document.getElementById("image").src = "./download.jsp?method=download&id="+fileId;
   	}
   </script>
   <body onload="displayImage(<%=request.getParameter("fileId") %>)">

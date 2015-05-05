@@ -93,6 +93,29 @@
   </div>
 </div>
 
+<!--修改角色名字 -->
+<div id="modifyRoleDiv" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h5>修改角色名字</h5>
+  </div>
+  <div class="modal-body">
+  	<form class="form-horizontal">
+  		<div class="control-group">
+		    <label class="control-label" for="modify_role_name">角色名称:</label>
+		    <div class="controls">
+		   	    <input type="text" id="modify_role_name" />
+		    </div>
+		</div>
+  	</form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    <button class="btn btn-primary" onclick="modifyUserRole()">确定</button>
+  </div>
+  <input type="hidden" id = "modify_role_id" />
+</div>
+
 <!-- 新建用户 -->
 <div id="addUserDiv" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tag modal" aria-hidden="true">
   <div class="modal-header">

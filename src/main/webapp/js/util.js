@@ -26,7 +26,7 @@ noAddHeadUrl.push('login.jsp');
 noAddHeadUrl.push('register.jsp');
 
 //全局的AJAX访问，处理AJAX请求时SESSION超时  
-if ($.ajaxSetup) {
+if (window.$ && $.ajaxSetup) {
 	$.ajaxSetup({  
 //		crossDomain : true,
 	    xhrFields: {

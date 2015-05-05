@@ -51,10 +51,6 @@ public class WebServiceController extends BaseController{
 	@ResponseBody
 	@RequestMapping("/importData.do")
 	public String importData(HttpServletRequest request , HttpServletResponse response, HttpSession httpSession) throws Exception {
-		response.addHeader( "Access-Control-Allow-Origin", "*" ); // open your api to any client 
-		response.addHeader( "Access-Control-Allow-Methods", "POST" ); // a allow post
-		response.addHeader( "Access-Control-Max-Age", "1000" ); // 
-		
 		List<Map<String, String>> allImportDataList = new ArrayList<Map<String,String>>();
 		String jsonData = request.getParameter("importDatas");
 		JSONArray jsonArray = JSONArray.parseArray(jsonData);

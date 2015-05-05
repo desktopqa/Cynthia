@@ -51,7 +51,7 @@ function onInitTemplateListAjax(rootNode)
 		templates[idx].isProTemplate = $(node).children("isProTemplate").text();
 		
 		if((!optionRightControl  || userRole === "super_admin" || $.inArray(templates[idx].id, allTemplateRight) != -1) &&
-				( !isProjectInvolved || (isProjectInvolved && !templates[idx].isProTemplate == 'true')))
+				( !isProjectInvolved || (isProjectInvolved && !templates[idx].isProTemplate != 'true')))
 			gridHtml += "<option value=\"" + idx+"\">" + templates[idx].name + "</option>";
 	});
 	
@@ -91,7 +91,8 @@ function initFlowRoles()
 					gridHtml += "<td>-</td>";
 				}
 				else{
-					gridHtml += "<td>" + data.allRole[i].fieldName +"</td>";
+//					gridHtml += "<td>" + data.allRole[i].fieldName +"</td>";
+					gridHtml += "<td><a href=\"#\" onClick=\"modifyRoleDiv('" + data.allRole[i].fieldId + "','" + data.allRole[i].fieldName + "')\">" +data.allRole[i].fieldName+ "</a></td>";
 					gridHtml += "<td><a href=\"#\" onClick=\"removeRole('" + data.allRole[i].fieldId + "')\">删除</a></td>";
 					gridHtml += "<td><a href=\"#\" onClick=\"editRoleUsers('" + data.allRole[i].fieldId + "')\">管理</a></td>";
 				}
@@ -102,6 +103,50 @@ function initFlowRoles()
 		error:function(msg){
 		}
 	});
+}
+
+//修改角色名称初始化修改框
+function modifyRoleDiv(roleId, roleName)
+{
+	$("#modify_role_id").val(roleId);
+	$("#modify_role_name").val(roleName);
+	$("#modifyRoleDiv").modal('show');
+}
+
+function modifyUserRole()
+{
+	var roleName = $("#modify_role_name").val();
+	var roleId = $("#modify_role_id").val();
+	if(roleName === ""){
+		alert("角色名称不能为空!");
+		return;
+	}
+	var index = $("#select_template").val();
+	var flowId = templates[index].flowId;
+	
+	$.ajax({
+		url:'flow/modify_Role_xml.jsp',
+		type:'post',
+		data:{'id':roleId,'flowId':flowId,'name':roleName},
+		success:onCompleteModifyRole,
+		error:function(){
+			alert("删除失败!");
+			return;
+		}
+	});
+}
+
+function onCompleteModifyRole(request)
+{
+	var isErrorNode = $(request).find("isError");
+	eval("var isError = " + $(isErrorNode).text());
+	if(isError)
+	{
+		alert("修改失败！");
+		return;
+	}
+	$("#modifyRoleDiv").modal('hide');
+	initFlowRoles();
 }
 
 function removeRole(roleId){
