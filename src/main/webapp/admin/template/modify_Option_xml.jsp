@@ -1,3 +1,4 @@
+<%@page import="com.sogou.qadev.service.cynthia.util.CynthiaUtil"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.ErrorManager.ErrorType"%>
 <%@page import="com.sogou.qadev.service.cynthia.service.ErrorManager"%>
 <%@page import="java.util.Date"%>
@@ -81,7 +82,7 @@
 		tol.setFieldId(field.getId().getValue());
 		tol.setFieldName(field.getName());
 		tol.setOperateType(TemplateOperateLog.MODIFY);
-		tol.setCreateTime(Timestamp.valueOf(com.sogou.qadev.service.cynthia.util.Date.valueOf(new Date().toLocaleString()).toTimestamp().toString()));
+		tol.setCreateTime(Timestamp.valueOf(CynthiaUtil.toLocalDateString(null)));
 		tol.setCreateUser(key.getUsername());
 		tol.setBefore(fieldXmlBefore);
 		tol.setAfter(field.toXMLString());

@@ -52,11 +52,6 @@ public class BatchModifyController extends BaseController{
 			return "";
 		}
 		
-		String filterIdStr = request.getParameter("filterId");
-		if(filterIdStr == null){
-			return "";
-		}
-		
 		UUID[] dataIdArray = new UUID[dataIdStrArray.length];
 		for(int i = 0; i < dataIdArray.length; i++){
 			dataIdArray[i] = DataAccessFactory.getInstance().createUUID(dataIdStrArray[i]);
@@ -104,11 +99,6 @@ public class BatchModifyController extends BaseController{
 		
 		String[] dataIdStrArray = request.getParameterValues("dataIds[]");
 		if(dataIdStrArray == null || dataIdStrArray.length == 0){
-			return "";
-		}
-		
-		String filterIdStr = request.getParameter("filterId");
-		if(filterIdStr == null){
 			return "";
 		}
 		

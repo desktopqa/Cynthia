@@ -39,7 +39,7 @@ public class Date implements Comparable<Date>, Serializable {
 			try {
 				DateFormat df = new SimpleDateFormat(formatStr);
 				java.util.Date date1 = df.parse(dateStr);
-				timestampStr = date1.toLocaleString();
+				timestampStr = CynthiaUtil.toLocalDateString(date1);
 			} catch (Exception e) {
 				System.err.println("error in date.java valueOf -- java.text.ParseException: Unparseable date: "+ dateStr);
 			}
@@ -195,6 +195,7 @@ public class Date implements Comparable<Date>, Serializable {
 			return Timestamp.valueOf(timeStr);
 		}else {
 			dateStr = checkValue(dateStr);
+			System.out.println("date format str in Date.java :" + dateStr);
 			return Timestamp.valueOf(dateStr);
 		}
 	}

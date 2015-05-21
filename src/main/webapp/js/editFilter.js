@@ -147,7 +147,7 @@ function onCompleteInitFilterPage(data,textStatus)
 	
 	//字段间关系
 	eval("isAnd = "+$(queryNode).find("isAnd").text());
-	$("#input_and , #input_or").attr("checked", isAnd ? true : false);
+	$("#input_and").attr("checked", isAnd ? true : false);
 	
 	//定时器管理
 	$("#timer_div").hide();	
@@ -522,15 +522,6 @@ function getFilterParams(){
 		{
 			alert("[日期]和[周几]至少要选中一个选项");
 			return;
-		}
-		var daySL = document.getElementById("day");
-		if ( daySL!=null && daySL.selectedIndex < 0 )
-		{
-			//选中所有的day
-			for ( var i=0; i<daySL.options.length; i++ )
-			{
-				daySL.options[i].selected=true;
-			}
 		}
 		
 		var	hourSL	= document.getElementById( "hour" );

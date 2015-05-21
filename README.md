@@ -1,4 +1,4 @@
-问题管理 BUG管理 任务管理 项目管理系统Cynthia
+﻿问题管理 BUG管理 任务管理 项目管理系统Cynthia
 =============================================
 		Cynthia提供了一个基于Web的、开源的、跨平台的软件项目管理和问题管理的解决方案。通过极大的灵活度，实现了特殊性和普遍性的统一。
 		它提供了强大的自定义配置功能，用户能够根据自己的实际情况配置问题的流转和数据模板，它同时内置了强大的Cache模块提高数据的访问效率。
@@ -37,7 +37,7 @@
 		
 	手动部署：
 		本单主要介绍如何部署cynthia服务(以tomcat为例)：
-		1. 线上下载cynthia.war包  或者地址：http://git.oschina.net/cynthia/Cynthia/blob/master/Cynthia.war
+		1. 线上下载cynthia.war包  或者地址：http://git.oschina.net/cynthia/Cynthia/blob/master/cynthia.war
 		2. 将下载的cynthia.war包  放在tomcat的webapps目录下面
 		3. 新建数据库命名为cynthia，导入docs目录下的cynthia.sql文件 , 请在新建数据库和导入sql文件是务必选择utf-8编码！
 		4. 启动tomcat应用,tomcat会自动解压Cynthia.war包 为Cynthia文件夹

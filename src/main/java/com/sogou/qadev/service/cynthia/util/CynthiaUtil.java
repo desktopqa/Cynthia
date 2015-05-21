@@ -410,6 +410,13 @@ public class CynthiaUtil {
 			}
 			return ArrayUtil.strArray2String(alias.toArray(new String[0]));
 		}
-    	
+    }
+    
+    public static String toLocalDateString(Date date) {
+    	if(date == null) {
+    		date = new java.util.Date();
+    	}
+    	SimpleDateFormat datetime=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	return datetime.format(date);
     }
 }

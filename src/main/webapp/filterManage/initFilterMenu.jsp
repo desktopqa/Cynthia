@@ -220,6 +220,9 @@ String getFolderXMLString(int nodeId,DataAccessSession das,String userName , Map
 	xmlb.append("</favorites>");
 	
 	xmlb.append("<username>");
+	
+	System.out.println(key.getUsername());
+	
 	xmlb.append(CynthiaUtil.getUserAlias(key.getUsername()));
 	xmlb.append("</username>");
 	xmlb.append("</root>");

@@ -35,6 +35,7 @@ import com.sogou.qadev.service.cynthia.bean.impl.ActionImpl;
 import com.sogou.qadev.service.cynthia.dao.DataAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.factory.DataAccessFactory;
 import com.sogou.qadev.service.cynthia.service.ErrorManager.ErrorType;
+import com.sogou.qadev.service.cynthia.util.Date;
 import com.sogou.qadev.service.cynthia.util.XMLUtil;
 
 public class DataManager
@@ -888,8 +889,8 @@ public class DataManager
 		
 		Timestamp startTimestamp = null;
 		try {
-			startTimestamp = new Timestamp(new SimpleDateFormat("yyyy-MM-dd").parse(java.sql.Date.valueOf(startTime).toLocaleString()).getTime());
-		} catch (ParseException e) {
+			startTimestamp = Date.valueOf(startTime).toTimestamp();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		if(startTimestamp == null)
@@ -957,8 +958,8 @@ public class DataManager
 		
 		Timestamp startTimestamp = null;
 		try {
-			startTimestamp = new Timestamp(new SimpleDateFormat("yyyy-MM-dd").parse(java.sql.Date.valueOf(startTime).toLocaleString()).getTime());
-		} catch (ParseException e) {
+			startTimestamp = Date.valueOf(startTime).toTimestamp();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		if(startTimestamp == null)
@@ -967,8 +968,8 @@ public class DataManager
 		Timestamp endTimestamp = null;
 		if (endTime != null) {
 			try {
-				endTimestamp = new Timestamp(new SimpleDateFormat("yyyy-MM-dd").parse(java.sql.Date.valueOf(endTime).toLocaleString()).getTime());
-			} catch (ParseException e) {
+				endTimestamp = Date.valueOf(endTime).toTimestamp();
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import com.sogou.qadev.service.cynthia.bean.UUID;
 import com.sogou.qadev.service.cynthia.bean.impl.UUIDImpl;
+import com.sogou.qadev.service.cynthia.dao.DataAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.dao.UUIDAccessSessionMySQL;
 import com.sogou.qadev.service.cynthia.service.DataAccessSession;
 import com.sogou.qadev.service.cynthia.service.impl.DataAccessSessionMemory;
@@ -47,6 +48,12 @@ public class DataAccessFactory
 	public synchronized UUID newUUID(String str)
 	{
 		String newUUIDStr = new UUIDAccessSessionMySQL().add(str);
+		return createUUID(newUUIDStr);
+	}
+	
+	public synchronized UUID newDataUUID(String templateId)
+	{
+		String newUUIDStr = new DataAccessSessionMySQL().createUUID(templateId);
 		return createUUID(newUUIDStr);
 	}
 	

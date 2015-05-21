@@ -57,6 +57,8 @@ String checkXML(String xml, String encode) throws Exception{
 	
 	String xml = null;
 		
+	System.out.println(key.getUsername());
+	
 	Template[] templateArray  = DataManager.getInstance().queryUserTemplates(key.getUsername());
 		
 	StringBuffer xmlb = new StringBuffer(64);

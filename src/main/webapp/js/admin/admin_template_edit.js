@@ -318,9 +318,10 @@ function onInitTemplateEditComplete(response)
 	
 	$(roleNodes).each(function(idx,roleNode){
 		if($(roleNode).children("id").text() != '82') {  //everyone取消
-			roles[idx] = new Object();
-			roles[idx].id = $(roleNode).children("id").text();
-			roles[idx].name = $(roleNode).children("name").text();
+			roles[roles.length] = {
+					id : $(roleNode).children("id").text(),
+					name : $(roleNode).children("name").text()
+			};
 		}
 	});
 	

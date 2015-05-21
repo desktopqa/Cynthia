@@ -323,8 +323,8 @@ abstract public class AbstractDataAccessSession implements DataAccessSession
 		Template template = queryTemplate(templateId);
 		if (template == null)
 			return null;
-
-		UUID dataId = DataAccessFactory.getInstance().newUUID("DATA");
+		
+		UUID dataId = DataAccessFactory.getInstance().newDataUUID(template.getId().getValue());
 		newUUIDTable.put(dataId, false);
 		DataImpl data = new DataImpl(dataId, templateId, getUsername(), new Timestamp(System.currentTimeMillis()));
 
@@ -338,7 +338,7 @@ abstract public class AbstractDataAccessSession implements DataAccessSession
 		if(data == null)
 			return null;
 		
-		UUID newDataId = DataAccessFactory.getInstance().newUUID("DATA");
+		UUID newDataId = DataAccessFactory.getInstance().newDataUUID(templateId.getValue());
 		newUUIDTable.put(newDataId, false);
 		
 		DataImpl newData = new DataImpl(newDataId, data.getTemplateId(), data.getCreateUsername(), data.getCreateTime());

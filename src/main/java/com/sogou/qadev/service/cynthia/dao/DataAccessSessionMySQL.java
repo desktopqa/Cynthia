@@ -89,14 +89,11 @@ public class DataAccessSessionMySQL {
 		PreparedStatement pStat = null;
 
 		StringBuffer sqlBuffer = new StringBuffer();
-		sqlBuffer.append("insert ignore into ").append(tableName).append(" (");
+		sqlBuffer.append("replace into ").append(tableName).append(" (");
 
 		Iterator<Map.Entry<String, String>> iterator = fieldValueMap.entrySet().iterator();  //去掉空列表
 		while (iterator.hasNext()) {
 			Map.Entry<String,String> entry = iterator.next();
-			if (entry.getKey() == null) {
-				System.err.println("find it!");
-			}
 			if (entry == null || entry.getKey() == null || entry.getKey().equals("")) {
 				iterator.remove();
 			}
@@ -105,7 +102,6 @@ public class DataAccessSessionMySQL {
 			return false;
 		}
 
-		
 		for (String fieldName : fieldValueMap.keySet()) {
 			sqlBuffer.append(fieldName).append(",");
 		}
@@ -986,7 +982,12 @@ public class DataAccessSessionMySQL {
 
 			String fieldColName = FieldNameCache.getInstance().getFieldName(field.getId(),template.getId());
 			if (fieldColName != null && fieldColName.length() > 0) {
-				dataSaveDBMap.put(fieldColName, fieldValue);
+				if (field.getType().equals(Type.t_selection) && field.getDataType().equals(DataType.dt_single)
+						&& fieldValue != null && fieldValue.equals("")) {
+					dataSaveDBMap.put(fieldColName, null);
+				}else {
+					dataSaveDBMap.put(fieldColName, fieldValue);
+				}
 			}
 		}
 
@@ -1554,5 +1555,35 @@ public class DataAccessSessionMySQL {
 		}
 		
 		return queryDatas(sqlBuffer.toString(), needLog, templateId);
+	}
+
+	/**
+	 * @description:get a new uuid
+	 * @date:2014-5-6 下午6:05:08
+	 * @version:v1.0
+	 * @param templateId 表单id
+	 * @return
+	 */
+	public synchronized String createUUID(String templateId) {
+		Connection conn = null;
+		PreparedStatement ptmt = null;
+		ResultSet rs = null;
+		try {
+			conn = DbPoolConnection.getInstance().getConnection();
+			ptmt = conn.prepareStatement("insert into data (templateId) values(?)",Statement.RETURN_GENERATED_KEYS);
+			ptmt.setString(1, templateId);
+			ptmt.execute();
+			rs = ptmt.getGeneratedKeys();
+			if (rs.next()) {
+				return String.valueOf(rs.getInt(1));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			DbPoolConnection.getInstance().closeResultSet(rs);
+			DbPoolConnection.getInstance().closeStatment(ptmt);
+			DbPoolConnection.getInstance().closeConn(conn);
+		}
+		return "";
 	}
 }
