@@ -53,14 +53,11 @@ function checkUser()
 		type:'POST',
 		dataType:'text',
 		success:function(data){
-			if(data === "true")
-			{
+			if(data === "true") {
 				$("#mailInfo").text("该邮箱己被注册");
 				$("#userMail").focus();
 				return;
-			}
-			else
-			{
+			}else {
 				$("#mailInfo").text("邮箱名可用");
 			}
 		}

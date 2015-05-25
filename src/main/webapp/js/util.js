@@ -38,7 +38,7 @@ if (window.$ && $.ajaxSetup) {
         },
 		statusCode: {
 			401: function (data) {
-				if(window.location.href.indexOf("login.jsp") == -1){
+				if(window.location.href.indexOf("login.jsp") == -1 ){
 					window.location.href = data.responseText; 
 				}
 	        }
@@ -1599,8 +1599,11 @@ function queryUserInfo(callback)
 
 function checkLogin()
 {
-	addCnzzStatic(); 
 	var userMail = readCookie("login_username");
+	addCnzzStatic(); 
+	if(window.location.href.indexOf('login.jsp') > 0 || window.location.href.indexOf('register.jsp') > 0) {
+		return;
+	}
 	$.ajax({
 		url: base_url + 'user/getUserInfo.do',
 		type:'POST',
@@ -1613,7 +1616,7 @@ function checkLogin()
 				createCookie("login_username=" + user.userName);
 				addHeadHtml(user); //添加头部导航条
 			}else{
-				if(window.location.href.indexOf('/userInfo/login.jsp') == -1){
+				if(window.location.href.indexOf('/userInfo/login.jsp') == -1 || window.location.href.indexOf('/userInfo/register.jsp') == -1){
 					//cookie失效重新跳转到登录页
 					var url = base_url + 'user/logout.do?isReturn=false&targetUrl=' + encodeURIComponent( window.location.href );
 					window.parent ? window.parent.location.href = url : window.location.href = url;

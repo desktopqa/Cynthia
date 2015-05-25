@@ -147,7 +147,11 @@ function onCompleteInitFilterPage(data,textStatus)
 	
 	//字段间关系
 	eval("isAnd = "+$(queryNode).find("isAnd").text());
-	$("#input_and").attr("checked", isAnd ? true : false);
+	if(isAnd) {
+		$("#input_and").attr("checked", true);
+	}else{
+		$("#input_or").attr("checked", true);
+	}
 	
 	//定时器管理
 	$("#timer_div").hide();	
