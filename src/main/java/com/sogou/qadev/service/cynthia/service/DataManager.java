@@ -693,6 +693,51 @@ public class DataManager
 	}
 	
 	/**
+	 * @description:查询用户可查看权限表单
+	 * @date:2014-9-3 下午2:30:13
+	 * @version:v1.0
+	 * @param templateTypeId
+	 * @param das
+	 * @return
+	 */
+	public Template[] queryUserReadableTemplates(String userMail)
+	{
+		if (ConfigManager.getProjectInvolved()) {
+			return queryUserTemplates(userMail);
+		}else {
+			Template[] templateArray = das.queryAllTemplates();
+			if(templateArray == null || templateArray.length == 0)
+				return new Template[0];
+
+			Set<Template> templateSet = new LinkedHashSet<Template>();
+			for(Template template : templateArray)
+			{
+				
+				Flow flow = das.queryFlow(template.getFlowId());
+				if(flow == null)
+					continue;
+				
+				if(flow.isRoleReadAction(Role.everyoneUUID))
+				{
+					templateSet.add(template);
+					continue;
+				}
+				
+				//其它角色查看
+				List<Role> userRoleList = Arrays.asList(flow.queryUserNodeRoles(userMail, template.getId()));
+				Role[] readActionRoles = flow.queryReadActionRoles();
+				
+				for(Role role : readActionRoles){
+					if(userRoleList.contains(role)){
+						templateSet.add(template);
+					}
+				}
+			}
+			return templateSet.toArray(new Template[0]);
+		}
+	}
+	
+	/**
 	 * @function：
 	 * @modifyTime：2013-9-9 下午6:22:29
 	 * @author：李明

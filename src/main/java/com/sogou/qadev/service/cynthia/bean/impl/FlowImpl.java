@@ -856,6 +856,17 @@ public class FlowImpl implements Flow{
 	}
 	
 	@Override
+	public Set<Action> queryActionsByEndStatId(UUID statId){
+		Set<Action> allActions = new HashSet<Action>();
+		for (Action action : this.getActions()) {
+			if (action.getEndStatId() != null && action.getEndStatId().equals(statId)) {
+				allActions.add(action);
+			}
+		}
+		return allActions;
+	}
+	
+	@Override
 	public String queryNextActionRoleIdsByActionId(UUID actionId){
 		Action action = getAction(actionId);
 		if (action == null) {

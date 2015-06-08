@@ -3,7 +3,6 @@ package com.sogou.qadev.cache;
 import com.sogou.qadev.service.cynthia.bean.BaseType;
 import com.sogou.qadev.service.cynthia.bean.UUID;
 
-
 /**
  * @description:cache interface
  * @author:liming

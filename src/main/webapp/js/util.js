@@ -1612,8 +1612,6 @@ function checkLogin()
 		success:function(user){
 			userPicUrl = user.picUrl || base_url + "images/default_user.png";
 			if(user){
-				createCookie("login_nickname=" + encodeURIComponent(user.nickName));
-				createCookie("login_username=" + user.userName);
 				addHeadHtml(user); //添加头部导航条
 			}else{
 				if(window.location.href.indexOf('/userInfo/login.jsp') == -1 || window.location.href.indexOf('/userInfo/register.jsp') == -1){

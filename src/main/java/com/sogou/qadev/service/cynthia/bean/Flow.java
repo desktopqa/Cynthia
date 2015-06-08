@@ -387,6 +387,15 @@ public interface Flow extends BaseType{
 	public Set<Action> queryActionsByStartStatId(UUID statId);
 	
 	/**
+	 * @Title: queryActionsByEndStatId
+	 * @Description: query all actions by end statId 
+	 * @param statId
+	 * @return
+	 * @return: Set<Action>
+	 */
+	public Set<Action> queryActionsByEndStatId(UUID statId);
+	
+	/**
 	 * @Title: queryActionRoleIds
 	 * @Description: query all role ids by action
 	 * @param actionId

@@ -77,10 +77,6 @@
 			continue;
 		}
 		
-		if(data.getChangeLogs().length == 0){
-			continue;
-		}
-		
 		if(templateMap.get(data.getTemplateId()) == null){
 			Template template = das.queryTemplate(data.getTemplateId());
 			if(template != null)

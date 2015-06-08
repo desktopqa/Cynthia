@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import sun.tools.tree.NewArrayExpression;
+
 import com.alibaba.fastjson.JSONArray;
 import com.sogou.qadev.service.cynthia.bean.Action;
 import com.sogou.qadev.service.cynthia.bean.Data;
@@ -52,6 +54,8 @@ import com.sogou.qadev.service.cynthia.util.ConfigUtil;
 import com.sogou.qadev.service.cynthia.util.CynthiaUtil;
 import com.sogou.qadev.service.cynthia.util.Date;
 import com.sogou.qadev.service.cynthia.util.XMLUtil;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * @description:excel import processor
@@ -693,7 +697,12 @@ public class ExcelImportControllerNew extends BaseController {
 								}
 							}
 							
-							data.setObject("logActionId", null);
+							if (statId != null) {
+								data.setObject("logActionId", new ArrayList<Action>(flow.queryActionsByEndStatId(statId)).get(0).getId());
+							}else{
+								data.setObject("logActionId", null);
+							}
+							
 							data.setStatusId(statId);
 							baseValueMap.put("statusId", new Pair<Object, Object>(null, statId));
 

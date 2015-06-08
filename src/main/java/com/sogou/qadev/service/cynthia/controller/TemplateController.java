@@ -69,7 +69,7 @@ public class TemplateController extends BaseController{
 			queryUser = ((Key)httpSession.getAttribute("key")).getUsername();
 		}
 		
-		Template[] allTemplates = DataManager.getInstance().queryUserTemplates(queryUser);
+		Template[] allTemplates = DataManager.getInstance().queryUserReadableTemplates(queryUser);
 		Map<String, String> allTemplateMap = new HashMap<String, String>();
 		for (Template template : allTemplates) {
 			if (!CynthiaUtil.isNull(isProTemplate) && isProTemplate.equals("true") && !template.getTemplateConfig().isProjectInvolve()) 
