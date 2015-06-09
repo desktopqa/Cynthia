@@ -92,7 +92,7 @@ function onInitTemplateListAjax(rootNode)
 			
 			gridHtml += "<td><a href='#' onclick='displayTemplateUserDiv("+templates[idx].id+")'>管理</a></td>";
 			
-			gridHtml += "<td><a href='#' onclick='displayModifyDiv("+templates[idx].id+")'>修改</a>&nbsp;";
+			gridHtml += "<td><a href='#' onclick='displayModifyDiv("+templates[idx].id+"," + templates[idx].flowId + ")'>修改</a>&nbsp;";
 			//超级管理员具体删除权限
 			if(userRole === "super_admin")
 			{
@@ -323,8 +323,9 @@ function onCompleteAddTemplate(response)
 	initTemplateList();
 }
 
-function displayModifyDiv(templateId)
+function displayModifyDiv(templateId,flowId)
 {
+	
 	for(var i = 0; i < templates.length; i++)
 	{
 		if(templates[i].id != templateId)
@@ -342,6 +343,7 @@ function displayModifyDiv(templateId)
 			flowOption += ">" + getXMLStr(flows[j].name) + "</option>";
 			$("#select_flowId_m").append(flowOption);
 		}
+		$("#select_flowId_m").val(flowId).trigger('change').prop('disabled','true');
 	}
 	$("#modifyTemplateDiv").modal('show');
 }
@@ -367,6 +369,7 @@ function initTemplateMail(templateId,templateName){
 		success : function(data){
 			//已配置的动作
 			actionUsers = data.templateMailOptions.actionUsers;
+			$("#cur_action_id").val('');
 			$('.part_users').hide();
 			templateMailOptions.actionUsers = actionUsers;
 			
@@ -387,10 +390,10 @@ function initTemplateMail(templateId,templateName){
 			var $mailUsers = $("#mail_users");
 			$mailUsers.empty();
 			for(var i in data.roles){
-				$mailUsers.append("<option value=role_" + data.roles[i].id.value + "> " + data.roles[i].name + "</option>");
+				$mailUsers.append("<option class='role-option' value=role_" + data.roles[i].id.value + ">[角色]- " + data.roles[i].name + "</option>");
 			}
 			for(var user in data.users){
-				$mailUsers.append("<option value=" + user + "> " + data.users[user] + "</option>");
+				$mailUsers.append("<option class='user-option' value=" + user + ">[用户]-" + data.users[user] + "</option>");
 			}
 			$("#templateMailCfgDiv").modal('show');
 		}
@@ -599,9 +602,9 @@ function bindEvents()
 	
 	$("#actions_ul").change(function(){
 		$(".part_users").show();
-		if($("#cur_action_id").val())
+		if($("#cur_action_id").val()) {
 			actionUsers[$("#cur_action_id").val()] = $("#mail_users").val() ? $("#mail_users").val().join(",") : '';
-			
+		}
 		var actionId = $(this).val();
 		$("#cur_action_id").val(actionId);
 		$("#mail_users").val(actionUsers[actionId] ? actionUsers[actionId].split(',') : '').trigger('change');
