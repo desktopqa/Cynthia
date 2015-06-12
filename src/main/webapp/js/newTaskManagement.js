@@ -1086,7 +1086,7 @@ function displayQueryTaskPage(fieldId)
 	var filterId = field.defaultValues[0];
 	
 	$.ajax({
-		url: '/template/getAllTemplates.do',
+		url: base_url + 'template/getAllTemplates.do',
 		dataType:'json',
 		success: function(data){
 			var $templateId = $('#searchTemplateId');
@@ -1097,7 +1097,7 @@ function displayQueryTaskPage(fieldId)
 			
 			if(filterId){
 				$.ajax({
-					url: '/filter/getFilterXml.do',
+					url: base_url + 'filter/getFilterXml.do',
 					type :'POST',
 					data: {'filterId':filterId},
 					success: function(filterXml){

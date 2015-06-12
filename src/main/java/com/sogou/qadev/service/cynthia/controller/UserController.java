@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -141,6 +142,12 @@ public class UserController extends BaseController{
 	@ResponseBody
 	public String getUserInfo(HttpServletRequest request, HttpServletResponse response ,HttpSession session) throws Exception {
 		String userId = request.getParameter("userId");
+		if(userId == null || userId.equals("")) {
+			Cookie idCookie = CookieManager.getCookieByName(request, "id");
+			if (idCookie != null) {
+				userId = idCookie.getValue();
+			}
+		}
 		String userMail = request.getParameter("userMail");
 		System.out.println("getUserInfo.do, userId:" + userId + ",userMail:" + userMail );
 		UserInfo userInfo = null;

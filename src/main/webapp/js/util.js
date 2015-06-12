@@ -1599,7 +1599,6 @@ function queryUserInfo(callback)
 
 function checkLogin()
 {
-	var userMail = readCookie("login_username");
 	addCnzzStatic(); 
 	if(window.location.href.indexOf('login.jsp') > 0 || window.location.href.indexOf('register.jsp') > 0) {
 		return;

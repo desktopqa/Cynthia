@@ -36,6 +36,7 @@ import com.alibaba.druid.pool.DruidDataSourceFactory;
 import com.alibaba.druid.pool.DruidPooledConnection;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.mysql.fabric.xmlrpc.base.Value;
 import com.sogou.qadev.service.cynthia.bean.Action;
 import com.sogou.qadev.service.cynthia.bean.ActionRole;
 import com.sogou.qadev.service.cynthia.bean.Flow;
@@ -264,7 +265,6 @@ public class ProjectInvolveManager {
 	 * @return: String
 	 */
 	public String getUserSign(String userMail,String userId){
-		
 		String sign = userSignMap.get(userMail);
 		if (sign == null) {
 			Map<String, String> jsonMap = new HashMap<String, String>();
@@ -277,17 +277,19 @@ public class ProjectInvolveManager {
 				e.printStackTrace();
 			}
 			
-			String result = URLUtil.sendGet(getUrl, "","");
-			System.out.println("getUserSign:" + result);
-			JSONObject jsonObject = JSONArray.parseObject(result);
-			if (jsonObject.getString("success") == "true") {
-				sign = jsonObject.getString("id");
-				if (sign != null && !sign.equals("")) {
-					userSignMap.put(userMail, sign);
+			List<String> cookies = URLUtil.getResponseCookie(getUrl, "","");
+			for (String cookieKey : cookies) {
+			    String[] values = cookieKey.split("=");
+			    if (values[0] != null && values[0].equals("id")) {
+			    	sign = values[1].split(";")[0];
+					if (sign != null && !sign.equals("")) {
+						userSignMap.put(userMail, sign);
+					}
 				}
-			}
+ 			}
 		}
 		
+		System.out.println("getUserSign of " + userMail + " Result:" + sign);
 		return "id=" + sign;
 	}
 	
@@ -402,6 +404,7 @@ public class ProjectInvolveManager {
 		if (isProjectInvolved()) {
 			try {
 				String getUrl = String.format(properties.getProperty("base_url") + properties.getProperty("user_get_by_mail_url"), userMail);
+				System.out.println("getUserInfoByMail,url:" + getUrl);
 				String result = URLUtil.sendGet(getUrl, "",cookie);
 				JSONObject jsonObject = JSONArray.parseObject(result);
 				userInfo = new UserInfoImpl();
@@ -613,7 +616,6 @@ public class ProjectInvolveManager {
 	}
 	
 	public static void main(String[] args){
-		System.out.println(new ProjectInvolveManager().getProductMap("liming@sogou-inc.com"));
+		System.out.println(new ProjectInvolveManager().getAllBackUsers("liming@sogou-inc.com"));
 	}
-	
 }

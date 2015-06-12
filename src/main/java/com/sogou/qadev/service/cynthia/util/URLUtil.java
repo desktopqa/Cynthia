@@ -7,6 +7,11 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import com.lowagie.text.Header;
 
 public class URLUtil {
 	
@@ -81,6 +86,40 @@ public class URLUtil {
         return result;
     }
     
+    /**
+     * 获取响应cookie
+     */
+    public static List<String> getResponseCookie(String url, String params,String cookies) {
+        HttpURLConnection conn = null;
+        List<String> cookieList = null;
+        try {
+            String urlName = url;
+            if (!params.equals("")) {
+            	urlName += "?" + params;
+			}
+            URL realUrl = new URL(urlName);
+            // 打开和URL之间的连接
+            conn = (HttpURLConnection)realUrl.openConnection();
+            // 设置通用的请求属性
+            conn.setRequestProperty("accept", "*/*");
+            conn.setRequestProperty("connection", "Keep-Alive");
+            conn.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)");
+            if (!cookies.equals("")) {
+            	conn.setRequestProperty("Cookie", cookies);
+			}
+            
+            // 建立实际的连接
+            conn.connect();
+            cookieList = conn.getHeaderFields().get("set-cookie");
+        } catch (Exception e) {
+        }finally {
+            if (conn != null) {
+				conn.disconnect();
+			}
+        }
+       
+        return cookieList;
+    }
     
     /**
      * 向指定URL发送POST方法的请求
