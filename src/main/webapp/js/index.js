@@ -2146,6 +2146,7 @@ function initFavoriteFilterMenu(data)
 function openDefaultTemplate(e){
 	var defaultTemplateId = null;
 	var defaultTemplateTypeId = null;
+	var $clickNode = $(this);
 	$.ajax({
 		url:'filterManage/initUserDefaultTemplate.jsp',
 		success:function(data){
@@ -2154,12 +2155,13 @@ function openDefaultTemplate(e){
 			if(defaultTemplateId != null && $.trim(defaultTemplateId) != ''){
 				window.open('taskManagement.html?operation=create&templateId=' +defaultTemplateId + '&templateTypeId=' + defaultTemplateTypeId);
 			}else{
-				$(this).parent().toggleClass("open");
+				$clickNode.parent().toggleClass("open");
 			}
 		}
 	});
 	return false;
 }
+
 /*************菜单处理结束****************/
 
 

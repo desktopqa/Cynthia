@@ -31,10 +31,15 @@
 	DataAccessSession das = DataAccessFactory.getInstance().createDataAccessSession(key.getUsername(), keyId);
 	String userDefaultTemplateId = das.getUserDefaultTemplate(key.getUsername());
 	String templateTypeId = null;
-	if(userDefaultTemplateId!=null&&!"".equals(userDefaultTemplateId))
+	if(userDefaultTemplateId != null && !"".equals(userDefaultTemplateId))
 	{
 		Template template = das.queryTemplate(DataAccessFactory.getInstance().createUUID(userDefaultTemplateId));
-		templateTypeId = template.getTemplateTypeId().toString();	
+		if (template == null) {
+			userDefaultTemplateId = null;
+			templateTypeId = null;
+		}else{
+			templateTypeId = template.getTemplateTypeId().toString();	
+		}
 	}
 	
 	StringBuffer xmlb = new StringBuffer(64);

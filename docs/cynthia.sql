@@ -39,7 +39,7 @@ CREATE TABLE `attachment` (
 -- ----------------------------
 DROP TABLE IF EXISTS `data`;
 CREATE TABLE `data` (
-  `id` int(10) NOT NULL,
+  `id` int(11) NOT NULL auto_increment,
   `templateId` int(50) default NULL,
   `createUser` varchar(50) default NULL,
   `templateTypeId` int(1) default NULL,

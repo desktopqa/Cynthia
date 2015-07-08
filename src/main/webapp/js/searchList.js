@@ -274,6 +274,7 @@ function getDataTr(data,showFields)
 
 function getTitleTd(id, templateId , content)
 {
+	content = content.replace('&amp;','&');
 	var curFilterId = $("#filterId").val();
 	if(curFilterId != "")
 		return "<td style='text-align:left !important'><div class='td-content-nowrap'><a class = 'data-title' href='" + base_url + "taskManagement.html?operation=read&taskid=" +id + "&templateId=" + templateId + "&filterId=" + curFilterId + "'" +" target='_blank' onClick='cleanNewData(" + id + ", " +curFilterId+ ");' >" + content + "</a></div></td>";
