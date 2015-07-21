@@ -1501,6 +1501,7 @@ function getHomeFilter(callback)
 			url: 'filter/getHomeFilter.do',
 			type:'POST',
 			success: function(filterId){
+				filterId = filterId || '119695';
 				$("#filterId").val(trim(filterId || "" ));
 				if(callback) {
 					callback();

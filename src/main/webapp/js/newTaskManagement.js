@@ -1254,17 +1254,26 @@ function getFieldInitValues(field)
 		if(field.type == "selection")
 		{
 			var fieldInitValues = field.defaultValues;
-			defaultValues = allDefaultValueMap.get(field.id);
 			
 			if(controlFieldValue != null && controlFieldValue.length > 0)
 				defaultValues = allDefaultValueMap.get(field.id + "|" + controlFieldValue);
 			else
 				defaultValues = allDefaultValueMap.get(field.id);
-            
+			
+			defaultValues = defaultValues || fieldInitValues;
 			var newFieldInitValues = new Array();
 
 			if(defaultValues != null && defaultValues != ""){
-				fieldInitValues = defaultValues.split("|");
+				fieldInitValues = defaultValues;
+				if(fieldInitValues.indexOf("|") != -1) {
+					fieldInitValues = fieldInitValues.split("|");
+				}
+				
+				if(!(fieldInitValues instanceof Array)) {
+					
+					fieldInitValues = [fieldInitValues];
+				}
+				
 				for(var i = 0; i < fieldInitValues.length; i++)
 				{
 					var contain = false;
@@ -1282,7 +1291,6 @@ function getFieldInitValues(field)
 						newFieldInitValues[newFieldInitValues.length] = fieldInitValues[i];
 				}
 			}
-			
 			return newFieldInitValues;
 		}
 

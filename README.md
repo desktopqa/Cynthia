@@ -48,7 +48,7 @@
 如何升级
 --------
 	Windows版一键升级
-		一键升级包下载地址：http://pan.baidu.com/s/1danTW
+		一键升级包下载地址：http://pan.baidu.com/s/1i3pg1NZ
 	手动升级：
 		1.关闭tomcat服务
 		2.删除tomcat/webapps下Cynthia目录，下载最新的War包到webapps下

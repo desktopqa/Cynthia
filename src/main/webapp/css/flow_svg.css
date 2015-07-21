@@ -29,9 +29,11 @@ body {
 
 .type_change
 {
-	margin-bottom:3px;
-	font-size:13px;
-	margin-left:600px;
+  margin-bottom: 3px;
+  font-size: 13px;
+  margin: 3px auto;
+  width: 200px;
+  overflow: hidden;
 }
 
 .type_change div
@@ -43,7 +45,8 @@ body {
 
 .type_change .active
 {
-	background: rgb(194, 138, 138);;
+ 	background: rgb(194, 138, 138);
+  	color: #fff;
 }
 
 .node {
@@ -110,7 +113,11 @@ body {
 
 #mapContainer {position:relative; margin:0 0 0 20px}
 #mapControls { position: absolute; left: 15px; top: 300px; width: 29px;}
-#search { position: absolute; left: 950px; top: 10px; width: 29px;}
+#search { 
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
 #up { background: url(../images/svg_img/iconUp.png) no-repeat center top; display: block; height: 26px; width: 29px; }
 #down { background: url(../images/svg_img/iconDown.png) no-repeat center top; display: block; height: 27px; width: 29px; }
 

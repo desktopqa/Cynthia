@@ -30,7 +30,7 @@ public class HomeFilterAccessSessionMySQL {
 		PreparedStatement pstm = null;
 		Connection conn = null;
 		ResultSet rs = null;
-		String filterIdStr = "119695";  //默认为待处理
+		String filterIdStr = "";  
 		
 		try
 		{
