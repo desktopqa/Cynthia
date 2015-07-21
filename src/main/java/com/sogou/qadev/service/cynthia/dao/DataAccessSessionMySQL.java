@@ -110,6 +110,7 @@ public class DataAccessSessionMySQL {
 		sqlBuffer.append(") values(");
 
 		for (String fieldName : fieldValueMap.keySet()) {
+			
 			sqlBuffer.append("?,");
 		}
 
@@ -754,9 +755,25 @@ public class DataAccessSessionMySQL {
 			DbPoolConnection.getInstance().closeStatment(stat);
 			DbPoolConnection.getInstance().closeConn(conn);
 		}
-
 	}
 
+	private void removeIdFromDb(String dataId,String templateId) {
+		Connection conn = null;
+		PreparedStatement pstm = null;
+		try {
+			
+			conn = DbPoolConnection.getInstance().getConnection();
+			String tableName = TableRuleManager.getInstance().getDataTableName(DataAccessFactory.getInstance().createUUID(templateId));
+			pstm = conn.prepareStatement("delete from " + tableName + " where id = ?");
+			pstm.setString(1, dataId);
+			pstm.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			DbPoolConnection.getInstance().closeAll(pstm,conn);
+		}
+	}
+	
 	/**
 	 * @description:add data to db
 	 * @date:2014-5-6 下午5:22:37
@@ -778,6 +795,7 @@ public class DataAccessSessionMySQL {
 			boolean isSuccess = insertDataToDB(dataSaveDBMap, tableName, conn);
 			if (!isSuccess) {
 				logger.error("数据无法存储： dataid=" + data.getId().getValue());
+				removeIdFromDb(data.getId().getValue(),data.getTemplateId().getValue());
 				throw new Exception("无法存储");
 			}
 
@@ -936,7 +954,7 @@ public class DataAccessSessionMySQL {
 				}
 			}else if (type == Type.t_reference) {
 				if (dataType == DataType.dt_single) {
-					fieldValue = data.getSingleReference(field.getId()) == null ? "" : data.getSingleReference(field.getId()).getValue();
+					fieldValue = data.getSingleReference(field.getId()) == null ? null : data.getSingleReference(field.getId()).getValue();
 				}else {
 					if (data.getMultiReference(field.getId()) != null) {
 						for (UUID uuid : data.getMultiReference(field.getId())) {
