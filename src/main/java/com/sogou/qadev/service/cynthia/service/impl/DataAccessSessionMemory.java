@@ -1171,7 +1171,7 @@ public class DataAccessSessionMemory extends AbstractDataAccessSession
 		return new UserInfoAccessSessionMySQL().queryUserInfoById(id);
 	}
 	
-	/**
+	/**0
 	 * (non-Javadoc)
 	 * <p> Title:queryUserInfoByUserName</p>
 	 * @param userName

@@ -103,6 +103,7 @@ if(allRequestPair.get("projectId") != null){
 		for(QueryCondition queryCondition : queryConditionList){
 			sql += " and " + queryCondition.getQueryField() + " " + queryCondition.getQueryMethod() + " " + queryCondition.getQueryValue() + " ";
 		}
+		System.out.println("query statistic sql :" + sql);
 	}else{
 		//其它条件查询
 		List<QueryCondition> queryConditionList = QueryUtil.getQueryCondition(allRequestPair,templateId);

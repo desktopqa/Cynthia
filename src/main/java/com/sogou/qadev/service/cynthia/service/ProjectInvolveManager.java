@@ -265,7 +265,11 @@ public class ProjectInvolveManager {
 	 * @return: String
 	 */
 	public String getUserSign(String userMail,String userId){
-		String sign = userSignMap.get(userMail);
+		String sign = null;
+		if (userMail != "") {
+			sign = userSignMap.get(userMail);
+		}
+		
 		if (sign == null) {
 			Map<String, String> jsonMap = new HashMap<String, String>();
 			jsonMap.put("username", userMail);

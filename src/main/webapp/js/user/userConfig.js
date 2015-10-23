@@ -11,12 +11,14 @@ function uploadImage()
         return false;
     }
     // 利用ajaxFileUpload js 插件上传图片
-    $.ajaxFileUpload({url: base_url + "attachment/upload.jsp",
+    $.ajaxFileUpload({
+    	url: base_url + "attachment/upload.jsp",
     	secureuri:false,
         fileElementId:"userPic",
         dataType:"json",
        
         success:function (data , status) {
+        	alert(data);
         	for(var key in data){
 				fileId = key;
 				break;

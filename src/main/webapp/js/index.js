@@ -1546,6 +1546,21 @@ function initFilterData(filterId,page,sortField,sortType,reDrawHead)
 					showLoading(false);
 				}
 			});
+		},error : function(data){
+			var filterData = eval('(' + data.responseText + ')'); 
+			var params = "filterId=" + filterId;
+			$.ajax({
+				url: "filter/getFilterShowInfo.do",
+				type:'POST',
+				data:params,
+				success: function(data){
+					var filterField = eval('(' + data + ')');
+					showFilterData(filterData, filterField.groupField, filterField.showFields, filterField.backFields, reDrawHead);
+					showLoading(false);
+				},error : function(){
+					showLoading(false);
+				}
+			});
 		}
 	});
 }

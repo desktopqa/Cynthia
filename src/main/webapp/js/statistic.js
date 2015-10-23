@@ -303,7 +303,7 @@ function initTemplateRoles(callback)
 	});
 }
 
-function initRoleActions()
+function initRoleActions(callback)
 {
 	var templateId = $("#templates").val();
 	var roleId = $("#stat_role").val();
@@ -317,9 +317,11 @@ function initRoleActions()
 			for(var key in data){
 				$("#stat_action").append("<option value=" + data[key].fieldId + "> " + data[key].fieldName + "</option>");
 			}
+			callback && callback(true);
 		},
 		error:function(data){
 			alert("error");
+			callback && callback(false);
 		}
 	});
 }
@@ -668,14 +670,12 @@ function editStat(statId)
 					}else if(statType === "person"){
 						//人员
 						$("#stat_role").val($(rootNode).find("person roleId").text());
-						$("#stat_role").change();
-						var actionIds = $(rootNode).find("person roleActionIds").text();
-						if(actionIds && actionIds.length >0){
-							$.each(actionIds.split(","),function(index,action){
-								$("#stat_action option[value="+action+"]").attr("selected","selected");
-							});
-						};
-						$("input[type=radio][name=containCurAssign][value="+$(rootNode).find("person containCurAssign").text()+"]").attr("checked","checked");
+						initRoleActions(function(success) {
+							var actionIds = $(rootNode).find("person roleActionIds").text();
+							$("#stat_action").val(actionIds.split(","));
+							enableSelectSearch();
+							$("input[type=radio][name=containCurAssign][value="+$(rootNode).find("person containCurAssign").text()+"]").attr("checked","checked");
+						});
 					}else if(statType === "model"){
 						//模块
 						$("#stat_field").val($(rootNode).find("model modelfieldId").text());

@@ -292,6 +292,7 @@
 				chart.setChartData(data.name,data.data,data.chartType);
 				if($("#tableData").length != 0)
 				{
+					console.log(data.data);
 					initTableData(data.data,data.statisticId);
 				}
 			}

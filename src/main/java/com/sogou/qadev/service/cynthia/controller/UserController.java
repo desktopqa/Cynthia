@@ -243,6 +243,15 @@ public class UserController extends BaseController{
 		String password = request.getParameter("password");
 		String remember = request.getParameter("remember");
 		String targetUrl = request.getParameter("targetUrl");
+		String userId = null;
+		
+		if (ConfigManager.getEnableSso()) {
+			String passport = request.getParameter("passport");
+			com.alibaba.fastjson.JSONObject data = com.alibaba.fastjson.JSONObject.parseObject(passport);
+			userName = data.getString("username");
+			userId = data.getString("id");
+		}
+		
 		int loginMaxAge = 24 * 60 * 60;   //不自动登陆则为一天
 		targetUrl = targetUrl != null && !targetUrl.equals("") ? targetUrl : ConfigUtil.getCynthiaWebRoot();
 		if (remember != null && remember.equals("true")) {
@@ -255,13 +264,17 @@ public class UserController extends BaseController{
         	UserInfo userInfo = das.queryUserInfoByUserName(userName);
         	CookieManager.addCookie(response , "login_username" , userName , loginMaxAge,null); 
 		    CookieManager.addCookie(response , "login_password" , password , loginMaxAge,null);   
-		    CookieManager.addCookie(response , "login_nickname" , URLEncoder.encode(userInfo.getNickName(), "UTF-8") , loginMaxAge,null);   
+		    CookieManager.addCookie(response , "userId" , userId , loginMaxAge,null);   
 		    session.setAttribute("userName",userName);
-			if(userInfo != null)  //中文名
-				session.setAttribute("userAlis", userInfo.getNickName());
+			if(userInfo != null && userInfo.getNickName() != null) { //中文名 
+			    CookieManager.addCookie(response , "login_nickname" , URLEncoder.encode(userInfo.getNickName(), "UTF-8") , loginMaxAge,null);   
+			    session.setAttribute("userAlis", userInfo.getNickName());
+			}
+				
 			//更新最后登陆时间
 			userInfo.setLastLoginTime(new Timestamp(System.currentTimeMillis()));
 			das.updateUserInfo(userInfo);
+			//response.sendRedirect(targetUrl);
 			return targetUrl;
         }else {
         	 CookieManager.addCookie(response,"login_username","",0,null);  //清除Cookie
@@ -294,13 +307,15 @@ public class UserController extends BaseController{
 		CookieManager.delCookie(response, "login_nickname");
 		CookieManager.delCookie(response, "login_password");
 		CookieManager.delCookie(response, "id");
+		CookieManager.delCookie(response, "userId");
 		session.removeAttribute("key");
 		session.removeAttribute("userName");
 		session.invalidate();
 		String targetUrl = request.getParameter("targetUrl"); //是否回跳
 		if (!CynthiaUtil.isNull(targetUrl)) {
 			String logoutUrl  = ConfigUtil.getLogOutUrl();
-			logoutUrl += (logoutUrl.indexOf("?") != -1 ? "&" : "?") + "targetUrl=" + URLEncoder.encode(targetUrl,"UTF-8");
+//			logoutUrl += (logoutUrl.indexOf("?") != -1 ? "&" : "?") + "targetUrl=" + URLEncoder.encode(targetUrl,"UTF-8");
+			logoutUrl += (logoutUrl.indexOf("?") != -1 ? "&" : "?") + "targetUrl=" + URLEncoder.encode(targetUrl,"UTF-8") + "&returnUrl=" + ConfigUtil.getCynthiaWebRoot() + "user/login.do";
 			System.out.println("usercontroller sendredirect:" + logoutUrl);
 			response.sendRedirect(logoutUrl);
 		}

@@ -162,8 +162,9 @@ public class LoginFilter implements Filter {
 				// *用户登录以后需手动添加session  
 			    if("XMLHttpRequest".equals(httpRequest.getHeader("X-Requested-With"))){  
 			    	//ajax请求跳转到首页
+
 			    	targetUrl = ConfigUtil.getCynthiaWebRoot();
-			    	redirectUrl = ConfigUtil.getLoginUrl() + ( ConfigUtil.getLoginUrl().indexOf("?") != -1 ? "&" : "?" ) +  "targetUrl=" + targetUrl;
+			    	redirectUrl = ConfigUtil.getLoginUrl() + ( ConfigUtil.getLoginUrl().indexOf("?") != -1 ? "&" : "?" ) +  "targetUrl=" + targetUrl + "&returnUrl=" + ConfigUtil.getCynthiaWebRoot() + "user/login.do";
 			    	httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			    	httpResponse.addHeader("Vary", "Origin");
 			    	httpResponse.addHeader("Access-Control-Allow-Origin", httpRequest.getHeader("Origin"));
@@ -173,8 +174,8 @@ public class LoginFilter implements Filter {
 			    	httpResponse.getWriter().println(redirectUrl);
 			    } else {  
 			    	targetUrl = ConfigUtil.getTargetUrl(httpRequest);
-					redirectUrl = ConfigUtil.getLoginUrl() + ( ConfigUtil.getLoginUrl().indexOf("?") != -1 ? "&" : "?" ) +  "targetUrl=" + targetUrl;
-			    	httpResponse.sendRedirect(redirectUrl);  
+					redirectUrl = ConfigUtil.getLoginUrl() + ( ConfigUtil.getLoginUrl().indexOf("?") != -1 ? "&" : "?" ) +  "targetUrl=" + targetUrl + "&returnUrl=" + ConfigUtil.getCynthiaWebRoot() + "user/login.do";
+					httpResponse.sendRedirect(redirectUrl);  
 			    } 
 				return;
 			}else {
@@ -192,7 +193,7 @@ public class LoginFilter implements Filter {
 			session.setAttribute("kid", kid);
 		}
 		
-		if (!authUserRole(dataAndEventId, userName) && httpRequest.getQueryString().indexOf("previewFlow") == -1) {
+		if (!authUserRole(dataAndEventId, userName) && httpRequest.getQueryString() != null && httpRequest.getQueryString().indexOf("previewFlow") == -1) {
 			httpResponse.sendRedirect(ConfigUtil.getCynthiaWebRoot() + "error.html");
 			return;
 		}

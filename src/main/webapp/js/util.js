@@ -1607,7 +1607,7 @@ function checkLogin()
 		url: base_url + 'user/getUserInfo.do',
 		type:'POST',
 		dataType:'json',
-		data:{userId:readCookie("id"),userMail:readCookie('login_username')},
+		data:{userId:readCookie("userId"),userMail:readCookie('login_username')},
 		success:function(user){
 			userPicUrl = user.picUrl || base_url + "images/default_user.png";
 			if(user){

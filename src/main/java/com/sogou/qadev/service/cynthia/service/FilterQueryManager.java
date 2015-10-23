@@ -536,8 +536,10 @@ public class FilterQueryManager {
 			}
 			
 			Template template = templateMap.get(task.getTemplateId());
-			if(template == null)
+			if(template == null) {
+				System.out.println("template is null, templateId:" + task.getTemplateId());
 				continue;
+			}
 			if (flowMap.get(template.getFlowId()) == null) {
 				Flow flow = das.queryFlow(template.getFlowId());
 				if (flow != null) {

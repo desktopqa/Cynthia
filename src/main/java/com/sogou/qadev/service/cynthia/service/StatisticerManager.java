@@ -358,6 +358,8 @@ public class StatisticerManager
 			sqlBuffer.append("select count(*) as count,").append(fieldColName).append(" from ").append(dataTable).append(" where id in (").append(idBuffer.toString()).append(") ").append(" group by ").append(fieldColName);;
 		}
 		
+		System.out.println("query all statistic sql :" + sqlBuffer.toString());
+		
 		List<Map<String , String>> allCountMap = DbPoolConnection.getInstance().getResultSetListBySql(sqlBuffer.toString());
 		
 		for (Map<String, String> map : allCountMap) {
@@ -459,12 +461,13 @@ public class StatisticerManager
 		
 		List<Map<String , String>> allIdMap = DbPoolConnection.getInstance().getResultSetListBySql(sqlBuffer.toString());
 		
+		System.out.println("getBugMapByPersonSolve sql:" + sqlBuffer.toString());
 		
 		for (Map<String, String> map : allIdMap) {
 			if (roleSolveIdSet.get(map.get("logcreateUser")) == null) {
 				roleSolveIdSet.put(map.get("logcreateUser"), new HashSet<String>());
 			}
-			roleSolveIdSet.get(map.get("logcreateUser")).add(map.get("dataid"));
+			roleSolveIdSet.get(map.get("logcreateUser")).add(map.get("dataId"));
 		}
 		
 		if (containCurAssign) {
@@ -716,7 +719,7 @@ public class StatisticerManager
 			}
 			
 			StringBuffer sqlBuffer = new StringBuffer();
-			sqlBuffer.append("select dataid from ").append(dataLogTable).append(" where is_valid=1 and logcreateUser='").append(statisticVal).append("' and templateId =").append(templateId.getValue()).append(" and ").append(whereStr).append(" and logActionId in (")
+			sqlBuffer.append("select dataId from ").append(dataLogTable).append(" where is_valid=1 and logcreateUser='").append(statisticVal).append("' and templateId =").append(templateId.getValue()).append(" and ").append(whereStr).append(" and logActionId in (")
 					.append(logActionIdBuffer.toString()).append(")");
 			
 			if (startTimestamp != null) {
@@ -727,8 +730,11 @@ public class StatisticerManager
 			}
 			
 			List<Map<String, String>> allIdMap = DbPoolConnection.getInstance().getResultSetListBySql(sqlBuffer.toString());
+			
+			System.out.println("log role action id query sql:" + sqlBuffer.toString());
+			
 			for (Map<String, String> map : allIdMap) {
-				allIdSet.add(map.get("dataid"));
+				allIdSet.add(map.get("dataId"));
 			}
 			
 			if (containCurAssign) {

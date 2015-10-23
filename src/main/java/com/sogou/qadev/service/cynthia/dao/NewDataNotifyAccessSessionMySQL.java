@@ -231,8 +231,13 @@ public class NewDataNotifyAccessSessionMySQL
 			sqlStr = sqlStr.trim();
 			StringBuffer sqlBuffer = new StringBuffer();
 			sqlBuffer.append("select count(").append(sqlStr.substring(sqlStr.indexOf("select") +6, sqlStr.indexOf("from"))).append(" ) ").append(sqlStr.substring(sqlStr.indexOf("from")));
+			
+			if (filterId.getValue().equals("119695")) {
+				System.out.println("待处理 filter count sql:" + sqlBuffer.toString());
+			}
 			totalCount += DbPoolConnection.getInstance().getCountOfSQL(sqlBuffer.toString());
 		}
+		
 		return totalCount;
 	}
 	
