@@ -12,6 +12,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import sun.tools.tree.VarDeclarationStatement;
+
 import com.sogou.qadev.cache.Cache;
 import com.sogou.qadev.cache.impl.FieldNameCache;
 import com.sogou.qadev.cache.impl.FlowCache;
@@ -179,6 +181,9 @@ abstract public class AbstractDataAccessSession implements DataAccessSession
 		{
 			if (data.getCreateUsername() != null && data.getCreateUsername().equals(getUsername())) {
 				//自己创建的数据有可读权限
+				return true;
+			}else if(data.getAssignUser() != null && data.getAssignUser().indexOf(getUsername()) != -1) {
+				//指派人包含自己有读取权限 
 				return true;
 			}else if (ConfigManager.getProjectInvolved()){
 				//同公司创建数据有读取权限
