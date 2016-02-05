@@ -110,6 +110,7 @@
 		
 	}catch(Exception e)
 	{
+		e.printStackTrace();
 		result.append("{").append("\"isError\":\"true\"}");
 	}
 	
