@@ -4,7 +4,7 @@
     
     <!-- The Basics --> 
     <groupId>com.sogou.qadev</groupId>
-    <artifactId>Cynthia_Maven</artifactId>
+    <artifactId>cynthia</artifactId>
     <version>2.0.0</version>
 	<packaging>war</packaging>
 	<name>cynthia</name>     
@@ -313,43 +313,23 @@
 				<directory>src/main/resources</directory>
 			</resource>
 		</resources>
-		<!--
-		<plugins>
-			
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.2.1</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-          
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<webXml>src\main\webapp\WEB-INF\web.xml</webXml>
-				</configuration>
-			</plugin>
-			
-		</plugins>
-	-->
+		
+	    <!-- Eclipse Maven Tomcat插件 可以直接运行   右键——>选择 Run As——> Maven build 在Goals框加加入以下命令: tomcat7:run-->
+		<pluginManagement>
+	      <plugins>
+	        <plugin>
+	          <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <port>8080</port>
+                    <path>/cynthia</path>
+                    <uriEncoding>UTF-8</uriEncoding>
+                    <finalName>cynthia</finalName>
+                    <server>tomcat7</server>
+                </configuration>
+	        </plugin>
+	      </plugins>
+	    </pluginManagement>
 	</build>
 </project>
