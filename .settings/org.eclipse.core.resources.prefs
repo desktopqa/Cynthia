@@ -1,4 +1,6 @@
 eclipse.preferences.version=1
+encoding//src/main/java=UTF-8
+encoding//src/main/resources=UTF-8
 encoding//src/main/resources/pro-involve.properties=UTF-8
 encoding//src/main/webapp/cplugin/excelimportnew.html=UTF-8
 encoding//src/main/webapp/css/admin_template_edit.css=UTF-8

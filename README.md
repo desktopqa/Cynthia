@@ -71,6 +71,13 @@ Demo 地址
 --------
 http://git.oschina.net/cynthia/Cynthia/attach_files
 
+Maven部署的一些问题解决方法
+--------
+1. tools.jar依赖问题
+https://my.oschina.net/cloudcoder/blog/189560
+2. jre依赖的问题
+http://stackoverflow.com/questions/12585380/maven-unable-to-locate-the-javac-compiler-in
+
 交流、反馈和建议
 ---------------
 		QQ群：305330695
