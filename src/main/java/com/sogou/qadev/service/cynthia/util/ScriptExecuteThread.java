@@ -33,6 +33,7 @@ public class ScriptExecuteThread implements Runnable {
 					String content = script.getScript();
 					if (content == null)
 						continue;
+					
 					interpreter.eval(content);
 				} catch (EvalError e) {
 					e.printStackTrace();
