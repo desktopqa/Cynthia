@@ -2,6 +2,7 @@ package com.sogou.qadev.service.cynthia.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -472,7 +473,7 @@ public class ExcelImportControllerNew extends BaseController {
 
 		try
 		{
-			File tmpFile = File.createTempFile("acctachment", ".attachment");
+			File tmpFile = Files.createTempFile("acctachment", ".attachment").toFile();
 			multipartFile.transferTo(tmpFile);
 			String realFileName = multipartFile.getOriginalFilename();
 			FileInputStream fis = new FileInputStream(tmpFile);
