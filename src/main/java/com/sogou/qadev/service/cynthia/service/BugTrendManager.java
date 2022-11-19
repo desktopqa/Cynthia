@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -556,7 +557,7 @@ public class BugTrendManager {
 		String fileId = "";
 		FileInputStream fin = null;
 		try {
-			File tempFile = File.createTempFile(System.currentTimeMillis() + showName , "png");
+			File tempFile = Files.createTempFile(System.currentTimeMillis() + showName, "png").toFile();
 			ChartUtilities.saveChartAsPNG(tempFile, chart, 800, 400);
 			//图片存储到图片服务器
 			fin = new FileInputStream(tempFile);

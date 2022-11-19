@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -148,7 +149,7 @@ public class FileUpDownLoadHandler {
 			//获取网络输入流
 			bis = new BufferedInputStream(httpUrl.getInputStream());
 			//创建临时文件，由于FileInputStream.avaiable受网络阻塞原因，得到的大小可能不靠谱
-			tempFile = File.createTempFile("temp", ".tmp");
+			tempFile = Files.createTempFile("temp", ".tmp").toFile();
 			fos = new FileOutputStream(tempFile);
 
 			while ((size = bis.read(buf, 0, buf.length)) != -1){
@@ -191,7 +192,7 @@ public class FileUpDownLoadHandler {
 		String fileId = "";
 		try {
 			//创建临时文件
-			File tempFile = File.createTempFile(System.currentTimeMillis() + showName , "png");
+			File tempFile = Files.createTempFile(System.currentTimeMillis() + showName, "png").toFile();
 			ChartUtilities.saveChartAsPNG(tempFile, chart, width, height);
 			//图片存储到图片服务器
 			fin = new FileInputStream(tempFile);
